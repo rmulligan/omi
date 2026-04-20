@@ -1,8 +1,13 @@
 {
-  "unreleased": [
-    "Dashboard Tasks/Goals cards now shrink to fit content instead of stretching to fill the screen"
-  ],
+  "unreleased": [],
   "releases": [
+    {
+      "version": "0.11.344",
+      "date": "2026-04-20",
+      "changes": [
+        "Dashboard Tasks/Goals cards now shrink to fit content instead of stretching to fill the screen"
+      ]
+    },
     {
       "version": "0.11.343",
       "date": "2026-04-20",
