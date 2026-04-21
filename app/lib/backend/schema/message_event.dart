@@ -34,6 +34,8 @@ abstract class MessageEvent {
         return FreemiumThresholdReachedEvent.fromJson(json);
       case 'segments_deleted':
         return SegmentsDeletedEvent.fromJson(json);
+      case 'translating_start':
+        return TranslatingStartEvent.fromJson(json);
       default:
         // Return a generic event or throw an error if the type is unknown
         return UnknownEvent(eventType: json['type'] ?? 'unknown');
@@ -248,6 +250,16 @@ class SegmentsDeletedEvent extends MessageEvent {
 
   factory SegmentsDeletedEvent.fromJson(Map<String, dynamic> json) {
     return SegmentsDeletedEvent(segmentIds: (json['segment_ids'] as List<dynamic>).map((e) => e.toString()).toList());
+  }
+}
+
+class TranslatingStartEvent extends MessageEvent {
+  final List<String> segmentIds;
+
+  TranslatingStartEvent({required this.segmentIds}) : super(eventType: 'translating_start');
+
+  factory TranslatingStartEvent.fromJson(Map<String, dynamic> json) {
+    return TranslatingStartEvent(segmentIds: (json['segment_ids'] as List<dynamic>).map((e) => e.toString()).toList());
   }
 }
 
