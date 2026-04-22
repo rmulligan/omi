@@ -592,20 +592,20 @@ class TestCacheRouting:
         inst2 = _cached_anthropic(api_key)
         assert inst1 is inst2
 
-    def test_anthropic_proxy_routes_to_byok(self):
-        from utils.llm.clients import _AnthropicViaOpenAIProxy, _ANTHROPIC_OPENAI_BASE_URL
+    def test_gemini_proxy_routes_to_byok(self):
+        from utils.llm.clients import _GeminiChatProxy, _GEMINI_OPENAI_BASE_URL
 
         mock_default = MagicMock()
-        proxy = _AnthropicViaOpenAIProxy(default=mock_default, ctor_kwargs={})
-        with patch('utils.llm.clients.get_byok_key', side_effect=lambda p: 'sk-ant-byok' if p == 'anthropic' else None):
+        proxy = _GeminiChatProxy(model='gemini-2.5-flash-lite', default=mock_default, ctor_kwargs={})
+        with patch('utils.llm.clients.get_byok_key', side_effect=lambda p: 'AIza-byok-key' if p == 'gemini' else None):
             resolved = proxy._resolve()
-        assert resolved.openai_api_base == _ANTHROPIC_OPENAI_BASE_URL
+        assert resolved.openai_api_base == _GEMINI_OPENAI_BASE_URL
 
-    def test_anthropic_proxy_falls_back_to_default(self):
-        from utils.llm.clients import _AnthropicViaOpenAIProxy
+    def test_gemini_proxy_falls_back_to_default(self):
+        from utils.llm.clients import _GeminiChatProxy
 
         mock_default = MagicMock()
-        proxy = _AnthropicViaOpenAIProxy(default=mock_default, ctor_kwargs={})
+        proxy = _GeminiChatProxy(model='gemini-2.5-flash-lite', default=mock_default, ctor_kwargs={})
         with patch('utils.llm.clients.get_byok_key', return_value=None):
             resolved = proxy._resolve()
         assert resolved is mock_default
