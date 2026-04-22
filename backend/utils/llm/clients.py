@@ -195,8 +195,6 @@ def get_openai_chat(model: str, **kwargs) -> ChatOpenAI:
 #   feature_b: ('gemini-2.5-flash', 'openrouter')   → OpenRouter
 #
 # Global switch:     MODEL_QOS=premium        (selects entire profile)
-# Per-feature:       MODEL_QOS_FOLLOWUP=gpt-4.1-nano:openai  (model:provider)
-#                    MODEL_QOS_FOLLOWUP=gpt-4.1-nano          (model only, inherits provider)
 #
 # Two profiles:
 #   premium — cost-effective default (80% of max quality)
@@ -313,22 +311,6 @@ _ANTHROPIC_ONLY_FEATURES = {'chat_agent'}
 _PERPLEXITY_ONLY_FEATURES = {'web_search'}
 
 
-def _classify_provider(model: str) -> str:
-    """Infer provider from model name. Used ONLY as fallback for env overrides
-    that don't specify an explicit provider (e.g. MODEL_QOS_X=gpt-4.1-mini).
-    Profile entries always have explicit provider — this is never used for them.
-    """
-    if '/' in model:
-        return 'openrouter'
-    if model.startswith('claude'):
-        return 'anthropic'
-    if model.startswith('sonar'):
-        return 'perplexity'
-    if model.startswith('gemini-'):
-        return 'gemini'
-    return 'openai'
-
-
 # Feature-specific client config (temperature, headers — orthogonal to model choice).
 # Only applied when a feature resolves to an OpenRouter model.
 _OPENROUTER_TEMPERATURES: Dict[str, float] = {
@@ -343,67 +325,26 @@ _CACHE_KEY_MODELS = {'gpt-5.4', 'gpt-5.4-mini'}
 _DEFAULT_CONFIG: Tuple[str, str] = ('gpt-4.1-mini', 'openai')
 
 
-_VALID_PROVIDERS = {'openai', 'gemini', 'openrouter', 'anthropic', 'perplexity'}
-
-
 def _get_model_config(feature: str) -> Tuple[str, str]:
     """Get the (model, provider) tuple for a feature. Internal — used by get_llm/get_model/get_provider.
 
-    Resolution order: pinned > per-feature env override > active profile > fallback.
-
-    Env override formats:
-      MODEL_QOS_X=model:provider  — explicit model and provider (validated)
-      MODEL_QOS_X=model           — provider inferred from model name via _classify_provider()
+    Resolution order: pinned > active profile > fallback.
     """
     if feature in _PINNED_FEATURES:
         return _PINNED_FEATURES[feature]
-    env_key = f'MODEL_QOS_{feature.upper()}'
-    override = os.environ.get(env_key, '').strip()
-    if override:
-        profile_entry = _active_profile.get(feature, _DEFAULT_CONFIG)
-        if ':' in override:
-            parts = override.rsplit(':', 1)
-            override_model, override_provider = parts[0], parts[1]
-            inferred = _classify_provider(override_model)
-            if override_provider not in _VALID_PROVIDERS:
-                logger.warning(
-                    'QoS override %s=%s has invalid provider %r — using inferred provider %s',
-                    env_key,
-                    override,
-                    override_provider,
-                    inferred,
-                )
-                override_provider = inferred
-            elif override_provider != inferred:
-                logger.warning(
-                    'QoS override %s=%s: explicit provider %r does not match model (inferred %s) — using inferred',
-                    env_key,
-                    override,
-                    override_provider,
-                    inferred,
-                )
-                override_provider = inferred
-        else:
-            override_model = override
-            override_provider = _classify_provider(override_model)
-        return (override_model, override_provider)
     return _active_profile.get(feature, _DEFAULT_CONFIG)
 
 
 def get_model(feature: str) -> str:
     """Get the model name for a feature from the active Model QoS profile.
 
-    Resolution order: pinned > per-feature env override > active profile > fallback.
+    Resolution order: pinned > active profile > fallback.
 
     Args:
         feature: Feature name (e.g. 'conv_action_items', 'chat_agent').
 
     Returns:
         Model name string (e.g. 'gpt-4.1-mini', 'claude-sonnet-4-6').
-
-    Override via env var:
-        MODEL_QOS_CHAT_AGENT=claude-haiku-3.5:anthropic
-        MODEL_QOS_CONV_STRUCTURE=gpt-5.1
     """
     return _get_model_config(feature)[0]
 
@@ -561,11 +502,7 @@ def get_qos_info() -> Dict[str, Dict[str, str]]:
 # Startup logging — log active profile so cost issues are traceable.
 logger.info('Model QoS profile=%s (%d features)', _active_profile_name, len(_active_profile))
 for _feat, (_model, _provider) in sorted(_active_profile.items()):
-    _resolved_model = get_model(_feat)
-    if _resolved_model != _model:
-        logger.info('  QoS %s: %s [%s] (override, profile default: %s)', _feat, _resolved_model, _provider, _model)
-    else:
-        logger.info('  QoS %s: %s [%s]', _feat, _model, _provider)
+    logger.info('  QoS %s: %s [%s]', _feat, _model, _provider)
 
 
 # ---------------------------------------------------------------------------
