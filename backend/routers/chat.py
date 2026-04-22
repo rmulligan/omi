@@ -28,6 +28,7 @@ from models.chat import (
 )
 from routers.sync import retrieve_file_paths, decode_files_to_wav
 from utils.apps import get_available_app_by_id
+from utils.byok import set_byok_keys
 from utils.conversation_helpers import extract_memory_ids
 from utils.chat import (
     process_voice_message_segment,
@@ -173,7 +174,10 @@ def send_message(
     plugin_id: Optional[str] = None,
     app_id: Optional[str] = None,
     uid: str = Depends(auth.with_rate_limit(auth.get_current_user_uid, "chat:send_message")),
+    byok_keys: dict = Depends(auth.get_validated_byok_keys_http),
 ):
+    if byok_keys:
+        set_byok_keys(byok_keys)
     # Hard cap: Free by question count, Architect by cost_usd. Operator enters
     # overage mode silently. If exceeded, instead of raising 402 (which mobile
     # clients render as a generic "having issues with the server" error), save
@@ -461,7 +465,10 @@ async def create_voice_message_stream(
     files: List[UploadFile] = File(...),
     language: Optional[str] = Form(None),
     uid: str = Depends(auth.with_rate_limit(auth.get_current_user_uid, "voice:message")),
+    byok_keys: dict = Depends(auth.get_validated_byok_keys_http),
 ):
+    if byok_keys:
+        set_byok_keys(byok_keys)
     enforce_chat_quota(uid)
 
     # wav
@@ -495,6 +502,7 @@ async def create_voice_message_stream(
 async def transcribe_voice_message(
     request: Request,
     uid: str = Depends(auth.with_rate_limit(auth.get_current_user_uid, "voice:transcribe")),
+    byok_keys: dict = Depends(auth.get_validated_byok_keys_http),
 ):
     """Transcribe audio and return the transcript text.
 
@@ -504,6 +512,8 @@ async def transcribe_voice_message(
 
     Returns {"transcript": "...", "language": "..."}.
     """
+    if byok_keys:
+        set_byok_keys(byok_keys)
     content_type = request.headers.get("content-type", "")
 
     if "application/octet-stream" in content_type:
@@ -678,6 +688,7 @@ async def transcribe_voice_message(
 async def transcribe_voice_message_stream(
     websocket: WebSocket,
     uid: str = Depends(auth.get_current_user_uid_ws_listen),
+    byok_keys: dict = Depends(auth.get_validated_byok_keys_ws),
     language: str = 'en',
     sample_rate: int = 16000,
     codec: str = 'linear16',
@@ -704,6 +715,8 @@ async def transcribe_voice_message_stream(
         [{"speaker": "SPEAKER_00", "start": 0.0, "end": 1.5, "text": "Hello world",
           "is_user": false, "person_id": null}]
     """
+    if byok_keys:
+        set_byok_keys(byok_keys)
     await websocket.accept()
 
     if codec != 'linear16':
