@@ -21,20 +21,20 @@ _usage_callback = get_usage_callback()
 # ---------------------------------------------------------------------------
 # BYOK routing proxies
 #
-# The backend has ~50 call sites that use module-level `llm_medium`, `llm_mini`,
-# etc. directly (e.g. `llm_medium.invoke(prompt)` or `llm_medium.bind_tools(...).ainvoke(...)`).
-# Rewriting every site to go through a factory would be a massive sweep.
-#
-# Instead we wrap each default client in a transparent proxy: every attribute
-# access resolves to either the default client or a BYOK-keyed client built
-# on the fly, keyed by (model, api_key) so we build each BYOK client once.
-# `__getattr__` forwards `bind_tools`, `with_structured_output`, `|` chaining,
-# etc. to the resolved client so tool-use/structured-output still route right.
+# All LLM features are routed through get_llm(feature) / get_model(feature).
+# Each proxy wraps a default client and transparently resolves to either
+# the default or a BYOK-keyed client at call time. `__getattr__` forwards
+# `bind_tools`, `with_structured_output`, `|` chaining, etc. to the resolved
+# client so tool-use/structured-output still route correctly.
 # ---------------------------------------------------------------------------
 
 
-class _OpenAIChatProxy:
-    """Forwards every attribute and call to the appropriate ChatOpenAI for the request."""
+class _BYOKChatProxy:
+    """Base class for transparent BYOK-aware ChatOpenAI proxies.
+
+    Subclasses only need to implement _resolve() — all attribute forwarding
+    and LangChain pipe composition is handled here.
+    """
 
     __slots__ = ('_model', '_default', '_ctor_kwargs')
 
@@ -44,10 +44,7 @@ class _OpenAIChatProxy:
         object.__setattr__(self, '_ctor_kwargs', ctor_kwargs)
 
     def _resolve(self) -> ChatOpenAI:
-        byok = get_byok_key('openai')
-        if byok:
-            return _cached_openai_chat(self._model, byok, self._ctor_kwargs)
-        return self._default
+        raise NotImplementedError
 
     def __getattr__(self, name: str):
         return getattr(self._resolve(), name)
@@ -58,6 +55,18 @@ class _OpenAIChatProxy:
 
     def __ror__(self, other):
         return other | self._resolve()
+
+
+class _OpenAIChatProxy(_BYOKChatProxy):
+    """Routes to BYOK OpenAI when set, otherwise uses default OpenAI client."""
+
+    __slots__ = ()
+
+    def _resolve(self) -> ChatOpenAI:
+        byok = get_byok_key('openai')
+        if byok:
+            return _cached_openai_chat(self._model, byok, self._ctor_kwargs)
+        return self._default
 
 
 class _AnthropicClientProxy:
@@ -83,19 +92,18 @@ class _AnthropicClientProxy:
 _GEMINI_OPENAI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai/"
 
 
-class _OpenRouterGeminiProxy:
-    """For models served via OpenRouter that we want to route direct when BYOK Gemini is set.
+class _OpenRouterGeminiProxy(_BYOKChatProxy):
+    """Routes OpenRouter Gemini models to Google direct when BYOK Gemini is set.
 
     Falls back to the OpenRouter-backed default client when no BYOK gemini key
     is present — so non-BYOK users are unaffected.
     """
 
-    __slots__ = ('_default', '_direct_model', '_ctor_kwargs')
+    __slots__ = ('_direct_model',)
 
     def __init__(self, default: ChatOpenAI, direct_model: str, ctor_kwargs: Dict[str, Any]):
-        object.__setattr__(self, '_default', default)
+        super().__init__(model=direct_model, default=default, ctor_kwargs=ctor_kwargs)
         object.__setattr__(self, '_direct_model', direct_model)
-        object.__setattr__(self, '_ctor_kwargs', ctor_kwargs)
 
     def _resolve(self) -> ChatOpenAI:
         byok = get_byok_key('gemini')
@@ -106,15 +114,6 @@ class _OpenRouterGeminiProxy:
                 {**self._ctor_kwargs, 'base_url': _GEMINI_OPENAI_BASE_URL},
             )
         return self._default
-
-    def __getattr__(self, name: str):
-        return getattr(self._resolve(), name)
-
-    def __or__(self, other):
-        return self._resolve() | other
-
-    def __ror__(self, other):
-        return other | self._resolve()
 
 
 class _OpenAIEmbeddingsProxy:
@@ -241,6 +240,7 @@ MODEL_QOS_PROFILES: Dict[str, Dict[str, str]] = {
         'proactive_notification': 'gpt-4.1-mini',  # quality-sensitive: notification decisions
         'followup': 'gemini-2.5-flash-lite',  # free text question → Gemini (75% savings vs mini)
         'smart_glasses': 'gpt-4.1-nano',
+        'openglass': 'gpt-4.1-mini',  # vision: image description from smart glasses
         'onboarding': 'gemini-2.5-flash-lite',  # boolean yes/no check → Gemini (75% savings vs mini)
         'app_generator': 'gpt-5.4-mini',
         'app_integration': 'gemini-2.5-flash-lite',  # simple routing → Gemini (75% savings vs mini)
@@ -285,6 +285,7 @@ MODEL_QOS_PROFILES: Dict[str, Dict[str, str]] = {
         'proactive_notification': 'gpt-4.1-mini',
         'followup': 'gpt-4.1-mini',
         'smart_glasses': 'gpt-4.1-mini',
+        'openglass': 'gpt-4.1-mini',  # vision: image description from smart glasses
         'onboarding': 'gpt-4.1-mini',
         'app_generator': 'gpt-5.4',
         'app_integration': 'gpt-4.1-mini',
@@ -431,15 +432,10 @@ def _get_or_create_openrouter_llm(
     return _llm_cache[key]
 
 
-class _GeminiChatProxy:
-    """Transparent BYOK-aware proxy for Gemini models via Google's OpenAI-compatible endpoint."""
+class _GeminiChatProxy(_BYOKChatProxy):
+    """Routes to BYOK Gemini when set, otherwise uses default Google OpenAI-compatible endpoint."""
 
-    __slots__ = ('_model', '_default', '_ctor_kwargs')
-
-    def __init__(self, model: str, default: ChatOpenAI, ctor_kwargs: Dict[str, Any]):
-        object.__setattr__(self, '_model', model)
-        object.__setattr__(self, '_default', default)
-        object.__setattr__(self, '_ctor_kwargs', ctor_kwargs)
+    __slots__ = ()
 
     def _resolve(self) -> ChatOpenAI:
         byok = get_byok_key('gemini')
@@ -450,15 +446,6 @@ class _GeminiChatProxy:
                 {**self._ctor_kwargs, 'base_url': _GEMINI_OPENAI_BASE_URL},
             )
         return self._default
-
-    def __getattr__(self, name: str):
-        return getattr(self._resolve(), name)
-
-    def __or__(self, other):
-        return self._resolve() | other
-
-    def __ror__(self, other):
-        return other | self._resolve()
 
 
 def _get_or_create_gemini_llm(model_name: str, streaming: bool = False) -> _GeminiChatProxy:
@@ -564,84 +551,10 @@ ANTHROPIC_AGENT_COMPLEX_MODEL = get_model('chat_agent')
 
 
 # ---------------------------------------------------------------------------
-# Legacy model instances (for callsites not yet wired through get_llm)
-#
-# These are kept for backward compatibility with BYOK routing.
-# New code should use get_llm(feature) or get_model(feature) instead.
+# Legacy module-level alias (kept for test compatibility).
+# Production code should use get_llm(feature) exclusively.
 # ---------------------------------------------------------------------------
 llm_mini = _byok_openai('gpt-4.1-mini', callbacks=[_usage_callback])
-llm_mini_stream = _byok_openai(
-    'gpt-4.1-mini',
-    streaming=True,
-    stream_options={"include_usage": True},
-    callbacks=[_usage_callback],
-)
-llm_large = _byok_openai('o1-preview', callbacks=[_usage_callback])
-llm_large_stream = _byok_openai(
-    'o1-preview',
-    streaming=True,
-    stream_options={"include_usage": True},
-    temperature=1,
-    callbacks=[_usage_callback],
-)
-llm_high = _byok_openai('o4-mini', callbacks=[_usage_callback])
-llm_high_stream = _byok_openai(
-    'o4-mini',
-    streaming=True,
-    stream_options={"include_usage": True},
-    temperature=1,
-    callbacks=[_usage_callback],
-)
-llm_medium = _byok_openai('gpt-5.2', callbacks=[_usage_callback])
-llm_medium_stream = _byok_openai(
-    'gpt-5.2',
-    streaming=True,
-    stream_options={"include_usage": True},
-    callbacks=[_usage_callback],
-)
-llm_medium_experiment = _byok_openai(
-    'gpt-5.1',
-    extra_body={"prompt_cache_retention": "24h"},
-    callbacks=[_usage_callback],
-)
-
-# Specialized models for agentic workflows
-# prompt_cache_key ensures consistent routing to the same cache machine
-# for better prompt prefix cache hit rates.
-_agent_cache_kwargs = {
-    "prompt_cache_key": "omi-agent-v1",
-}
-llm_agent = _byok_openai(
-    'gpt-5.1',
-    extra_body={"prompt_cache_retention": "24h"},
-    callbacks=[_usage_callback],
-    model_kwargs=_agent_cache_kwargs,
-)
-llm_agent_stream = _byok_openai(
-    'gpt-5.1',
-    streaming=True,
-    stream_options={"include_usage": True},
-    extra_body={"prompt_cache_retention": "24h"},
-    callbacks=[_usage_callback],
-    model_kwargs=_agent_cache_kwargs,
-)
-# Gemini models for large context analysis
-_gemini_flash_kwargs = dict(
-    temperature=0.7,
-    callbacks=[_usage_callback],
-)
-_gemini_flash_default = ChatOpenAI(
-    model="google/gemini-3-flash-preview",
-    api_key=os.environ.get('OPENROUTER_API_KEY'),
-    base_url="https://openrouter.ai/api/v1",
-    default_headers={"X-Title": "Omi Wrapped"},
-    **_gemini_flash_kwargs,
-)
-llm_gemini_flash = _OpenRouterGeminiProxy(
-    default=_gemini_flash_default,
-    direct_model="gemini-3-flash-preview",
-    ctor_kwargs=_gemini_flash_kwargs,
-)
 
 # ---------------------------------------------------------------------------
 # Embeddings, parser, utilities
