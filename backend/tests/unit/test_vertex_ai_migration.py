@@ -124,43 +124,73 @@ class TestVertexGeminiProxy:
     @patch('utils.llm.clients._get_vertex_access_token', return_value='vertex-tok')
     @patch('utils.llm.clients.get_byok_key', return_value=None)
     def test_platform_routes_to_vertex(self, mock_byok, mock_token):
-        """Without BYOK key, proxy should route to Vertex AI."""
+        """Without BYOK key, proxy should route to Vertex AI with correct base URL."""
         import utils.llm.clients as mod
 
         orig_project = mod._GCP_PROJECT
+        orig_cache = dict(mod._openai_cache)
         try:
             mod._GCP_PROJECT = 'test-project'
-            mock_default = MagicMock()
-            proxy = mod._VertexGeminiProxy(
-                default=mock_default,
-                direct_model='gemini-3-flash-preview',
-                ctor_kwargs={
-                    'api_key': 'openrouter-key',
-                    'base_url': 'https://openrouter.ai/api/v1',
-                    'default_headers': {'X-Title': 'Omi Chat'},
-                    'callbacks': [],
-                },
-            )
-            resolved = proxy._resolve()
-            # Should NOT be the OpenRouter default
-            assert resolved is not mock_default
+            mod._openai_cache.clear()
+
+            captured = {}
+
+            def capturing_cached_openai_chat(model, api_key, ctor_kwargs):
+                captured['api_key'] = api_key
+                captured['base_url'] = ctor_kwargs.get('base_url', '')
+                return MagicMock()
+
+            with patch.object(mod, '_cached_openai_chat', capturing_cached_openai_chat):
+                mock_default = MagicMock()
+                proxy = mod._VertexGeminiProxy(
+                    default=mock_default,
+                    direct_model='gemini-3-flash-preview',
+                    ctor_kwargs={
+                        'api_key': 'openrouter-key',
+                        'base_url': 'https://openrouter.ai/api/v1',
+                        'default_headers': {'X-Title': 'Omi Chat'},
+                        'callbacks': [],
+                    },
+                )
+                resolved = proxy._resolve()
+                assert resolved is not mock_default
+                assert 'aiplatform.googleapis.com' in captured['base_url']
+                assert captured['api_key'] == 'vertex-tok'
         finally:
             mod._GCP_PROJECT = orig_project
+            mod._openai_cache.clear()
+            mod._openai_cache.update(orig_cache)
 
     @patch('utils.llm.clients.get_byok_key', return_value='user-gemini-key')
     def test_byok_routes_to_ai_studio(self, mock_byok):
-        """With BYOK key, proxy should route to AI Studio."""
+        """With BYOK key, proxy should route to AI Studio with BYOK key."""
         import utils.llm.clients as mod
 
-        mock_default = MagicMock()
-        proxy = mod._VertexGeminiProxy(
-            default=mock_default,
-            direct_model='gemini-3-flash-preview',
-            ctor_kwargs={'callbacks': []},
-        )
-        resolved = proxy._resolve()
-        # Should NOT be the OpenRouter default (it's a cached AI Studio client)
-        assert resolved is not mock_default
+        orig_cache = dict(mod._openai_cache)
+        try:
+            mod._openai_cache.clear()
+
+            captured = {}
+
+            def capturing_cached_openai_chat(model, api_key, ctor_kwargs):
+                captured['api_key'] = api_key
+                captured['base_url'] = ctor_kwargs.get('base_url', '')
+                return MagicMock()
+
+            with patch.object(mod, '_cached_openai_chat', capturing_cached_openai_chat):
+                mock_default = MagicMock()
+                proxy = mod._VertexGeminiProxy(
+                    default=mock_default,
+                    direct_model='gemini-3-flash-preview',
+                    ctor_kwargs={'callbacks': []},
+                )
+                resolved = proxy._resolve()
+                assert resolved is not mock_default
+                assert 'generativelanguage.googleapis.com' in captured['base_url']
+                assert captured['api_key'] == 'user-gemini-key'
+        finally:
+            mod._openai_cache.clear()
+            mod._openai_cache.update(orig_cache)
 
     @patch('utils.llm.clients.get_byok_key', return_value=None)
     def test_no_vertex_config_falls_back_to_openrouter(self, mock_byok):
@@ -373,3 +403,77 @@ class TestAIStudioUrlPreserved:
         from utils.llm.clients import _GEMINI_AI_STUDIO_BASE_URL
 
         assert 'generativelanguage.googleapis.com' in _GEMINI_AI_STUDIO_BASE_URL
+
+
+# ---------------------------------------------------------------------------
+# 7. Boundary tests: concurrent refresh, embedding location override, token failure
+# ---------------------------------------------------------------------------
+
+
+class TestBoundaryBehavior:
+    def test_concurrent_token_refresh_serialized(self):
+        """Concurrent calls to _get_vertex_access_token serialize through _vertex_lock."""
+        import utils.llm.clients as mod
+
+        mock_creds = MagicMock()
+        mock_creds.valid = False
+        refresh_count = {'n': 0}
+
+        def counting_refresh(request):
+            refresh_count['n'] += 1
+
+        mock_creds.refresh = counting_refresh
+        mock_creds.token = 'refreshed-tok'
+
+        orig_creds = mod._vertex_credentials
+        try:
+            mod._vertex_credentials = mock_creds
+            import concurrent.futures
+
+            with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
+                futures = [pool.submit(mod._get_vertex_access_token) for _ in range(4)]
+                results = [f.result() for f in futures]
+            # All should get the token
+            assert all(r == 'refreshed-tok' for r in results)
+            # Refresh was called (at least once, serialized by lock)
+            assert refresh_count['n'] >= 1
+        finally:
+            mod._vertex_credentials = orig_creds
+
+    @patch('utils.llm.clients.httpx.post')
+    @patch('utils.llm.clients._get_vertex_access_token', return_value='vx-token')
+    @patch('utils.llm.clients.get_byok_key', return_value=None)
+    def test_embedding_location_override(self, mock_byok, mock_token, mock_post):
+        """GCP_EMBEDDING_LOCATION env var overrides default us-central1."""
+        import utils.llm.clients as mod
+
+        orig_project = mod._GCP_PROJECT
+        try:
+            mod._GCP_PROJECT = 'test-project'
+            mock_response = MagicMock()
+            mock_response.json.return_value = {'embedding': {'values': [0.1] * 3072}}
+            mock_response.raise_for_status = MagicMock()
+            mock_post.return_value = mock_response
+
+            with patch.dict(os.environ, {'GCP_EMBEDDING_LOCATION': 'europe-west4'}):
+                mod.gemini_embed_query('test query')
+
+            url = mock_post.call_args[0][0]
+            assert 'europe-west4' in url
+            assert 'us-central1' not in url
+        finally:
+            mod._GCP_PROJECT = orig_project
+
+    @patch('utils.llm.clients._get_vertex_access_token', side_effect=RuntimeError('token refresh failed'))
+    @patch('utils.llm.clients.get_byok_key', return_value=None)
+    def test_embed_token_refresh_failure_raises(self, mock_byok, mock_token):
+        """Embedding with GCP project set but token refresh failure raises."""
+        import utils.llm.clients as mod
+
+        orig_project = mod._GCP_PROJECT
+        try:
+            mod._GCP_PROJECT = 'test-project'
+            with pytest.raises(RuntimeError, match='token refresh failed'):
+                mod.gemini_embed_query('test query')
+        finally:
+            mod._GCP_PROJECT = orig_project
