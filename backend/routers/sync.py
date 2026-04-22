@@ -70,6 +70,7 @@ from utils.stt.speaker_embedding import (
     compare_embeddings,
     SPEAKER_MATCH_THRESHOLD,
 )
+from utils.byok import set_byok_keys
 from utils.subscription import has_transcription_credits
 
 logger = logging.getLogger(__name__)
@@ -1088,10 +1089,13 @@ def _cleanup_files(file_paths):
 async def sync_local_files(
     files: List[UploadFile] = File(...),
     uid: str = Depends(auth.get_current_user_uid),
+    byok_keys: dict = Depends(auth.get_validated_byok_keys_http),
     conversation_id: str = Query(
         None, description="Target conversation ID to attach audio to (auto-sync from live capture)"
     ),
 ):
+    if byok_keys:
+        set_byok_keys(byok_keys)
     # Pre-check gates (#5854)
     if is_hard_restricted(uid):
         raise HTTPException(status_code=429, detail="Account temporarily restricted due to fair-use policy")
@@ -1412,6 +1416,7 @@ def _process_segments_background(
 async def sync_local_files_v2(
     files: List[UploadFile] = File(...),
     uid: str = Depends(auth.get_current_user_uid),
+    byok_keys: dict = Depends(auth.get_validated_byok_keys_http),
     conversation_id: str = Query(
         None, description="Target conversation ID to attach audio to (auto-sync from live capture)"
     ),
@@ -1420,6 +1425,8 @@ async def sync_local_files_v2(
     Async version of sync-local-files. Does fast-path work (decode, VAD) inline,
     then starts background processing and returns 202 with a job_id for polling.
     """
+    if byok_keys:
+        set_byok_keys(byok_keys)
     # Pre-check gates (same as v1)
     if is_hard_restricted(uid):
         raise HTTPException(status_code=429, detail="Account temporarily restricted due to fair-use policy")
