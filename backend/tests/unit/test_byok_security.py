@@ -592,22 +592,24 @@ class TestCacheRouting:
         inst2 = _cached_anthropic(api_key)
         assert inst1 is inst2
 
-    def test_gemini_proxy_routes_to_byok(self):
-        from utils.llm.clients import _GeminiChatProxy, _GEMINI_OPENAI_BASE_URL
+    def test_gemini_wrapper_routes_to_byok(self):
+        from utils.llm.clients import _BYOKChatWrapper, _GEMINI_OPENAI_BASE_URL, _wrap_byok
 
         mock_default = MagicMock()
-        proxy = _GeminiChatProxy(model='gemini-2.5-flash-lite', default=mock_default, ctor_kwargs={})
+        wrapper = _wrap_byok(mock_default, 'gemini-2.5-flash-lite', 'gemini', {})
+        assert isinstance(wrapper, _BYOKChatWrapper)
         with patch('utils.llm.clients.get_byok_key', side_effect=lambda p: 'AIza-byok-key' if p == 'gemini' else None):
-            resolved = proxy._resolve()
+            resolved = wrapper._resolve()
         assert resolved.openai_api_base == _GEMINI_OPENAI_BASE_URL
 
-    def test_gemini_proxy_falls_back_to_default(self):
-        from utils.llm.clients import _GeminiChatProxy
+    def test_gemini_wrapper_falls_back_to_default(self):
+        from utils.llm.clients import _BYOKChatWrapper, _wrap_byok
 
         mock_default = MagicMock()
-        proxy = _GeminiChatProxy(model='gemini-2.5-flash-lite', default=mock_default, ctor_kwargs={})
+        wrapper = _wrap_byok(mock_default, 'gemini-2.5-flash-lite', 'gemini', {})
+        assert isinstance(wrapper, _BYOKChatWrapper)
         with patch('utils.llm.clients.get_byok_key', return_value=None):
-            resolved = proxy._resolve()
+            resolved = wrapper._resolve()
         assert resolved is mock_default
 
 
