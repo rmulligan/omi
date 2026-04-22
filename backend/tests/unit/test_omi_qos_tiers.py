@@ -37,6 +37,7 @@ from utils.llm.clients import (
     _active_profile,
     _active_profile_name,
     _classify_provider,
+    _get_or_create_gemini_llm,
     _get_or_create_openai_llm,
     _get_or_create_openrouter_llm,
     _llm_cache,
@@ -75,9 +76,12 @@ class TestModelQosProfiles:
         for profile_name in MODEL_QOS_PROFILES:
             providers = {_classify_provider(m) for m in MODEL_QOS_PROFILES[profile_name].values()}
             assert 'openrouter' in providers, f'{profile_name} should have OpenRouter (wrapped_analysis)'
+        # Premium profile uses Gemini direct for free-text features
+        premium_providers = {_classify_provider(m) for m in MODEL_QOS_PROFILES['premium'].values()}
+        assert 'gemini' in premium_providers, 'premium should have Gemini direct models'
 
     def test_premium_profile_models(self):
-        """Premium uses gpt-5.4-mini for flagship, gpt-4.1-mini for quality-sensitive, gpt-4.1-nano for simple."""
+        """Premium uses gpt-5.4-mini for flagship, gpt-4.1-mini for quality-sensitive, gemini for free-text."""
         premium = MODEL_QOS_PROFILES['premium']
         # Flagship features use gpt-5.4-mini
         assert premium['conv_structure'] == 'gpt-5.4-mini'
@@ -94,8 +98,14 @@ class TestModelQosProfiles:
         assert premium['proactive_notification'] == 'gpt-4.1-mini'
         # Simple features use gpt-4.1-nano
         assert premium['conv_app_select'] == 'gpt-4.1-nano'
-        assert premium['session_titles'] == 'gpt-4.1-nano'
-        assert premium['followup'] == 'gpt-4.1-nano'
+        # Free-text features migrated to Gemini 2.5 Flash-Lite
+        assert premium['session_titles'] == 'gemini-2.5-flash-lite'
+        assert premium['followup'] == 'gemini-2.5-flash-lite'
+        assert premium['onboarding'] == 'gemini-2.5-flash-lite'
+        assert premium['memory_category'] == 'gemini-2.5-flash-lite'
+        assert premium['daily_summary_simple'] == 'gemini-2.5-flash-lite'
+        assert premium['app_integration'] == 'gemini-2.5-flash-lite'
+        assert premium['trends'] == 'gemini-2.5-flash-lite'
         # Unchanged
         assert premium['chat_agent'] == 'claude-sonnet-4-6'
         assert premium['web_search'] == 'sonar-pro'
@@ -459,6 +469,11 @@ class TestProviderClassification:
         assert _classify_provider('google/gemini-flash-1.5-8b') == 'openrouter'
         assert _classify_provider('anthropic/claude-3.5-sonnet') == 'openrouter'
 
+    def test_classify_provider_gemini(self):
+        assert _classify_provider('gemini-2.5-flash-lite') == 'gemini'
+        assert _classify_provider('gemini-2.5-pro') == 'gemini'
+        assert _classify_provider('gemini-2.5-flash') == 'gemini'
+
     def test_classify_provider_perplexity(self):
         assert _classify_provider('sonar-pro') == 'perplexity'
         assert _classify_provider('sonar') == 'perplexity'
@@ -806,6 +821,13 @@ class TestRuntimeProviderRouting:
         llm = get_llm('persona_chat')
         base_url = getattr(llm, 'openai_api_base', None) or ''
         assert 'openrouter' not in base_url
+
+    def test_gemini_feature_routes_to_gemini_endpoint(self):
+        """Free-text features on gemini-2.5-flash-lite should route via Google's OpenAI-compat endpoint."""
+        from utils.llm.clients import _GEMINI_OPENAI_BASE_URL, _GeminiChatProxy
+
+        llm = get_llm('followup')
+        assert isinstance(llm, _GeminiChatProxy), 'followup should route through _GeminiChatProxy'
 
     def test_override_to_openrouter_model_routes_to_openrouter(self, monkeypatch):
         """If an override sets an OpenRouter model, get_llm should route via OpenRouter."""
