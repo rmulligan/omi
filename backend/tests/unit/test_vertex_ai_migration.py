@@ -1,9 +1,8 @@
 """Tests for Gemini AI Studio → Vertex AI migration (issue #6935).
 
 Covers:
-  - Vertex auth helper caches and refreshes tokens
-  - _get_or_create_gemini_llm routes platform to Vertex AI, falls back to AI Studio
-  - gemini_embed_query routing (BYOK vs Vertex)
+  - _get_or_create_gemini_llm routes to ChatGoogleGenerativeAI (SDK) vs AI Studio
+  - gemini_embed_query routing (BYOK via httpx vs Vertex via google-genai SDK)
   - GCP project resolution
   - Helm chart GEMINI_API_KEY removal
 """
@@ -29,121 +28,15 @@ sys.modules.setdefault('utils.other.storage', MagicMock())
 
 
 # ---------------------------------------------------------------------------
-# 1. Vertex access token helper
-# ---------------------------------------------------------------------------
-
-
-class TestVertexAccessToken:
-    def test_returns_token_when_creds_valid(self):
-        """When credentials are valid, return cached token without refresh."""
-        import utils.llm.clients as mod
-
-        mock_creds = MagicMock()
-        mock_creds.valid = True
-        mock_creds.token = 'cached-token-abc'
-
-        orig_creds = mod._vertex_credentials
-        try:
-            mod._vertex_credentials = mock_creds
-            token = mod._get_vertex_access_token()
-            assert token == 'cached-token-abc'
-            mock_creds.refresh.assert_not_called()
-        finally:
-            mod._vertex_credentials = orig_creds
-
-    def test_refreshes_expired_token(self):
-        """When credentials are expired, refresh and return new token."""
-        import utils.llm.clients as mod
-
-        mock_creds = MagicMock()
-        mock_creds.valid = False
-        mock_creds.token = 'refreshed-token-xyz'
-
-        orig_creds = mod._vertex_credentials
-        try:
-            mod._vertex_credentials = mock_creds
-            token = mod._get_vertex_access_token()
-            assert token == 'refreshed-token-xyz'
-            mock_creds.refresh.assert_called_once()
-        finally:
-            mod._vertex_credentials = orig_creds
-
-    def test_raises_when_no_credentials(self):
-        """When no ADC credentials available, raise RuntimeError."""
-        import utils.llm.clients as mod
-
-        orig_creds = mod._vertex_credentials
-        try:
-            mod._vertex_credentials = None
-            with pytest.raises(RuntimeError, match='Vertex AI credentials not available'):
-                mod._get_vertex_access_token()
-        finally:
-            mod._vertex_credentials = orig_creds
-
-
-# ---------------------------------------------------------------------------
-# 2. Vertex OpenAI base URL construction
-# ---------------------------------------------------------------------------
-
-
-class TestVertexBaseUrl:
-    def test_default_location(self):
-        import utils.llm.clients as mod
-
-        orig_project = mod._GCP_PROJECT
-        try:
-            mod._GCP_PROJECT = 'test-project-123'
-            url = mod._vertex_openai_base_url()
-            assert 'aiplatform.googleapis.com' in url
-            assert 'test-project-123' in url
-            assert '/endpoints/openapi' in url
-        finally:
-            mod._GCP_PROJECT = orig_project
-
-    def test_custom_location(self):
-        import utils.llm.clients as mod
-
-        orig_project = mod._GCP_PROJECT
-        try:
-            mod._GCP_PROJECT = 'test-project-456'
-            url = mod._vertex_openai_base_url(location='us-east1')
-            assert 'us-east1' in url
-            assert 'test-project-456' in url
-        finally:
-            mod._GCP_PROJECT = orig_project
-
-
-# ---------------------------------------------------------------------------
-# 3. Gemini LLM factory routing (Vertex AI vs AI Studio fallback)
+# 1. Gemini LLM factory routing (Vertex AI SDK vs AI Studio)
 # ---------------------------------------------------------------------------
 
 
 class TestGeminiLlmFactory:
-    @patch('utils.llm.clients._get_vertex_access_token', return_value='vertex-tok')
-    def test_platform_routes_to_vertex_when_project_set(self, mock_token):
-        """When GCP project is set, default Gemini client uses Vertex AI base URL."""
-        import utils.llm.clients as mod
+    def test_platform_routes_to_vertex_sdk_when_project_set(self):
+        """When GCP project is set, default Gemini client is ChatGoogleGenerativeAI with Vertex config."""
+        from langchain_google_genai import ChatGoogleGenerativeAI
 
-        orig_project = mod._GCP_PROJECT
-        orig_cache = dict(mod._llm_cache)
-        try:
-            mod._GCP_PROJECT = 'test-project'
-            mod._llm_cache.clear()
-            llm = mod._get_or_create_gemini_llm('gemini-2.5-flash-lite')
-            # The wrapper's initial default should use Vertex base URL
-            default = llm._default
-            assert 'aiplatform.googleapis.com' in default.openai_api_base
-            # default_factory must be set for per-request token refresh
-            assert llm._default_factory is not None
-        finally:
-            mod._GCP_PROJECT = orig_project
-            mod._llm_cache.clear()
-            mod._llm_cache.update(orig_cache)
-
-    @patch.dict(os.environ, {'GEMINI_API_KEY': 'test-fallback-key'})
-    @patch('utils.llm.clients._get_vertex_access_token', side_effect=RuntimeError('ADC broken'))
-    def test_vertex_creds_failure_falls_back_to_ai_studio(self, mock_token):
-        """When GCP project is set but ADC fails and GEMINI_API_KEY is present, falls back to AI Studio."""
         import utils.llm.clients as mod
 
         orig_project = mod._GCP_PROJECT
@@ -153,36 +46,18 @@ class TestGeminiLlmFactory:
             mod._llm_cache.clear()
             llm = mod._get_or_create_gemini_llm('gemini-2.5-flash-lite')
             default = llm._default
-            assert 'generativelanguage.googleapis.com' in default.openai_api_base
+            # SDK client should be ChatGoogleGenerativeAI, not ChatOpenAI
+            assert isinstance(default, ChatGoogleGenerativeAI)
         finally:
             mod._GCP_PROJECT = orig_project
             mod._llm_cache.clear()
             mod._llm_cache.update(orig_cache)
 
-    @patch.dict(os.environ, {}, clear=False)
-    @patch('utils.llm.clients._get_vertex_access_token', side_effect=RuntimeError('ADC broken'))
-    def test_vertex_creds_failure_no_gemini_key_fails_fast(self, mock_token):
-        """Production scenario: GCP project set, Vertex fails, no GEMINI_API_KEY → raise immediately."""
-        import utils.llm.clients as mod
+    @patch.dict(os.environ, {'GEMINI_API_KEY': 'test-ai-studio-key'})
+    def test_no_project_uses_ai_studio_sdk(self):
+        """Without GCP project, Gemini client uses AI Studio via SDK (api_key mode)."""
+        from langchain_google_genai import ChatGoogleGenerativeAI
 
-        orig_project = mod._GCP_PROJECT
-        orig_cache = dict(mod._llm_cache)
-        # Ensure GEMINI_API_KEY is absent
-        orig_key = os.environ.pop('GEMINI_API_KEY', None)
-        try:
-            mod._GCP_PROJECT = 'test-project'
-            mod._llm_cache.clear()
-            with pytest.raises(RuntimeError, match='ADC broken'):
-                mod._get_or_create_gemini_llm('gemini-2.5-flash-lite')
-        finally:
-            mod._GCP_PROJECT = orig_project
-            mod._llm_cache.clear()
-            mod._llm_cache.update(orig_cache)
-            if orig_key is not None:
-                os.environ['GEMINI_API_KEY'] = orig_key
-
-    def test_no_project_uses_ai_studio(self):
-        """Without GCP project, Gemini client uses AI Studio (GEMINI_API_KEY)."""
         import utils.llm.clients as mod
 
         orig_project = mod._GCP_PROJECT
@@ -192,79 +67,93 @@ class TestGeminiLlmFactory:
             mod._llm_cache.clear()
             llm = mod._get_or_create_gemini_llm('gemini-2.5-flash-lite')
             default = llm._default
-            assert 'generativelanguage.googleapis.com' in default.openai_api_base
-            # No default_factory for AI Studio (static API key)
-            assert llm._default_factory is None
+            assert isinstance(default, ChatGoogleGenerativeAI)
         finally:
             mod._GCP_PROJECT = orig_project
             mod._llm_cache.clear()
             mod._llm_cache.update(orig_cache)
 
-    @patch('utils.llm.clients._get_vertex_access_token')
-    def test_vertex_token_refresh_creates_new_client(self, mock_token):
-        """When Vertex AI token changes, default_factory returns a new client with fresh token."""
+    def test_byok_resolves_to_chatopen_ai_with_ai_studio(self):
+        """BYOK users get ChatOpenAI routed to AI Studio, not the Vertex SDK client."""
+        from langchain_openai import ChatOpenAI
+
         import utils.llm.clients as mod
 
         orig_project = mod._GCP_PROJECT
         orig_cache = dict(mod._llm_cache)
-        orig_openai_cache = dict(mod._openai_cache)
         try:
             mod._GCP_PROJECT = 'test-project'
             mod._llm_cache.clear()
-            mod._openai_cache.clear()
-
-            # First call — token A
-            mock_token.return_value = 'token-aaa'
             llm = mod._get_or_create_gemini_llm('gemini-2.5-flash-lite')
-            client_a = llm._default_factory()
-            assert 'aiplatform.googleapis.com' in client_a.openai_api_base
-
-            # Second call — same token, should return cached client
-            client_a2 = llm._default_factory()
-            assert client_a2 is client_a
-
-            # Third call — token refreshed (simulates ~1 hour later)
-            mock_token.return_value = 'token-bbb'
-            client_b = llm._default_factory()
-            assert client_b is not client_a  # new client with fresh token
-            assert 'aiplatform.googleapis.com' in client_b.openai_api_base
+            # Simulate BYOK resolution
+            byok_client = llm._byok_factory('user-gemini-key')
+            assert isinstance(byok_client, ChatOpenAI)
+            assert 'generativelanguage.googleapis.com' in byok_client.openai_api_base
         finally:
             mod._GCP_PROJECT = orig_project
             mod._llm_cache.clear()
             mod._llm_cache.update(orig_cache)
-            mod._openai_cache.clear()
-            mod._openai_cache.update(orig_openai_cache)
+
+    def test_wrapper_has_no_default_factory(self):
+        """SDK handles token refresh internally — no default_factory needed on wrapper."""
+        import utils.llm.clients as mod
+
+        orig_project = mod._GCP_PROJECT
+        orig_cache = dict(mod._llm_cache)
+        try:
+            mod._GCP_PROJECT = 'test-project'
+            mod._llm_cache.clear()
+            llm = mod._get_or_create_gemini_llm('gemini-2.5-flash-lite')
+            assert not hasattr(llm, '_default_factory')
+        finally:
+            mod._GCP_PROJECT = orig_project
+            mod._llm_cache.clear()
+            mod._llm_cache.update(orig_cache)
+
+    def test_cached_across_calls(self):
+        """Same (model, streaming, provider) key returns cached wrapper."""
+        import utils.llm.clients as mod
+
+        orig_project = mod._GCP_PROJECT
+        orig_cache = dict(mod._llm_cache)
+        try:
+            mod._GCP_PROJECT = 'test-project'
+            mod._llm_cache.clear()
+            llm1 = mod._get_or_create_gemini_llm('gemini-2.5-flash-lite')
+            llm2 = mod._get_or_create_gemini_llm('gemini-2.5-flash-lite')
+            assert llm1 is llm2
+        finally:
+            mod._GCP_PROJECT = orig_project
+            mod._llm_cache.clear()
+            mod._llm_cache.update(orig_cache)
 
 
 # ---------------------------------------------------------------------------
-# 4. gemini_embed_query routing
+# 2. gemini_embed_query routing
 # ---------------------------------------------------------------------------
 
 
 class TestGeminiEmbedRouting:
-    @patch('utils.llm.clients.httpx.post')
-    @patch('utils.llm.clients._get_vertex_access_token', return_value='vx-token')
+    @patch('utils.llm.clients._get_vertex_embed_client')
     @patch('utils.llm.clients.get_byok_key', return_value=None)
-    def test_platform_embed_uses_vertex_endpoint(self, mock_byok, mock_token, mock_post):
+    def test_platform_embed_uses_vertex_sdk(self, mock_byok, mock_client):
+        """Platform embedding uses google-genai SDK client."""
         import utils.llm.clients as mod
 
         orig_project = mod._GCP_PROJECT
         try:
             mod._GCP_PROJECT = 'test-project'
-            mock_response = MagicMock()
-            mock_response.json.return_value = {'embedding': {'values': [0.1] * 3072}}
-            mock_response.raise_for_status = MagicMock()
-            mock_post.return_value = mock_response
+            mock_embed_result = MagicMock()
+            mock_embed_result.embeddings = [MagicMock(values=[0.1] * 3072)]
+            mock_client.return_value.models.embed_content.return_value = mock_embed_result
 
             result = mod.gemini_embed_query('test query')
 
-            call_args = mock_post.call_args
-            url = call_args[0][0]
-            assert 'aiplatform.googleapis.com' in url
-            assert 'gemini-embedding-001' in url
-            headers = call_args[1].get('headers', {})
-            assert headers.get('Authorization') == 'Bearer vx-token'
-            assert 'x-goog-api-key' not in headers
+            mock_client.assert_called_once_with('us-central1')
+            mock_client.return_value.models.embed_content.assert_called_once()
+            call_kwargs = mock_client.return_value.models.embed_content.call_args
+            assert call_kwargs[1]['model'] == 'gemini-embedding-001'
+            assert call_kwargs[1]['contents'] == 'test query'
             assert len(result) == 3072
         finally:
             mod._GCP_PROJECT = orig_project
@@ -272,6 +161,7 @@ class TestGeminiEmbedRouting:
     @patch('utils.llm.clients.httpx.post')
     @patch('utils.llm.clients.get_byok_key', return_value='byok-gem-key')
     def test_byok_embed_uses_ai_studio_endpoint(self, mock_byok, mock_post):
+        """BYOK users get AI Studio embedding via httpx (not the Vertex SDK)."""
         from utils.llm.clients import gemini_embed_query
 
         mock_response = MagicMock()
@@ -302,9 +192,57 @@ class TestGeminiEmbedRouting:
         finally:
             mod._GCP_PROJECT = orig_project
 
+    @patch('utils.llm.clients._get_vertex_embed_client')
+    @patch('utils.llm.clients.get_byok_key', return_value=None)
+    def test_embedding_location_override(self, mock_byok, mock_client):
+        """GCP_EMBEDDING_LOCATION env var overrides default us-central1."""
+        import utils.llm.clients as mod
+
+        orig_project = mod._GCP_PROJECT
+        try:
+            mod._GCP_PROJECT = 'test-project'
+            mock_embed_result = MagicMock()
+            mock_embed_result.embeddings = [MagicMock(values=[0.1] * 3072)]
+            mock_client.return_value.models.embed_content.return_value = mock_embed_result
+
+            with patch.dict(os.environ, {'GCP_EMBEDDING_LOCATION': 'europe-west4'}):
+                mod.gemini_embed_query('test query')
+
+            mock_client.assert_called_once_with('europe-west4')
+        finally:
+            mod._GCP_PROJECT = orig_project
+
 
 # ---------------------------------------------------------------------------
-# 5. Helm config: GEMINI_API_KEY removed
+# 3. Vertex embed client caching
+# ---------------------------------------------------------------------------
+
+
+class TestVertexEmbedClient:
+    def test_client_cached_per_location(self):
+        """_get_vertex_embed_client caches clients per location."""
+        import utils.llm.clients as mod
+
+        orig_clients = dict(mod._vertex_embed_clients)
+        orig_project = mod._GCP_PROJECT
+        try:
+            mod._GCP_PROJECT = 'test-project'
+            mod._vertex_embed_clients.clear()
+
+            client_a = mod._get_vertex_embed_client('us-central1')
+            client_b = mod._get_vertex_embed_client('us-central1')
+            assert client_a is client_b  # same location → cached
+
+            client_c = mod._get_vertex_embed_client('europe-west4')
+            assert client_c is not client_a  # different location → new client
+        finally:
+            mod._vertex_embed_clients.clear()
+            mod._vertex_embed_clients.update(orig_clients)
+            mod._GCP_PROJECT = orig_project
+
+
+# ---------------------------------------------------------------------------
+# 4. Helm config: GEMINI_API_KEY removed
 # ---------------------------------------------------------------------------
 
 
@@ -354,7 +292,7 @@ class TestHelmGeminiKeyRemoved:
 
 
 # ---------------------------------------------------------------------------
-# 6. AI Studio URL preserved for BYOK
+# 5. AI Studio URL preserved for BYOK
 # ---------------------------------------------------------------------------
 
 
@@ -366,129 +304,26 @@ class TestAIStudioUrlPreserved:
 
 
 # ---------------------------------------------------------------------------
-# 7. Boundary tests
+# 6. SDK dependency
 # ---------------------------------------------------------------------------
 
 
-class TestBoundaryBehavior:
-    def test_concurrent_token_refresh_serialized(self):
-        """Concurrent calls to _get_vertex_access_token serialize through _vertex_lock.
+class TestSDKAvailable:
+    def test_langchain_google_genai_importable(self):
+        """langchain-google-genai SDK must be importable."""
+        from langchain_google_genai import ChatGoogleGenerativeAI
 
-        Verifies that the lock prevents redundant refreshes: after the first
-        thread refreshes (setting valid=True), subsequent threads see the
-        valid token and skip refresh.
-        """
-        import concurrent.futures
-        import threading
+        assert ChatGoogleGenerativeAI is not None
 
-        import utils.llm.clients as mod
+    def test_google_genai_importable(self):
+        """google-genai SDK must be importable (used for embeddings)."""
+        from google import genai
 
-        mock_creds = MagicMock()
-        mock_creds.valid = False
-        refresh_count = {'n': 0}
-        barrier = threading.Barrier(4, timeout=5)
+        assert genai.Client is not None
 
-        def slow_refresh(request):
-            """Simulate refresh: mark valid after first call so others skip."""
-            refresh_count['n'] += 1
-            mock_creds.valid = True
-
-        mock_creds.refresh = slow_refresh
-        mock_creds.token = 'refreshed-tok'
-
-        orig_creds = mod._vertex_credentials
-        try:
-            mod._vertex_credentials = mock_creds
-
-            def _get_token_after_barrier():
-                barrier.wait()
-                return mod._get_vertex_access_token()
-
-            with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
-                futures = [pool.submit(_get_token_after_barrier) for _ in range(4)]
-                results = [f.result() for f in futures]
-            assert all(r == 'refreshed-tok' for r in results)
-            # Lock serializes: first thread refreshes and sets valid=True,
-            # remaining threads see valid=True and skip refresh.
-            assert refresh_count['n'] == 1
-        finally:
-            mod._vertex_credentials = orig_creds
-
-    @patch('utils.llm.clients._get_vertex_access_token', return_value='ttl-test-token')
-    def test_ttl_cache_evicts_vertex_client_after_expiry(self, mock_token):
-        """Vertex clients cached in _openai_cache are evicted after TTL expires."""
-        from cachetools import TTLCache
-
-        import utils.llm.clients as mod
-
-        orig_project = mod._GCP_PROJECT
-        orig_cache = mod._openai_cache
-        orig_llm_cache = dict(mod._llm_cache)
-        # Use a very short TTL to test eviction without sleeping
-        short_ttl_cache = TTLCache(maxsize=256, ttl=0.1)
-        try:
-            mod._GCP_PROJECT = 'test-project'
-            mod._openai_cache = short_ttl_cache
-            mod._llm_cache.clear()
-
-            llm = mod._get_or_create_gemini_llm('gemini-2.5-flash-lite')
-            client_a = llm._default_factory()
-            assert len(short_ttl_cache) == 1
-
-            # Same token before TTL expires — cached
-            client_a2 = llm._default_factory()
-            assert client_a2 is client_a
-
-            # Wait for TTL to expire
-            import time
-
-            time.sleep(0.15)
-
-            # Cache entry evicted — new client created even with same token
-            assert len(short_ttl_cache) == 0
-            client_b = llm._default_factory()
-            assert client_b is not client_a
-            assert len(short_ttl_cache) == 1
-        finally:
-            mod._GCP_PROJECT = orig_project
-            mod._openai_cache = orig_cache
-            mod._llm_cache.clear()
-            mod._llm_cache.update(orig_llm_cache)
-
-    @patch('utils.llm.clients.httpx.post')
-    @patch('utils.llm.clients._get_vertex_access_token', return_value='vx-token')
-    @patch('utils.llm.clients.get_byok_key', return_value=None)
-    def test_embedding_location_override(self, mock_byok, mock_token, mock_post):
-        """GCP_EMBEDDING_LOCATION env var overrides default us-central1."""
-        import utils.llm.clients as mod
-
-        orig_project = mod._GCP_PROJECT
-        try:
-            mod._GCP_PROJECT = 'test-project'
-            mock_response = MagicMock()
-            mock_response.json.return_value = {'embedding': {'values': [0.1] * 3072}}
-            mock_response.raise_for_status = MagicMock()
-            mock_post.return_value = mock_response
-
-            with patch.dict(os.environ, {'GCP_EMBEDDING_LOCATION': 'europe-west4'}):
-                mod.gemini_embed_query('test query')
-
-            url = mock_post.call_args[0][0]
-            assert 'europe-west4' in url
-            assert 'us-central1' not in url
-        finally:
-            mod._GCP_PROJECT = orig_project
-
-    @patch('utils.llm.clients._get_vertex_access_token', side_effect=RuntimeError('token refresh failed'))
-    @patch('utils.llm.clients.get_byok_key', return_value=None)
-    def test_embed_token_refresh_failure_raises(self, mock_byok, mock_token):
-        """Embedding with GCP project set but token refresh failure raises."""
-        import utils.llm.clients as mod
-
-        orig_project = mod._GCP_PROJECT
-        try:
-            mod._GCP_PROJECT = 'test-project'
-            with pytest.raises(RuntimeError, match='token refresh failed'):
-                mod.gemini_embed_query('test query')
-        finally:
-            mod._GCP_PROJECT = orig_project
+    def test_requirements_includes_sdk(self):
+        """requirements.txt includes langchain-google-genai."""
+        req_path = os.path.join(os.path.dirname(__file__), '..', '..', 'requirements.txt')
+        with open(req_path) as f:
+            content = f.read()
+        assert 'langchain-google-genai' in content
