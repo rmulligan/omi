@@ -571,6 +571,18 @@ class TestRollbackScenario:
         assert get_model('persona_chat') == 'claude-3.5-sonnet'
         assert get_provider('persona_chat') == 'anthropic'
 
+    def test_invalid_provider_in_override_falls_back(self, monkeypatch):
+        """Explicit override with invalid provider falls back to profile provider."""
+        monkeypatch.setenv('MODEL_QOS_CONV_ACTION_ITEMS', 'gpt-5.1:bogus_provider')
+        assert get_model('conv_action_items') == 'gpt-5.1'
+        assert get_provider('conv_action_items') == 'openai'  # profile provider
+
+    def test_model_only_override_infers_provider(self, monkeypatch):
+        """Model-only override infers provider from model name."""
+        monkeypatch.setenv('MODEL_QOS_CONV_ACTION_ITEMS', 'gemini-2.5-flash')
+        assert get_model('conv_action_items') == 'gemini-2.5-flash'
+        assert get_provider('conv_action_items') == 'gemini'  # inferred from model name
+
 
 class TestProfileSelectionAtImportTime:
     """Verify MODEL_QOS env var selects the correct profile at module load time."""
@@ -804,20 +816,29 @@ class TestExpandedCallsiteCoverage:
 
 
 class TestOverrideWarningLog:
-    """Verify override warnings fire when provider doesn't match."""
+    """Verify override warnings fire for invalid explicit provider."""
 
-    def test_warns_on_cross_provider_override(self, monkeypatch, caplog):
+    def test_warns_on_invalid_explicit_provider(self, monkeypatch, caplog):
         import logging
 
         with caplog.at_level(logging.WARNING, logger='utils.llm.clients'):
-            monkeypatch.setenv('MODEL_QOS_CONV_ACTION_ITEMS', 'gemini-2.5-flash')
+            monkeypatch.setenv('MODEL_QOS_CONV_ACTION_ITEMS', 'gpt-5.1:bogus')
             result = get_model('conv_action_items')
-            assert result == 'gemini-2.5-flash'
-        assert any(
-            'differs from profile provider' in r.message for r in caplog.records
-        ), "Expected cross-provider override warning"
+            assert result == 'gpt-5.1'
+        assert any('invalid provider' in r.message for r in caplog.records), "Expected invalid provider warning"
 
-    def test_no_warning_on_same_provider_override(self, monkeypatch, caplog):
+    def test_no_warning_on_valid_explicit_provider(self, monkeypatch, caplog):
+        import logging
+
+        with caplog.at_level(logging.WARNING, logger='utils.llm.clients'):
+            monkeypatch.setenv('MODEL_QOS_CONV_ACTION_ITEMS', 'gpt-4.1-mini:openai')
+            result = get_model('conv_action_items')
+            assert result == 'gpt-4.1-mini'
+        assert not any(
+            'invalid provider' in r.message for r in caplog.records
+        ), "No warning expected for valid explicit provider"
+
+    def test_no_warning_on_model_only_override(self, monkeypatch, caplog):
         import logging
 
         with caplog.at_level(logging.WARNING, logger='utils.llm.clients'):
@@ -825,8 +846,8 @@ class TestOverrideWarningLog:
             result = get_model('conv_action_items')
             assert result == 'gpt-4.1-mini'
         assert not any(
-            'may be invalid' in r.message for r in caplog.records
-        ), "No warning expected for same-provider override"
+            'invalid provider' in r.message for r in caplog.records
+        ), "No warning expected for model-only override"
 
 
 class TestRuntimeProviderRouting:
