@@ -130,9 +130,11 @@ class TestGeminiLlmFactory:
             mod._GCP_PROJECT = 'test-project'
             mod._llm_cache.clear()
             llm = mod._get_or_create_gemini_llm('gemini-2.5-flash-lite')
-            # The wrapper's default should use Vertex base URL
+            # The wrapper's initial default should use Vertex base URL
             default = llm._default
             assert 'aiplatform.googleapis.com' in default.openai_api_base
+            # default_factory must be set for per-request token refresh
+            assert llm._default_factory is not None
         finally:
             mod._GCP_PROJECT = orig_project
             mod._llm_cache.clear()
@@ -168,10 +170,47 @@ class TestGeminiLlmFactory:
             llm = mod._get_or_create_gemini_llm('gemini-2.5-flash-lite')
             default = llm._default
             assert 'generativelanguage.googleapis.com' in default.openai_api_base
+            # No default_factory for AI Studio (static API key)
+            assert llm._default_factory is None
         finally:
             mod._GCP_PROJECT = orig_project
             mod._llm_cache.clear()
             mod._llm_cache.update(orig_cache)
+
+    @patch('utils.llm.clients._get_vertex_access_token')
+    def test_vertex_token_refresh_creates_new_client(self, mock_token):
+        """When Vertex AI token changes, default_factory returns a new client with fresh token."""
+        import utils.llm.clients as mod
+
+        orig_project = mod._GCP_PROJECT
+        orig_cache = dict(mod._llm_cache)
+        orig_openai_cache = dict(mod._openai_cache)
+        try:
+            mod._GCP_PROJECT = 'test-project'
+            mod._llm_cache.clear()
+            mod._openai_cache.clear()
+
+            # First call — token A
+            mock_token.return_value = 'token-aaa'
+            llm = mod._get_or_create_gemini_llm('gemini-2.5-flash-lite')
+            client_a = llm._default_factory()
+            assert 'aiplatform.googleapis.com' in client_a.openai_api_base
+
+            # Second call — same token, should return cached client
+            client_a2 = llm._default_factory()
+            assert client_a2 is client_a
+
+            # Third call — token refreshed (simulates ~1 hour later)
+            mock_token.return_value = 'token-bbb'
+            client_b = llm._default_factory()
+            assert client_b is not client_a  # new client with fresh token
+            assert 'aiplatform.googleapis.com' in client_b.openai_api_base
+        finally:
+            mod._GCP_PROJECT = orig_project
+            mod._llm_cache.clear()
+            mod._llm_cache.update(orig_cache)
+            mod._openai_cache.clear()
+            mod._openai_cache.update(orig_openai_cache)
 
 
 # ---------------------------------------------------------------------------
