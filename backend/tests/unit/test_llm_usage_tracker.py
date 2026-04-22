@@ -419,3 +419,36 @@ def test_usage_context_is_frozen():
         assert False, "Should have raised FrozenInstanceError"
     except AttributeError:
         pass  # Expected - frozen dataclass
+
+
+def test_gemini_usage_metadata_fallback():
+    """ChatGoogleGenerativeAI puts token counts on message.usage_metadata, not llm_output.
+
+    Regression test: without the fallback, Gemini platform calls record 0 tokens.
+    """
+    from langchain_core.messages import AIMessage
+    from langchain_core.outputs import ChatGeneration
+
+    usage_tracker.get_and_clear_buffer()
+    callback = usage_tracker.LLMUsageCallback()
+    token = usage_tracker.set_usage_context("user-gemini", usage_tracker.Features.FOLLOWUP)
+    try:
+        msg = AIMessage(
+            content="response text",
+            usage_metadata={"input_tokens": 42, "output_tokens": 17, "total_tokens": 59},
+            response_metadata={"model_name": "gemini-2.5-flash-lite"},
+        )
+        gen = ChatGeneration(message=msg)
+        result = LLMResult(
+            generations=[[gen]],
+            llm_output={},
+        )
+        callback.on_llm_end(result)
+    finally:
+        usage_tracker.reset_usage_context(token)
+
+    buffered = usage_tracker.get_and_clear_buffer()
+    assert "user-gemini:followup:gemini-2.5-flash-lite" in buffered
+    record = buffered["user-gemini:followup:gemini-2.5-flash-lite"]
+    assert record["input_tokens"] == 42
+    assert record["output_tokens"] == 17
