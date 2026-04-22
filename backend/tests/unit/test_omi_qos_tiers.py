@@ -732,12 +732,12 @@ class TestRuntimeProviderRouting:
         assert 'openrouter' not in base_url
 
     def test_gemini_feature_routes_to_gemini_endpoint(self):
-        """Free-text features on gemini-2.5-flash-lite should route via Google's OpenAI-compat endpoint."""
-        from utils.llm.clients import _GEMINI_OPENAI_BASE_URL
-
+        """Free-text features on gemini-2.5-flash-lite should route via Gemini (Vertex AI or AI Studio)."""
         llm = get_llm('followup')
         # get_llm() eagerly resolves BYOK; result is a ChatOpenAI routed to Gemini
-        assert llm.openai_api_base == _GEMINI_OPENAI_BASE_URL, 'followup must use Gemini base URL'
+        base_url = llm.openai_api_base
+        is_gemini = 'generativelanguage.googleapis.com' in base_url or 'aiplatform.googleapis.com' in base_url
+        assert is_gemini, f'followup must use Gemini base URL, got: {base_url}'
 
     def test_openglass_routes_to_openai(self):
         """openglass (vision) should route to OpenAI gpt-4.1-mini."""
