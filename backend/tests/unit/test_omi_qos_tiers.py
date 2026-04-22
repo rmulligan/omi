@@ -878,21 +878,19 @@ class TestRuntimeProviderRouting:
 
     def test_gemini_feature_routes_to_gemini_endpoint(self):
         """Free-text features on gemini-2.5-flash-lite should route via Google's OpenAI-compat endpoint."""
-        from utils.llm.clients import _BYOKChatWrapper, _GEMINI_OPENAI_BASE_URL
+        from utils.llm.clients import _GEMINI_OPENAI_BASE_URL
 
         llm = get_llm('followup')
-        assert isinstance(llm, _BYOKChatWrapper), 'followup should be wrapped with _BYOKChatWrapper'
-        assert llm._provider == 'gemini', 'followup wrapper should have gemini provider'
-        # Default client must use Gemini base URL
-        assert llm._default.openai_api_base == _GEMINI_OPENAI_BASE_URL, 'followup default must use Gemini base URL'
+        # get_llm() eagerly resolves BYOK; result is a ChatOpenAI routed to Gemini
+        assert llm.openai_api_base == _GEMINI_OPENAI_BASE_URL, 'followup must use Gemini base URL'
 
     def test_openglass_routes_to_openai(self):
         """openglass (vision) should route to OpenAI gpt-4.1-mini."""
-        from utils.llm.clients import _BYOKChatWrapper
-
         llm = get_llm('openglass')
-        assert isinstance(llm, _BYOKChatWrapper)
-        assert llm._provider == 'openai'
+        # get_llm() eagerly resolves; result is a ChatOpenAI routed to OpenAI
+        base_url = getattr(llm, 'openai_api_base', None) or ''
+        assert 'openrouter' not in base_url
+        assert 'generativelanguage.googleapis.com' not in base_url
 
     def test_override_to_openrouter_model_routes_to_openrouter(self, monkeypatch):
         """If an override sets an OpenRouter model (vendor/model format), get_llm should route via OpenRouter."""
@@ -933,26 +931,23 @@ class TestRuntimeProviderRouting:
 
 
 class TestBYOKWrapperArchitecture:
-    """Verify BYOK wrapper is used consistently across providers."""
+    """Verify get_llm() eagerly resolves BYOK and returns proper ChatOpenAI instances."""
 
-    def test_all_providers_use_byok_wrapper(self):
-        from utils.llm.clients import _BYOKChatWrapper
+    def test_get_llm_returns_chat_openai(self):
+        """get_llm() must eagerly resolve BYOK and return a ChatOpenAI (Runnable), not a wrapper."""
+        from langchain_openai import ChatOpenAI
 
         # OpenAI feature
         llm_openai = get_llm('conv_structure')
-        assert isinstance(llm_openai, _BYOKChatWrapper)
-        assert llm_openai._provider == 'openai'
+        assert isinstance(llm_openai, ChatOpenAI), 'get_llm must return ChatOpenAI, not wrapper'
 
-        # Gemini feature
+        # Gemini feature (uses OpenAI-compat endpoint)
         llm_gemini = get_llm('followup')
-        assert isinstance(llm_gemini, _BYOKChatWrapper)
-        assert llm_gemini._provider == 'gemini'
+        assert isinstance(llm_gemini, ChatOpenAI), 'Gemini get_llm must return ChatOpenAI'
 
         # OpenRouter feature
         llm_or = get_llm('wrapped_analysis')
-        assert isinstance(llm_or, _BYOKChatWrapper)
-        # OpenRouter Gemini models use 'gemini' as BYOK provider (routes to Google direct)
-        assert llm_or._provider == 'gemini'
+        assert isinstance(llm_or, ChatOpenAI), 'OpenRouter get_llm must return ChatOpenAI'
 
     def test_no_legacy_llm_medium_or_llm_large(self):
         """Dead legacy instances must not exist in clients module."""
