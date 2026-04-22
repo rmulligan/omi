@@ -28,6 +28,7 @@ from utils.llm.clients import (
     MODEL_QOS_PROFILES,
     get_model,
     get_llm,
+    get_provider,
     get_qos_info,
     _classify_provider,
     _active_profile_name,
@@ -187,7 +188,7 @@ class TestPremiumOpenRouter:
 
     def test_wrapped_analysis(self):
         model = get_model('wrapped_analysis')
-        assert model == 'google/gemini-3-flash-preview'
+        assert model == 'gemini-3-flash-preview'
         llm = get_llm('wrapped_analysis')
         response = llm.invoke(SIMPLE_PROMPT)
         assert response.content.strip(), f"wrapped_analysis ({model}) returned empty response"
@@ -247,11 +248,11 @@ class TestProfileRouting:
         assert _active_profile_name == 'premium'
 
     def test_premium_profile_has_expected_variant_count(self):
-        distinct = set(MODEL_QOS_PROFILES['premium'].values())
+        distinct = {model for model, _provider in MODEL_QOS_PROFILES['premium'].values()}
         assert len(distinct) == 7, f"Expected 7 variants in premium, got {len(distinct)}: {distinct}"
 
     def test_max_profile_has_expected_variant_count(self):
-        distinct = set(MODEL_QOS_PROFILES['max'].values())
+        distinct = {model for model, _provider in MODEL_QOS_PROFILES['max'].values()}
         assert len(distinct) == 9, f"Expected 9 variants in max, got {len(distinct)}: {distinct}"
 
 
