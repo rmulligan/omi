@@ -311,6 +311,26 @@ class TestHelmGeminiKeyRemoved:
                 content = f.read()
             assert 'GEMINI_API_KEY' not in content
 
+    def test_gcp_location_in_backend_listen_dev(self):
+        """GCP_LOCATION env var must be set in dev Helm chart."""
+        chart_path = os.path.join(
+            os.path.dirname(__file__), '..', '..', 'charts', 'backend-listen', 'dev_omi_backend_listen_values.yaml'
+        )
+        if os.path.exists(chart_path):
+            with open(chart_path) as f:
+                content = f.read()
+            assert 'GCP_LOCATION' in content
+
+    def test_gcp_location_in_backend_listen_prod(self):
+        """GCP_LOCATION env var must be set in prod Helm chart."""
+        chart_path = os.path.join(
+            os.path.dirname(__file__), '..', '..', 'charts', 'backend-listen', 'prod_omi_backend_listen_values.yaml'
+        )
+        if os.path.exists(chart_path):
+            with open(chart_path) as f:
+                content = f.read()
+            assert 'GCP_LOCATION' in content
+
 
 # ---------------------------------------------------------------------------
 # 5. AI Studio URL preserved for BYOK
