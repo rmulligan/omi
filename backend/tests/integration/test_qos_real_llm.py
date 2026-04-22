@@ -7,7 +7,7 @@ a non-empty response.
 
 Default profile is premium. Set MODEL_QOS=max to test max profile.
 
-Requires: OPENAI_API_KEY, OPENROUTER_API_KEY, ANTHROPIC_API_KEY, PERPLEXITY_API_KEY in .env.
+Requires: OPENAI_API_KEY, OPENROUTER_API_KEY, ANTHROPIC_API_KEY, PERPLEXITY_API_KEY, GEMINI_API_KEY in .env.
 Run: cd backend && python3 -m pytest tests/integration/test_qos_real_llm.py -v -s
 """
 
