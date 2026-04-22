@@ -124,14 +124,7 @@ class TestPremiumNano:
         'conv_app_select',
         'conv_folder',
         'conv_discard',
-        'daily_summary_simple',
-        'memory_category',
-        'session_titles',
-        'followup',
         'smart_glasses',
-        'onboarding',
-        'app_integration',
-        'trends',
         'persona_chat',
     ]
 
@@ -139,6 +132,47 @@ class TestPremiumNano:
     def test_nano_feature_responds(self, feature):
         model = get_model(feature)
         assert model == 'gpt-4.1-nano', f"{feature} should be gpt-4.1-nano in premium, got {model}"
+        llm = get_llm(feature)
+        response = llm.invoke(SIMPLE_PROMPT)
+        assert response.content.strip(), f"{feature} ({model}) returned empty response"
+        print(f"  {feature} ({model}): {response.content.strip()[:60]}")
+
+
+# ---------------------------------------------------------------------------
+# Premium profile — gpt-4.1-mini features (vision/openglass)
+# ---------------------------------------------------------------------------
+class TestPremiumVision:
+    """Test gpt-4.1-mini vision-capable features in premium profile."""
+
+    def test_openglass_feature_responds(self):
+        model = get_model('openglass')
+        assert model == 'gpt-4.1-mini', f"openglass should be gpt-4.1-mini, got {model}"
+        llm = get_llm('openglass')
+        response = llm.invoke(SIMPLE_PROMPT)
+        assert response.content.strip(), f"openglass ({model}) returned empty response"
+        print(f"  openglass ({model}): {response.content.strip()[:60]}")
+
+
+# ---------------------------------------------------------------------------
+# Premium profile — gemini-2.5-flash-lite features (free-text cost optimization)
+# ---------------------------------------------------------------------------
+class TestPremiumGemini:
+    """Test gemini-2.5-flash-lite features in premium profile respond to real prompts."""
+
+    GEMINI_FEATURES = [
+        'daily_summary_simple',
+        'memory_category',
+        'session_titles',
+        'followup',
+        'onboarding',
+        'app_integration',
+        'trends',
+    ]
+
+    @pytest.mark.parametrize("feature", GEMINI_FEATURES)
+    def test_gemini_feature_responds(self, feature):
+        model = get_model(feature)
+        assert model == 'gemini-2.5-flash-lite', f"{feature} should be gemini-2.5-flash-lite in premium, got {model}"
         llm = get_llm(feature)
         response = llm.invoke(SIMPLE_PROMPT)
         assert response.content.strip(), f"{feature} ({model}) returned empty response"
@@ -204,7 +238,7 @@ class TestProfileRouting:
 
     def test_all_features_have_valid_provider(self):
         info = get_qos_info()
-        valid_providers = {'openai', 'anthropic', 'openrouter', 'perplexity'}
+        valid_providers = {'openai', 'anthropic', 'openrouter', 'perplexity', 'gemini'}
         for feature, details in info.items():
             assert details['provider'] in valid_providers, f"{feature}: invalid provider {details['provider']}"
             print(f"  {feature}: {details['model']} ({details['provider']})")
@@ -214,7 +248,7 @@ class TestProfileRouting:
 
     def test_premium_profile_has_expected_variant_count(self):
         distinct = set(MODEL_QOS_PROFILES['premium'].values())
-        assert len(distinct) == 6, f"Expected 6 variants in premium, got {len(distinct)}: {distinct}"
+        assert len(distinct) == 7, f"Expected 7 variants in premium, got {len(distinct)}: {distinct}"
 
     def test_max_profile_has_expected_variant_count(self):
         distinct = set(MODEL_QOS_PROFILES['max'].values())
