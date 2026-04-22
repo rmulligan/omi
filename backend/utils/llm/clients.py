@@ -146,24 +146,16 @@ def _wrap_byok(default: ChatOpenAI, model: str, provider: str, ctor_kwargs: Dict
             return _cached_openai_chat(model, byok_key, {**clean_kwargs, 'base_url': _GEMINI_OPENAI_BASE_URL})
 
     elif provider == 'openrouter':
-        # Only reroute to Gemini direct if the model is actually Gemini-based
+        # Only Gemini-based OpenRouter models support BYOK reroute to Gemini direct
         bare_model = model.split('/', 1)[1] if '/' in model else model
-        is_gemini_model = bare_model.startswith('gemini')
-
-        if is_gemini_model:
+        if bare_model.startswith('gemini'):
 
             def _factory(byok_key: str) -> ChatOpenAI:
                 return _cached_openai_chat(bare_model, byok_key, {**clean_kwargs, 'base_url': _GEMINI_OPENAI_BASE_URL})
 
             return _BYOKChatWrapper(default=default, provider='gemini', byok_factory=_factory)
-        else:
-            # Non-Gemini OpenRouter model: BYOK stays on OpenRouter
-            def _factory(byok_key: str) -> ChatOpenAI:
-                return _cached_openai_chat(
-                    model, byok_key, {**clean_kwargs, 'base_url': 'https://openrouter.ai/api/v1'}
-                )
-
-            return _BYOKChatWrapper(default=default, provider='openrouter', byok_factory=_factory)
+        # Non-Gemini OpenRouter: no BYOK support, always use Omi's key
+        return default
     else:
         # OpenAI and any future OpenAI-compatible provider
 
