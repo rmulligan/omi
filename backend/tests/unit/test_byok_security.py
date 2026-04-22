@@ -643,14 +643,14 @@ class TestCacheRouting:
             resolved = wrapper._resolve()
         assert resolved.model_name == 'gemini-3-flash-preview'
 
-    def test_non_gemini_openrouter_wrapper_stays_on_openrouter(self):
-        """Non-Gemini OpenRouter models must NOT reroute to Gemini direct."""
+    def test_non_gemini_openrouter_returns_default_directly(self):
+        """Non-Gemini OpenRouter models have no BYOK support — returns default client unchanged."""
         from utils.llm.clients import _BYOKChatWrapper, _wrap_byok
 
         mock_default = MagicMock()
-        wrapper = _wrap_byok(mock_default, 'anthropic/claude-3.5-sonnet', 'openrouter', {'api_key': 'sk-or-key'})
-        assert isinstance(wrapper, _BYOKChatWrapper)
-        assert wrapper._provider == 'openrouter'  # NOT 'gemini'
+        result = _wrap_byok(mock_default, 'anthropic/claude-3.5-sonnet', 'openrouter', {'api_key': 'sk-or-key'})
+        assert result is mock_default  # No wrapper, returns default directly
+        assert not isinstance(result, _BYOKChatWrapper)
 
 
 # ---------------------------------------------------------------------------
