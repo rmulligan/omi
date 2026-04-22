@@ -36,7 +36,6 @@ from utils.llm.clients import (
     _PINNED_FEATURES,
     _active_profile,
     _active_profile_name,
-    _classify_provider,
     _get_or_create_gemini_llm,
     _get_or_create_openai_llm,
     _get_or_create_openrouter_llm,
@@ -181,26 +180,10 @@ class TestGetModel:
     def test_returns_profile_default(self):
         assert get_model('conv_action_items') == MODEL_QOS_PROFILES[_active_profile_name]['conv_action_items'][0]
 
-    def test_env_override_takes_precedence(self, monkeypatch):
-        monkeypatch.setenv('MODEL_QOS_CONV_ACTION_ITEMS', 'gpt-5.1')
-        assert get_model('conv_action_items') == 'gpt-5.1'
-
-    def test_env_override_with_anthropic_model(self, monkeypatch):
-        monkeypatch.setenv('MODEL_QOS_CHAT_AGENT', 'claude-haiku-3.5')
-        assert get_model('chat_agent') == 'claude-haiku-3.5'
-
-    def test_empty_env_override_falls_back_to_profile(self, monkeypatch):
-        monkeypatch.setenv('MODEL_QOS_CONV_ACTION_ITEMS', '')
-        assert get_model('conv_action_items') == _active_profile['conv_action_items'][0]
-
     def test_unknown_feature_falls_back_to_gpt41_mini(self):
         assert get_model('totally_unknown_feature') == 'gpt-4.1-mini'
 
     def test_pinned_feature_ignores_profile(self):
-        assert get_model('fair_use') == 'gpt-5.1'
-
-    def test_pinned_feature_ignores_env_override(self, monkeypatch):
-        monkeypatch.setenv('MODEL_QOS_FAIR_USE', 'gpt-4.1-nano')
         assert get_model('fair_use') == 'gpt-5.1'
 
     def test_anthropic_feature_returns_model_string(self):
@@ -257,17 +240,10 @@ class TestGetLlm:
         assert llm_with_key is not llm_without_key
         assert hasattr(llm_with_key, 'invoke')
 
-    def test_cache_key_ignored_for_non_cacheable_model(self, monkeypatch):
-        # Override to a model not in _CACHE_KEY_MODELS
-        monkeypatch.setenv('MODEL_QOS_MEMORIES', 'gpt-4.1-nano')
+    def test_cache_key_ignored_for_non_cacheable_model(self):
+        # memories uses gpt-4.1-mini which is not in _CACHE_KEY_MODELS
         llm_with_key = get_llm('memories', cache_key='omi-test-key')
         llm_without_key = get_llm('memories')
-        assert llm_with_key is llm_without_key
-
-    def test_cache_key_ignored_after_override_to_non_cacheable(self, monkeypatch):
-        monkeypatch.setenv('MODEL_QOS_CONV_STRUCTURE', 'gpt-4.1-mini')
-        llm_with_key = get_llm('conv_structure', cache_key='omi-test-key')
-        llm_without_key = get_llm('conv_structure')
         assert llm_with_key is llm_without_key
 
     def test_new_features_return_clients(self):
@@ -448,11 +424,6 @@ class TestGetQosInfo:
         assert get_provider('wrapped_analysis') == 'openrouter'
         assert get_provider('followup') == 'gemini'
 
-    def test_reflects_env_override(self, monkeypatch):
-        monkeypatch.setenv('MODEL_QOS_CONV_ACTION_ITEMS', 'o4-mini')
-        info = get_qos_info()
-        assert info['conv_action_items']['model'] == 'o4-mini'
-
 
 class TestPinnedFeatures:
     """Verify pinned features are immutable."""
@@ -466,30 +437,7 @@ class TestPinnedFeatures:
 
 
 class TestProviderClassification:
-    """Verify provider detection from model name and feature routing."""
-
-    def test_classify_provider_openai(self):
-        assert _classify_provider('gpt-5.4') == 'openai'
-        assert _classify_provider('gpt-5.4-mini') == 'openai'
-        assert _classify_provider('gpt-4.1-nano') == 'openai'
-        assert _classify_provider('o4-mini') == 'openai'
-
-    def test_classify_provider_anthropic(self):
-        assert _classify_provider('claude-sonnet-4-6') == 'anthropic'
-        assert _classify_provider('claude-haiku-3.5') == 'anthropic'
-
-    def test_classify_provider_openrouter(self):
-        assert _classify_provider('google/gemini-flash-1.5-8b') == 'openrouter'
-        assert _classify_provider('anthropic/claude-3.5-sonnet') == 'openrouter'
-
-    def test_classify_provider_gemini(self):
-        assert _classify_provider('gemini-2.5-flash-lite') == 'gemini'
-        assert _classify_provider('gemini-2.5-pro') == 'gemini'
-        assert _classify_provider('gemini-2.5-flash') == 'gemini'
-
-    def test_classify_provider_perplexity(self):
-        assert _classify_provider('sonar-pro') == 'perplexity'
-        assert _classify_provider('sonar') == 'perplexity'
+    """Verify provider routing from profile entries."""
 
     def test_chat_agent_is_anthropic_only(self):
         assert 'chat_agent' in _ANTHROPIC_ONLY_FEATURES
@@ -527,18 +475,6 @@ class TestProviderSafetyGuard:
         with pytest.raises(ValueError, match='Perplexity'):
             get_llm('web_search')
 
-    def test_get_llm_rejects_claude_model_override(self, monkeypatch):
-        """Env override to a claude model is rejected — can't serve via ChatOpenAI."""
-        monkeypatch.setenv('MODEL_QOS_CONV_ACTION_ITEMS', 'claude-haiku-3.5')
-        with pytest.raises(ValueError, match='Anthropic'):
-            get_llm('conv_action_items')
-
-    def test_get_llm_rejects_sonar_model_override(self, monkeypatch):
-        """Env override to a sonar model is rejected — can't serve via ChatOpenAI."""
-        monkeypatch.setenv('MODEL_QOS_CONV_STRUCTURE', 'sonar-pro')
-        with pytest.raises(ValueError, match='Perplexity'):
-            get_llm('conv_structure')
-
 
 class TestAnthropicModelExports:
     """Verify ANTHROPIC_AGENT_MODEL is backed by profile."""
@@ -553,41 +489,6 @@ class TestAnthropicModelExports:
 
         assert isinstance(ANTHROPIC_AGENT_MODEL, str)
         assert len(ANTHROPIC_AGENT_MODEL) > 0
-
-
-class TestRollbackScenario:
-    """Verify model can be switched via env var for rollback."""
-
-    def test_override_conv_action_items_to_gpt51(self, monkeypatch):
-        monkeypatch.setenv('MODEL_QOS_CONV_ACTION_ITEMS', 'gpt-5.1')
-        assert get_model('conv_action_items') == 'gpt-5.1'
-
-    def test_override_chat_agent_to_haiku(self, monkeypatch):
-        monkeypatch.setenv('MODEL_QOS_CHAT_AGENT', 'claude-haiku-3.5')
-        assert get_model('chat_agent') == 'claude-haiku-3.5'
-
-    def test_override_persona_to_different_model(self, monkeypatch):
-        monkeypatch.setenv('MODEL_QOS_PERSONA_CHAT', 'claude-3.5-sonnet:anthropic')
-        assert get_model('persona_chat') == 'claude-3.5-sonnet'
-        assert get_provider('persona_chat') == 'anthropic'
-
-    def test_invalid_provider_in_override_falls_back(self, monkeypatch):
-        """Explicit override with invalid provider falls back to inferred provider."""
-        monkeypatch.setenv('MODEL_QOS_CONV_ACTION_ITEMS', 'gpt-5.1:bogus_provider')
-        assert get_model('conv_action_items') == 'gpt-5.1'
-        assert get_provider('conv_action_items') == 'openai'  # inferred from model name
-
-    def test_mismatched_model_provider_uses_inferred(self, monkeypatch):
-        """Explicit override with mismatched model/provider uses inferred provider."""
-        monkeypatch.setenv('MODEL_QOS_PERSONA_CHAT', 'gpt-5.1:anthropic')
-        assert get_model('persona_chat') == 'gpt-5.1'
-        assert get_provider('persona_chat') == 'openai'  # inferred, not explicit anthropic
-
-    def test_model_only_override_infers_provider(self, monkeypatch):
-        """Model-only override infers provider from model name."""
-        monkeypatch.setenv('MODEL_QOS_CONV_ACTION_ITEMS', 'gemini-2.5-flash')
-        assert get_model('conv_action_items') == 'gemini-2.5-flash'
-        assert get_provider('conv_action_items') == 'gemini'  # inferred from model name
 
 
 class TestProfileSelectionAtImportTime:
@@ -821,52 +722,6 @@ class TestExpandedCallsiteCoverage:
             assert 'llm_high.invoke' not in source, f"{path} still uses llm_high.invoke"
 
 
-class TestOverrideWarningLog:
-    """Verify override warnings fire for invalid explicit provider."""
-
-    def test_warns_on_invalid_explicit_provider(self, monkeypatch, caplog):
-        import logging
-
-        with caplog.at_level(logging.WARNING, logger='utils.llm.clients'):
-            monkeypatch.setenv('MODEL_QOS_CONV_ACTION_ITEMS', 'gpt-5.1:bogus')
-            result = get_model('conv_action_items')
-            assert result == 'gpt-5.1'
-        assert any('invalid provider' in r.message for r in caplog.records), "Expected invalid provider warning"
-
-    def test_no_warning_on_valid_explicit_provider(self, monkeypatch, caplog):
-        import logging
-
-        with caplog.at_level(logging.WARNING, logger='utils.llm.clients'):
-            monkeypatch.setenv('MODEL_QOS_CONV_ACTION_ITEMS', 'gpt-4.1-mini:openai')
-            result = get_model('conv_action_items')
-            assert result == 'gpt-4.1-mini'
-        assert not any(
-            'invalid provider' in r.message for r in caplog.records
-        ), "No warning expected for valid explicit provider"
-
-    def test_no_warning_on_model_only_override(self, monkeypatch, caplog):
-        import logging
-
-        with caplog.at_level(logging.WARNING, logger='utils.llm.clients'):
-            monkeypatch.setenv('MODEL_QOS_CONV_ACTION_ITEMS', 'gpt-4.1-mini')
-            result = get_model('conv_action_items')
-            assert result == 'gpt-4.1-mini'
-        assert not any(
-            'invalid provider' in r.message for r in caplog.records
-        ), "No warning expected for model-only override"
-
-    def test_warns_on_mismatched_model_provider(self, monkeypatch, caplog):
-        import logging
-
-        with caplog.at_level(logging.WARNING, logger='utils.llm.clients'):
-            monkeypatch.setenv('MODEL_QOS_CONV_ACTION_ITEMS', 'gpt-5.1:anthropic')
-            result = get_model('conv_action_items')
-            assert result == 'gpt-5.1'
-        assert any(
-            'does not match model' in r.message for r in caplog.records
-        ), "Expected model/provider mismatch warning"
-
-
 class TestRuntimeProviderRouting:
     """Verify get_llm() routes to correct client factory based on resolved model."""
 
@@ -892,42 +747,20 @@ class TestRuntimeProviderRouting:
         assert 'openrouter' not in base_url
         assert 'generativelanguage.googleapis.com' not in base_url
 
-    def test_override_to_openrouter_model_routes_to_openrouter(self, monkeypatch):
-        """If an override sets an OpenRouter model (vendor/model format), get_llm should route via OpenRouter."""
-        monkeypatch.setenv('MODEL_QOS_PERSONA_CHAT', 'google/gemini-flash-1.5-8b:openrouter')
-        llm = get_llm('persona_chat')
-        # OpenRouter Gemini models get BYOK-wrapped with Gemini direct fallback
-        base_url = (
-            getattr(llm, 'openai_api_base', None)
-            or getattr(getattr(llm, '_default', None), 'openai_api_base', None)
-            or ''
-        )
-        assert 'openrouter' in base_url
-
-    def test_openrouter_temperature_applied_via_get_llm(self, monkeypatch):
+    def test_openrouter_temperature_applied_via_get_llm(self):
         """When get_llm routes to OpenRouter, _OPENROUTER_TEMPERATURES config is applied."""
         from utils.llm.clients import _OPENROUTER_TEMPERATURES
 
-        # Override persona_chat to an OpenRouter model (vendor/model format)
-        monkeypatch.setenv('MODEL_QOS_PERSONA_CHAT', 'google/gemini-flash-1.5-8b:openrouter')
-        llm = get_llm('persona_chat')
-        expected_temp = _OPENROUTER_TEMPERATURES.get('persona_chat')
-        assert expected_temp == 0.8, "persona_chat should have temp 0.8 in config"
-        default = getattr(llm, '_default', llm)
-        assert default.temperature == expected_temp, "get_llm should apply _OPENROUTER_TEMPERATURES"
+        llm = get_llm('wrapped_analysis')
+        expected_temp = _OPENROUTER_TEMPERATURES.get('wrapped_analysis')
+        assert expected_temp == 0.7, "wrapped_analysis should have temp 0.7 in config"
+        assert llm.temperature == expected_temp, "get_llm should apply _OPENROUTER_TEMPERATURES"
 
     def test_openrouter_adds_vendor_prefix_for_gemini_models(self):
         """Profile stores bare model name; OpenRouter factory must add google/ prefix for API calls."""
         llm = get_llm('wrapped_analysis')
         default = getattr(llm, '_default', llm)
         assert default.model_name.startswith('google/'), f"Expected google/ prefix, got {default.model_name}"
-
-    def test_empty_provider_suffix_in_override(self, monkeypatch):
-        """MODEL_QOS_X=model: (empty provider after colon) should use inferred provider."""
-        monkeypatch.setenv('MODEL_QOS_CONV_ACTION_ITEMS', 'gpt-4.1-mini:')
-        assert get_model('conv_action_items') == 'gpt-4.1-mini'
-        # Empty string is not in _VALID_PROVIDERS, so falls back to inferred
-        assert get_provider('conv_action_items') == 'openai'
 
 
 class TestBYOKWrapperArchitecture:
