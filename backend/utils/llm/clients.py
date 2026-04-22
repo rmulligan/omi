@@ -146,13 +146,24 @@ def _wrap_byok(default: ChatOpenAI, model: str, provider: str, ctor_kwargs: Dict
             return _cached_openai_chat(model, byok_key, {**clean_kwargs, 'base_url': _GEMINI_OPENAI_BASE_URL})
 
     elif provider == 'openrouter':
-        # OpenRouter Gemini models: BYOK gemini key routes to Google direct
-        direct_model = model.split('/', 1)[1] if '/' in model else model
+        # Only reroute to Gemini direct if the model is actually Gemini-based
+        bare_model = model.split('/', 1)[1] if '/' in model else model
+        is_gemini_model = bare_model.startswith('gemini')
 
-        def _factory(byok_key: str) -> ChatOpenAI:
-            return _cached_openai_chat(direct_model, byok_key, {**clean_kwargs, 'base_url': _GEMINI_OPENAI_BASE_URL})
+        if is_gemini_model:
 
-        return _BYOKChatWrapper(default=default, provider='gemini', byok_factory=_factory)
+            def _factory(byok_key: str) -> ChatOpenAI:
+                return _cached_openai_chat(bare_model, byok_key, {**clean_kwargs, 'base_url': _GEMINI_OPENAI_BASE_URL})
+
+            return _BYOKChatWrapper(default=default, provider='gemini', byok_factory=_factory)
+        else:
+            # Non-Gemini OpenRouter model: BYOK stays on OpenRouter
+            def _factory(byok_key: str) -> ChatOpenAI:
+                return _cached_openai_chat(
+                    model, byok_key, {**clean_kwargs, 'base_url': 'https://openrouter.ai/api/v1'}
+                )
+
+            return _BYOKChatWrapper(default=default, provider='openrouter', byok_factory=_factory)
     else:
         # OpenAI and any future OpenAI-compatible provider
 
