@@ -137,24 +137,27 @@ def _cached_anthropic(api_key: str) -> anthropic.AsyncAnthropic:
 
 def _wrap_byok(default: ChatOpenAI, model: str, provider: str, ctor_kwargs: Dict[str, Any]) -> _BYOKChatWrapper:
     """Wrap a ChatOpenAI client with BYOK resolution for the given provider."""
+    # Strip api_key/base_url from kwargs — BYOK factory supplies its own
+    clean_kwargs = {k: v for k, v in ctor_kwargs.items() if k not in ('api_key', 'base_url')}
+
     if provider == 'gemini':
 
         def _factory(byok_key: str) -> ChatOpenAI:
-            return _cached_openai_chat(model, byok_key, {**ctor_kwargs, 'base_url': _GEMINI_OPENAI_BASE_URL})
+            return _cached_openai_chat(model, byok_key, {**clean_kwargs, 'base_url': _GEMINI_OPENAI_BASE_URL})
 
     elif provider == 'openrouter':
         # OpenRouter Gemini models: BYOK gemini key routes to Google direct
         direct_model = model.split('/', 1)[1] if '/' in model else model
 
         def _factory(byok_key: str) -> ChatOpenAI:
-            return _cached_openai_chat(direct_model, byok_key, {**ctor_kwargs, 'base_url': _GEMINI_OPENAI_BASE_URL})
+            return _cached_openai_chat(direct_model, byok_key, {**clean_kwargs, 'base_url': _GEMINI_OPENAI_BASE_URL})
 
         return _BYOKChatWrapper(default=default, provider='gemini', byok_factory=_factory)
     else:
         # OpenAI and any future OpenAI-compatible provider
 
         def _factory(byok_key: str) -> ChatOpenAI:
-            return _cached_openai_chat(model, byok_key, ctor_kwargs)
+            return _cached_openai_chat(model, byok_key, clean_kwargs)
 
     return _BYOKChatWrapper(default=default, provider=provider, byok_factory=_factory)
 
@@ -337,39 +340,40 @@ _CACHE_KEY_MODELS = {'gpt-5.4', 'gpt-5.4-mini'}
 _DEFAULT_CONFIG: Tuple[str, str] = ('gpt-4.1-mini', 'openai')
 
 
+_VALID_PROVIDERS = {'openai', 'gemini', 'openrouter', 'anthropic', 'perplexity'}
+
+
 def _get_model_config(feature: str) -> Tuple[str, str]:
     """Get the (model, provider) tuple for a feature. Internal — used by get_llm/get_model/get_provider.
 
     Resolution order: pinned > per-feature env override > active profile > fallback.
-    Env override format: MODEL_QOS_X=model:provider  or  MODEL_QOS_X=model (inherits profile provider).
+
+    Env override formats:
+      MODEL_QOS_X=model:provider  — explicit model and provider (validated)
+      MODEL_QOS_X=model           — provider inferred from model name via _classify_provider()
     """
     if feature in _PINNED_FEATURES:
         return _PINNED_FEATURES[feature]
     env_key = f'MODEL_QOS_{feature.upper()}'
     override = os.environ.get(env_key, '').strip()
     if override:
-        # Parse model:provider format
+        profile_entry = _active_profile.get(feature, _DEFAULT_CONFIG)
         if ':' in override:
             parts = override.rsplit(':', 1)
             override_model, override_provider = parts[0], parts[1]
+            if override_provider not in _VALID_PROVIDERS:
+                logger.warning(
+                    'QoS override %s=%s has invalid provider %r — falling back to profile provider %s',
+                    env_key,
+                    override,
+                    override_provider,
+                    profile_entry[1],
+                )
+                override_provider = profile_entry[1]
         else:
             override_model = override
-            # Inherit provider from profile if not specified, fall back to inference
-            profile_entry = _active_profile.get(feature, _DEFAULT_CONFIG)
-            profile_provider = profile_entry[1]
+            # Model-only override: infer provider from model name to maintain safety guards
             override_provider = _classify_provider(override_model)
-            if override_provider != profile_provider:
-                logger.warning(
-                    'QoS override %s=%s (inferred provider: %s) differs from profile provider %s — '
-                    'use %s=%s:%s to be explicit',
-                    env_key,
-                    override,
-                    override_provider,
-                    profile_provider,
-                    env_key,
-                    override,
-                    override_provider,
-                )
         return (override_model, override_provider)
     return _active_profile.get(feature, _DEFAULT_CONFIG)
 
