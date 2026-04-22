@@ -878,11 +878,13 @@ class TestRuntimeProviderRouting:
 
     def test_gemini_feature_routes_to_gemini_endpoint(self):
         """Free-text features on gemini-2.5-flash-lite should route via Google's OpenAI-compat endpoint."""
-        from utils.llm.clients import _BYOKChatWrapper
+        from utils.llm.clients import _BYOKChatWrapper, _GEMINI_OPENAI_BASE_URL
 
         llm = get_llm('followup')
         assert isinstance(llm, _BYOKChatWrapper), 'followup should be wrapped with _BYOKChatWrapper'
         assert llm._provider == 'gemini', 'followup wrapper should have gemini provider'
+        # Default client must use Gemini base URL
+        assert llm._default.openai_api_base == _GEMINI_OPENAI_BASE_URL, 'followup default must use Gemini base URL'
 
     def test_openglass_routes_to_openai(self):
         """openglass (vision) should route to OpenAI gpt-4.1-mini."""
@@ -915,6 +917,19 @@ class TestRuntimeProviderRouting:
         assert expected_temp == 0.8, "persona_chat should have temp 0.8 in config"
         default = getattr(llm, '_default', llm)
         assert default.temperature == expected_temp, "get_llm should apply _OPENROUTER_TEMPERATURES"
+
+    def test_openrouter_adds_vendor_prefix_for_gemini_models(self):
+        """Profile stores bare model name; OpenRouter factory must add google/ prefix for API calls."""
+        llm = get_llm('wrapped_analysis')
+        default = getattr(llm, '_default', llm)
+        assert default.model_name.startswith('google/'), f"Expected google/ prefix, got {default.model_name}"
+
+    def test_empty_provider_suffix_in_override(self, monkeypatch):
+        """MODEL_QOS_X=model: (empty provider after colon) should use inferred provider."""
+        monkeypatch.setenv('MODEL_QOS_CONV_ACTION_ITEMS', 'gpt-4.1-mini:')
+        assert get_model('conv_action_items') == 'gpt-4.1-mini'
+        # Empty string is not in _VALID_PROVIDERS, so falls back to inferred
+        assert get_provider('conv_action_items') == 'openai'
 
 
 class TestBYOKWrapperArchitecture:
