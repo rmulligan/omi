@@ -788,7 +788,6 @@ def gemini_embed_query(text: str) -> List[float]:
         f'/locations/{loc}/publishers/google/models/gemini-embedding-001:embedContent'
     )
     payload = {
-        'model': f'projects/{_GCP_PROJECT}/locations/{loc}/publishers/google/models/gemini-embedding-001',
         'content': {'parts': [{'text': text}]},
         'taskType': 'RETRIEVAL_QUERY',
     }
