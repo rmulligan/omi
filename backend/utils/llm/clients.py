@@ -221,34 +221,34 @@ MODEL_QOS_PROFILES: Dict[str, Dict[str, str]] = {
         'conv_folder': 'gpt-4.1-nano',
         'conv_discard': 'gpt-4.1-nano',
         'daily_summary': 'gpt-5.4-mini',
-        'daily_summary_simple': 'gpt-4.1-nano',
+        'daily_summary_simple': 'gemini-2.5-flash-lite',  # free-text stats → Gemini (75% savings vs mini)
         'external_structure': 'gpt-4.1-mini',  # quality-sensitive: structuring external data
         # OpenAI — memories & knowledge
         'memories': 'gpt-4.1-mini',  # quality-sensitive: memory extraction
         'learnings': 'gpt-5.4-mini',
         'memory_conflict': 'gpt-4.1-mini',  # quality-sensitive: conflict detection
-        'memory_category': 'gpt-4.1-nano',
+        'memory_category': 'gemini-2.5-flash-lite',  # text enum classification → Gemini (75% savings vs mini)
         'knowledge_graph': 'gpt-4.1-mini',  # quality-sensitive: entity/relationship extraction
         # OpenAI — chat
         'chat_responses': 'gpt-5.4-mini',
         'chat_extraction': 'gpt-4.1-mini',  # quality-sensitive: structured data extraction
         'chat_graph': 'gpt-4.1-mini',  # quality-sensitive: graph queries
-        'session_titles': 'gpt-4.1-nano',
+        'session_titles': 'gemini-2.5-flash-lite',  # free text title → Gemini (75% savings vs mini)
         # OpenAI — features
         'goals': 'gpt-4.1-mini',  # quality-sensitive: goal analysis
         'goals_advice': 'gpt-5.4-mini',
         'notifications': 'gpt-5.4-mini',
         'proactive_notification': 'gpt-4.1-mini',  # quality-sensitive: notification decisions
-        'followup': 'gpt-4.1-nano',
+        'followup': 'gemini-2.5-flash-lite',  # free text question → Gemini (75% savings vs mini)
         'smart_glasses': 'gpt-4.1-nano',
-        'onboarding': 'gpt-4.1-nano',
+        'onboarding': 'gemini-2.5-flash-lite',  # boolean yes/no check → Gemini (75% savings vs mini)
         'app_generator': 'gpt-5.4-mini',
-        'app_integration': 'gpt-4.1-nano',
+        'app_integration': 'gemini-2.5-flash-lite',  # simple routing → Gemini (75% savings vs mini)
         'persona_clone': 'gpt-5.4-mini',
-        'trends': 'gpt-4.1-nano',
+        'trends': 'gemini-2.5-flash-lite',  # simple pattern analysis → Gemini (75% savings vs mini)
         # Anthropic (chat_agent — used via get_model() + anthropic_client)
         'chat_agent': 'claude-sonnet-4-6',
-        # OpenAI — persona (moved from deprecated OpenRouter models to direct API)
+        # OpenAI — persona
         'persona_chat': 'gpt-4.1-nano',
         'persona_chat_premium': 'gpt-5.4-mini',
         # OpenRouter — wrapped_analysis only (gemini-3-flash-preview still active)
@@ -328,6 +328,8 @@ def _classify_provider(model: str) -> str:
         return 'anthropic'
     if model.startswith('sonar'):
         return 'perplexity'
+    if model.startswith('gemini-'):
+        return 'gemini'
     return 'openai'
 
 
@@ -429,10 +431,58 @@ def _get_or_create_openrouter_llm(
     return _llm_cache[key]
 
 
+class _GeminiChatProxy:
+    """Transparent BYOK-aware proxy for Gemini models via Google's OpenAI-compatible endpoint."""
+
+    __slots__ = ('_model', '_default', '_ctor_kwargs')
+
+    def __init__(self, model: str, default: ChatOpenAI, ctor_kwargs: Dict[str, Any]):
+        object.__setattr__(self, '_model', model)
+        object.__setattr__(self, '_default', default)
+        object.__setattr__(self, '_ctor_kwargs', ctor_kwargs)
+
+    def _resolve(self) -> ChatOpenAI:
+        byok = get_byok_key('gemini')
+        if byok:
+            return _cached_openai_chat(
+                self._model,
+                byok,
+                {**self._ctor_kwargs, 'base_url': _GEMINI_OPENAI_BASE_URL},
+            )
+        return self._default
+
+    def __getattr__(self, name: str):
+        return getattr(self._resolve(), name)
+
+    def __or__(self, other):
+        return self._resolve() | other
+
+    def __ror__(self, other):
+        return other | self._resolve()
+
+
+def _get_or_create_gemini_llm(model_name: str, streaming: bool = False) -> _GeminiChatProxy:
+    """Get or create a BYOK-aware ChatOpenAI proxy for a Gemini model via Google's OpenAI-compat endpoint."""
+    key = (model_name, streaming, 'gemini')
+    if key not in _llm_cache:
+        kwargs: Dict[str, Any] = {'callbacks': [_usage_callback]}
+        if streaming:
+            kwargs['streaming'] = True
+            kwargs['stream_options'] = {"include_usage": True}
+        default = ChatOpenAI(
+            model=model_name,
+            api_key=os.environ.get('GEMINI_API_KEY', ''),
+            base_url=_GEMINI_OPENAI_BASE_URL,
+            **kwargs,
+        )
+        _llm_cache[key] = _GeminiChatProxy(model=model_name, default=default, ctor_kwargs=kwargs)
+    return _llm_cache[key]
+
+
 def get_llm(feature: str, streaming: bool = False, cache_key: Optional[str] = None) -> ChatOpenAI:
     """Get the LLM client for a feature based on the active Model QoS profile.
 
-    Works for OpenAI and OpenRouter features (returns ChatOpenAI or BYOK proxy).
+    Works for OpenAI, Gemini, and OpenRouter features (returns ChatOpenAI or BYOK proxy).
     For Anthropic/Perplexity, use get_model(feature) to get the model string.
 
     Args:
@@ -472,6 +522,9 @@ def get_llm(feature: str, streaming: bool = False, cache_key: Optional[str] = No
     if provider == 'openrouter':
         temp = _OPENROUTER_TEMPERATURES.get(feature)
         return _get_or_create_openrouter_llm(model, streaming, temp)
+
+    if provider == 'gemini':
+        return _get_or_create_gemini_llm(model, streaming)
 
     llm = _get_or_create_openai_llm(model, streaming)
     if cache_key and model in _CACHE_KEY_MODELS:
@@ -572,78 +625,6 @@ llm_agent_stream = _byok_openai(
     callbacks=[_usage_callback],
     model_kwargs=_agent_cache_kwargs,
 )
-_persona_mini_kwargs = dict(
-    temperature=0.8,
-    streaming=True,
-    stream_options={"include_usage": True},
-    callbacks=[_usage_callback],
-)
-_persona_mini_default = ChatOpenAI(
-    model="google/gemini-flash-1.5-8b",
-    api_key=os.environ.get('OPENROUTER_API_KEY'),
-    base_url="https://openrouter.ai/api/v1",
-    default_headers={"X-Title": "Omi Chat"},
-    **_persona_mini_kwargs,
-)
-# BYOK Gemini → route direct to Google's OpenAI-compat endpoint.
-# Model name drops the `google/` prefix: gemini-flash-1.5-8b on Google direct.
-llm_persona_mini_stream = _OpenRouterGeminiProxy(
-    default=_persona_mini_default,
-    direct_model="gemini-flash-1.5-8b",
-    ctor_kwargs=_persona_mini_kwargs,
-)
-# Anthropic-via-OpenRouter. BYOK Anthropic users route to Anthropic's
-# OpenAI-compat endpoint directly, avoiding Omi's OpenRouter bill.
-_ANTHROPIC_OPENAI_BASE_URL = "https://api.anthropic.com/v1/"
-_persona_medium_kwargs = dict(
-    temperature=0.8,
-    streaming=True,
-    stream_options={"include_usage": True},
-    callbacks=[_usage_callback],
-)
-_persona_medium_default = ChatOpenAI(
-    model="anthropic/claude-3.5-sonnet",
-    api_key=os.environ.get('OPENROUTER_API_KEY'),
-    base_url="https://openrouter.ai/api/v1",
-    default_headers={"X-Title": "Omi Chat"},
-    **_persona_medium_kwargs,
-)
-
-
-class _AnthropicViaOpenAIProxy:
-    """Route to Anthropic's OpenAI-compat endpoint when BYOK Anthropic key is set."""
-
-    __slots__ = ('_default', '_ctor_kwargs')
-
-    def __init__(self, default: ChatOpenAI, ctor_kwargs: Dict[str, Any]):
-        object.__setattr__(self, '_default', default)
-        object.__setattr__(self, '_ctor_kwargs', ctor_kwargs)
-
-    def _resolve(self) -> ChatOpenAI:
-        byok = get_byok_key('anthropic')
-        if byok:
-            return _cached_openai_chat(
-                'claude-sonnet-4-20250514',
-                byok,
-                {**self._ctor_kwargs, 'base_url': _ANTHROPIC_OPENAI_BASE_URL},
-            )
-        return self._default
-
-    def __getattr__(self, name: str):
-        return getattr(self._resolve(), name)
-
-    def __or__(self, other):
-        return self._resolve() | other
-
-    def __ror__(self, other):
-        return other | self._resolve()
-
-
-llm_persona_medium_stream = _AnthropicViaOpenAIProxy(
-    default=_persona_medium_default,
-    ctor_kwargs=_persona_medium_kwargs,
-)
-
 # Gemini models for large context analysis
 _gemini_flash_kwargs = dict(
     temperature=0.7,
