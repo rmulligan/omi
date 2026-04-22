@@ -643,6 +643,15 @@ class TestCacheRouting:
             resolved = wrapper._resolve()
         assert resolved.model_name == 'gemini-3-flash-preview'
 
+    def test_non_gemini_openrouter_wrapper_stays_on_openrouter(self):
+        """Non-Gemini OpenRouter models must NOT reroute to Gemini direct."""
+        from utils.llm.clients import _BYOKChatWrapper, _wrap_byok
+
+        mock_default = MagicMock()
+        wrapper = _wrap_byok(mock_default, 'anthropic/claude-3.5-sonnet', 'openrouter', {'api_key': 'sk-or-key'})
+        assert isinstance(wrapper, _BYOKChatWrapper)
+        assert wrapper._provider == 'openrouter'  # NOT 'gemini'
+
 
 # ---------------------------------------------------------------------------
 # 12. Middleware dispatch: context isolation between requests
