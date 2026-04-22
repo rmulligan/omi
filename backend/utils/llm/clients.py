@@ -1,15 +1,14 @@
 import hashlib
 import logging
 import os
-import threading
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import anthropic
-import google.auth
-import google.auth.transport.requests
 import httpx
 from cachetools import TTLCache
+from google import genai
 from langchain_core.output_parsers import PydanticOutputParser
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 import tiktoken
 
@@ -24,36 +23,20 @@ _usage_callback = get_usage_callback()
 # ---------------------------------------------------------------------------
 # Vertex AI configuration — ADC auth for cost savings (EDP + Provisioned Throughput)
 # Platform Gemini calls route here; BYOK users stay on AI Studio.
+# The langchain-google-genai SDK handles token refresh automatically.
 # ---------------------------------------------------------------------------
 
-try:
-    _vertex_credentials, _vertex_project = google.auth.default(
-        scopes=['https://www.googleapis.com/auth/cloud-platform'],
-    )
-except google.auth.exceptions.DefaultCredentialsError:
-    logger.info('No ADC found — Vertex AI Gemini calls will fall back to GEMINI_API_KEY')
-    _vertex_credentials = None
-    _vertex_project = None
-
-_GCP_PROJECT = os.environ.get('GOOGLE_CLOUD_PROJECT', '') or (_vertex_project or '')
+_GCP_PROJECT = os.environ.get('GOOGLE_CLOUD_PROJECT', '')
 _GCP_LOCATION = os.environ.get('GCP_LOCATION', 'global')
-_vertex_lock = threading.Lock()
+
+_vertex_embed_clients: Dict[str, genai.Client] = {}
 
 
-def _get_vertex_access_token() -> str:
-    """Return a valid Vertex AI access token, refreshing if needed (thread-safe)."""
-    if _vertex_credentials is None:
-        raise RuntimeError('Vertex AI credentials not available — check ADC configuration')
-    with _vertex_lock:
-        if not _vertex_credentials.valid:
-            _vertex_credentials.refresh(google.auth.transport.requests.Request())
-        return _vertex_credentials.token
-
-
-def _vertex_openai_base_url(location: Optional[str] = None) -> str:
-    """Build the Vertex AI OpenAI-compatible endpoint URL."""
-    loc = location or _GCP_LOCATION
-    return f'https://aiplatform.googleapis.com/v1/projects/{_GCP_PROJECT}/locations/{loc}/endpoints/openapi'
+def _get_vertex_embed_client(location: str) -> genai.Client:
+    """Get or create a google-genai Client for Vertex AI embeddings (cached per location)."""
+    if location not in _vertex_embed_clients:
+        _vertex_embed_clients[location] = genai.Client(project=_GCP_PROJECT, location=location, vertexai=True)
+    return _vertex_embed_clients[location]
 
 
 # ---------------------------------------------------------------------------
@@ -64,44 +47,29 @@ def _vertex_openai_base_url(location: Optional[str] = None) -> str:
 # The QoS layer creates a plain client, then optionally wraps it with BYOK.
 # ---------------------------------------------------------------------------
 
-# Google's OpenAI-compatible endpoint lets us keep langchain_openai.ChatOpenAI
-# as the client class while routing to Gemini directly — no new langchain dep.
+# AI Studio base URL for BYOK Gemini users (ChatOpenAI + Google's OpenAI-compat endpoint).
 _GEMINI_AI_STUDIO_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai/"
 
 
 class _BYOKChatWrapper:
-    """Wraps any ChatOpenAI client with per-request BYOK key substitution.
+    """Wraps any BaseChatModel client with per-request BYOK key substitution.
 
     NOT a base class. A decorator/wrapper applied by get_llm() on top of
     provider-specific clients. The provider tag determines which BYOK key
     pool to check. The byok_factory constructs a BYOK-keyed client when needed.
-
-    For providers with expiring credentials (e.g. Vertex AI OAuth2 tokens),
-    default_factory resolves a fresh default client per-request instead of
-    returning the static _default. This keeps token refresh aligned with
-    the QoS caching pattern.
     """
 
-    __slots__ = ('_default', '_provider', '_byok_factory', '_default_factory')
+    __slots__ = ('_default', '_provider', '_byok_factory')
 
-    def __init__(
-        self,
-        default: ChatOpenAI,
-        provider: str,
-        byok_factory: Callable[[str], ChatOpenAI],
-        default_factory: Optional[Callable[[], ChatOpenAI]] = None,
-    ):
+    def __init__(self, default, provider: str, byok_factory: Callable[[str], ChatOpenAI]):
         object.__setattr__(self, '_default', default)
         object.__setattr__(self, '_provider', provider)
         object.__setattr__(self, '_byok_factory', byok_factory)
-        object.__setattr__(self, '_default_factory', default_factory)
 
-    def _resolve(self) -> ChatOpenAI:
+    def _resolve(self):
         byok = get_byok_key(self._provider)
         if byok:
             return self._byok_factory(byok)
-        if self._default_factory is not None:
-            return self._default_factory()
         return self._default
 
     def __getattr__(self, name: str):
@@ -187,19 +155,8 @@ def _cached_anthropic(api_key: str) -> anthropic.AsyncAnthropic:
     return inst
 
 
-def _wrap_byok(
-    default: ChatOpenAI,
-    model: str,
-    provider: str,
-    ctor_kwargs: Dict[str, Any],
-    default_factory: Optional[Callable[[], ChatOpenAI]] = None,
-) -> _BYOKChatWrapper:
-    """Wrap a ChatOpenAI client with BYOK resolution for the given provider.
-
-    Args:
-        default_factory: Optional callable that returns a fresh default client
-            per-request. Used for providers with expiring credentials (Vertex AI).
-    """
+def _wrap_byok(default, model: str, provider: str, ctor_kwargs: Dict[str, Any]) -> _BYOKChatWrapper:
+    """Wrap a BaseChatModel client with BYOK resolution for the given provider."""
     # Strip api_key/base_url from kwargs — BYOK factory supplies its own
     clean_kwargs = {k: v for k, v in ctor_kwargs.items() if k not in ('api_key', 'base_url')}
 
@@ -227,7 +184,7 @@ def _wrap_byok(
         def _factory(byok_key: str) -> ChatOpenAI:
             return _cached_openai_chat(model, byok_key, clean_kwargs)
 
-    return _BYOKChatWrapper(default=default, provider=provider, byok_factory=_factory, default_factory=default_factory)
+    return _BYOKChatWrapper(default=default, provider=provider, byok_factory=_factory)
 
 
 # Anthropic client for chat agent (module-level, BYOK-aware)
@@ -475,60 +432,35 @@ def _get_or_create_openrouter_llm(
 
 
 def _get_or_create_gemini_llm(model_name: str, streaming: bool = False) -> _BYOKChatWrapper:
-    """Get or create a BYOK-wrapped ChatOpenAI for a Gemini model.
+    """Get or create a BYOK-wrapped Gemini client.
 
-    Platform calls route to Vertex AI (ADC auth, EDP/PT discounts).
-    Falls back to GEMINI_API_KEY (AI Studio) when Vertex is unavailable.
+    Platform calls route to Vertex AI via the langchain-google-genai SDK,
+    which handles ADC auth and token refresh automatically.
+    Falls back to AI Studio (GEMINI_API_KEY) when no GCP project is configured.
     BYOK users always route to AI Studio via the _BYOKChatWrapper.
-
-    Vertex AI uses OAuth2 tokens that expire after ~1 hour. Rather than
-    baking a static token into a cached client, we use a default_factory
-    that resolves a fresh token per-request via _BYOKChatWrapper._resolve().
-    Clients are cached in _openai_cache (TTLCache, 1h) keyed by token hash
-    so the same client is reused while the token is valid.
     """
     key = (model_name, streaming, 'gemini')
     if key not in _llm_cache:
         kwargs: Dict[str, Any] = {'callbacks': [_usage_callback]}
         if streaming:
             kwargs['streaming'] = True
-            kwargs['stream_options'] = {"include_usage": True}
 
         if _GCP_PROJECT:
-            vertex_base_url = _vertex_openai_base_url()
-            vertex_kwargs = {**kwargs, 'base_url': vertex_base_url}
-
-            def _vertex_client_factory() -> ChatOpenAI:
-                """Resolve a Vertex AI client with a fresh token (cached by token hash)."""
-                try:
-                    token = _get_vertex_access_token()
-                    return _cached_openai_chat(model_name, token, vertex_kwargs)
-                except Exception:
-                    # Only fall back to AI Studio if GEMINI_API_KEY is actually available.
-                    # In production Helm config, the key is removed — fail fast instead
-                    # of creating an unauthenticated client that errors downstream.
-                    gemini_key = os.environ.get('GEMINI_API_KEY', '')
-                    if not gemini_key:
-                        raise
-                    logger.warning('Vertex AI credentials unavailable, falling back to GEMINI_API_KEY')
-                    return ChatOpenAI(
-                        model=model_name,
-                        api_key=gemini_key,
-                        base_url=_GEMINI_AI_STUDIO_BASE_URL,
-                        **kwargs,
-                    )
-
-            # Eagerly resolve initial default for introspection / test compatibility
-            default = _vertex_client_factory()
-            _llm_cache[key] = _wrap_byok(default, model_name, 'gemini', kwargs, default_factory=_vertex_client_factory)
-        else:
-            default = ChatOpenAI(
+            # Vertex AI via SDK — handles ADC token refresh automatically
+            default = ChatGoogleGenerativeAI(
                 model=model_name,
-                api_key=os.environ.get('GEMINI_API_KEY', ''),
-                base_url=_GEMINI_AI_STUDIO_BASE_URL,
+                project=_GCP_PROJECT,
+                location=_GCP_LOCATION,
                 **kwargs,
             )
-            _llm_cache[key] = _wrap_byok(default, model_name, 'gemini', kwargs)
+        else:
+            # No GCP project — use AI Studio with GEMINI_API_KEY
+            default = ChatGoogleGenerativeAI(
+                model=model_name,
+                api_key=os.environ.get('GEMINI_API_KEY', ''),
+                **kwargs,
+            )
+        _llm_cache[key] = _wrap_byok(default, model_name, 'gemini', kwargs)
     return _llm_cache[key]
 
 
@@ -655,8 +587,8 @@ def gemini_embed_query(text: str) -> List[float]:
     generated by the desktop app.
 
     Routing:
-      - BYOK Gemini key present → AI Studio (user's own key, unchanged)
-      - No BYOK key → Vertex AI via ADC (EDP/PT cost savings)
+      - BYOK Gemini key present → AI Studio (user's own key)
+      - No BYOK key → Vertex AI via google-genai SDK (ADC, token refresh automatic)
     """
     byok_key = get_byok_key('gemini')
     if byok_key:
@@ -672,20 +604,13 @@ def gemini_embed_query(text: str) -> List[float]:
         resp.raise_for_status()
         return resp.json()['embedding']['values']
 
-    # Platform calls: Vertex AI endpoint with ADC token
+    # Platform calls: Vertex AI via google-genai SDK (handles ADC token refresh)
     if not _GCP_PROJECT:
         raise RuntimeError('Gemini embedding requires either a BYOK key or GCP project configuration')
     loc = os.environ.get('GCP_EMBEDDING_LOCATION', 'us-central1')
-    url = (
-        f'https://aiplatform.googleapis.com/v1beta1/projects/{_GCP_PROJECT}'
-        f'/locations/{loc}/publishers/google/models/gemini-embedding-001:embedContent'
+    result = _get_vertex_embed_client(loc).models.embed_content(
+        model='gemini-embedding-001',
+        contents=text,
+        config={'task_type': 'RETRIEVAL_QUERY'},
     )
-    payload = {
-        'content': {'parts': [{'text': text}]},
-        'taskType': 'RETRIEVAL_QUERY',
-    }
-    token = _get_vertex_access_token()
-    headers = {'Authorization': f'Bearer {token}', 'Content-Type': 'application/json'}
-    resp = httpx.post(url, json=payload, headers=headers, timeout=10)
-    resp.raise_for_status()
-    return resp.json()['embedding']['values']
+    return list(result.embeddings[0].values)
