@@ -10,6 +10,7 @@ from concurrent.futures import as_completed
 from utils.executors import storage_executor
 
 import opuslib
+import google.auth.transport.requests
 from google.cloud import storage
 from google.oauth2 import service_account
 from google.cloud.exceptions import NotFound as BlobNotFound
@@ -1081,7 +1082,26 @@ def _get_signed_url(blob, minutes):
     if cached := get_cached_signed_url(blob.name):
         return cached
 
-    signed_url = blob.generate_signed_url(version="v4", expiration=datetime.timedelta(minutes=minutes), method="GET")
+    # When using Workload Identity (no private key), we must pass the service
+    # account email and refreshed credentials so the GCS library calls the
+    # IAM Credentials signBlob API instead of signing locally.
+    sa_email = os.environ.get('GCP_SERVICE_ACCOUNT_EMAIL')
+    if sa_email and not isinstance(storage_client._credentials, service_account.Credentials):
+        creds = storage_client._credentials
+        creds.refresh(google.auth.transport.requests.Request())
+        signed_url = blob.generate_signed_url(
+            version="v4",
+            expiration=datetime.timedelta(minutes=minutes),
+            method="GET",
+            service_account_email=sa_email,
+            access_token=creds.token,
+        )
+    else:
+        signed_url = blob.generate_signed_url(
+            version="v4",
+            expiration=datetime.timedelta(minutes=minutes),
+            method="GET",
+        )
     cache_signed_url(blob.name, signed_url, minutes * 60)
     return signed_url
 
