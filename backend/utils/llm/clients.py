@@ -364,18 +364,27 @@ def _get_model_config(feature: str) -> Tuple[str, str]:
         if ':' in override:
             parts = override.rsplit(':', 1)
             override_model, override_provider = parts[0], parts[1]
+            inferred = _classify_provider(override_model)
             if override_provider not in _VALID_PROVIDERS:
                 logger.warning(
-                    'QoS override %s=%s has invalid provider %r — falling back to profile provider %s',
+                    'QoS override %s=%s has invalid provider %r — using inferred provider %s',
                     env_key,
                     override,
                     override_provider,
-                    profile_entry[1],
+                    inferred,
                 )
-                override_provider = profile_entry[1]
+                override_provider = inferred
+            elif override_provider != inferred:
+                logger.warning(
+                    'QoS override %s=%s: explicit provider %r does not match model (inferred %s) — using inferred',
+                    env_key,
+                    override,
+                    override_provider,
+                    inferred,
+                )
+                override_provider = inferred
         else:
             override_model = override
-            # Model-only override: infer provider from model name to maintain safety guards
             override_provider = _classify_provider(override_model)
         return (override_model, override_provider)
     return _active_profile.get(feature, _DEFAULT_CONFIG)
