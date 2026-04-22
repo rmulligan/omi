@@ -572,10 +572,16 @@ class TestRollbackScenario:
         assert get_provider('persona_chat') == 'anthropic'
 
     def test_invalid_provider_in_override_falls_back(self, monkeypatch):
-        """Explicit override with invalid provider falls back to profile provider."""
+        """Explicit override with invalid provider falls back to inferred provider."""
         monkeypatch.setenv('MODEL_QOS_CONV_ACTION_ITEMS', 'gpt-5.1:bogus_provider')
         assert get_model('conv_action_items') == 'gpt-5.1'
-        assert get_provider('conv_action_items') == 'openai'  # profile provider
+        assert get_provider('conv_action_items') == 'openai'  # inferred from model name
+
+    def test_mismatched_model_provider_uses_inferred(self, monkeypatch):
+        """Explicit override with mismatched model/provider uses inferred provider."""
+        monkeypatch.setenv('MODEL_QOS_PERSONA_CHAT', 'gpt-5.1:anthropic')
+        assert get_model('persona_chat') == 'gpt-5.1'
+        assert get_provider('persona_chat') == 'openai'  # inferred, not explicit anthropic
 
     def test_model_only_override_infers_provider(self, monkeypatch):
         """Model-only override infers provider from model name."""
@@ -849,6 +855,17 @@ class TestOverrideWarningLog:
             'invalid provider' in r.message for r in caplog.records
         ), "No warning expected for model-only override"
 
+    def test_warns_on_mismatched_model_provider(self, monkeypatch, caplog):
+        import logging
+
+        with caplog.at_level(logging.WARNING, logger='utils.llm.clients'):
+            monkeypatch.setenv('MODEL_QOS_CONV_ACTION_ITEMS', 'gpt-5.1:anthropic')
+            result = get_model('conv_action_items')
+            assert result == 'gpt-5.1'
+        assert any(
+            'does not match model' in r.message for r in caplog.records
+        ), "Expected model/provider mismatch warning"
+
 
 class TestRuntimeProviderRouting:
     """Verify get_llm() routes to correct client factory based on resolved model."""
@@ -876,23 +893,28 @@ class TestRuntimeProviderRouting:
         assert llm._provider == 'openai'
 
     def test_override_to_openrouter_model_routes_to_openrouter(self, monkeypatch):
-        """If an override sets an OpenRouter model:provider, get_llm should route via OpenRouter."""
-        monkeypatch.setenv('MODEL_QOS_PERSONA_CHAT', 'gemini-flash-1.5-8b:openrouter')
+        """If an override sets an OpenRouter model (vendor/model format), get_llm should route via OpenRouter."""
+        monkeypatch.setenv('MODEL_QOS_PERSONA_CHAT', 'google/gemini-flash-1.5-8b:openrouter')
         llm = get_llm('persona_chat')
-        # The wrapper's default client should be OpenRouter-configured
-        base_url = getattr(llm._default, 'openai_api_base', None) or ''
+        # OpenRouter Gemini models get BYOK-wrapped with Gemini direct fallback
+        base_url = (
+            getattr(llm, 'openai_api_base', None)
+            or getattr(getattr(llm, '_default', None), 'openai_api_base', None)
+            or ''
+        )
         assert 'openrouter' in base_url
 
     def test_openrouter_temperature_applied_via_get_llm(self, monkeypatch):
         """When get_llm routes to OpenRouter, _OPENROUTER_TEMPERATURES config is applied."""
         from utils.llm.clients import _OPENROUTER_TEMPERATURES
 
-        # Override persona_chat to an OpenRouter model to test temperature routing
-        monkeypatch.setenv('MODEL_QOS_PERSONA_CHAT', 'gemini-flash-1.5-8b:openrouter')
+        # Override persona_chat to an OpenRouter model (vendor/model format)
+        monkeypatch.setenv('MODEL_QOS_PERSONA_CHAT', 'google/gemini-flash-1.5-8b:openrouter')
         llm = get_llm('persona_chat')
         expected_temp = _OPENROUTER_TEMPERATURES.get('persona_chat')
         assert expected_temp == 0.8, "persona_chat should have temp 0.8 in config"
-        assert llm._default.temperature == expected_temp, "get_llm should apply _OPENROUTER_TEMPERATURES"
+        default = getattr(llm, '_default', llm)
+        assert default.temperature == expected_temp, "get_llm should apply _OPENROUTER_TEMPERATURES"
 
 
 class TestBYOKWrapperArchitecture:
