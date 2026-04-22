@@ -612,6 +612,37 @@ class TestCacheRouting:
             resolved = wrapper._resolve()
         assert resolved is mock_default
 
+    def test_openrouter_wrapper_byok_routes_to_gemini_direct(self):
+        """OpenRouter BYOK wraps to Gemini direct — must not forward OpenRouter api_key."""
+        from utils.llm.clients import _BYOKChatWrapper, _GEMINI_OPENAI_BASE_URL, _wrap_byok
+
+        mock_default = MagicMock()
+        or_kwargs = {
+            'api_key': 'sk-or-openrouter-key',
+            'base_url': 'https://openrouter.ai/api/v1',
+            'callbacks': [],
+        }
+        wrapper = _wrap_byok(mock_default, 'google/gemini-3-flash-preview', 'openrouter', or_kwargs)
+        assert isinstance(wrapper, _BYOKChatWrapper)
+        assert wrapper._provider == 'gemini'  # OpenRouter BYOK resolves via Gemini
+
+        with patch('utils.llm.clients.get_byok_key', side_effect=lambda p: 'AIza-byok-key' if p == 'gemini' else None):
+            resolved = wrapper._resolve()
+        # Must use Gemini base URL, not OpenRouter
+        assert resolved.openai_api_base == _GEMINI_OPENAI_BASE_URL
+        # Must not contain the OpenRouter api_key
+        assert resolved.openai_api_key != 'sk-or-openrouter-key'
+
+    def test_openrouter_wrapper_strips_vendor_prefix(self):
+        """OpenRouter BYOK must strip google/ prefix for Gemini direct API."""
+        from utils.llm.clients import _BYOKChatWrapper, _wrap_byok
+
+        mock_default = MagicMock()
+        wrapper = _wrap_byok(mock_default, 'google/gemini-3-flash-preview', 'openrouter', {'api_key': 'sk-or-key'})
+        with patch('utils.llm.clients.get_byok_key', side_effect=lambda p: 'AIza-byok-key' if p == 'gemini' else None):
+            resolved = wrapper._resolve()
+        assert resolved.model_name == 'gemini-3-flash-preview'
+
 
 # ---------------------------------------------------------------------------
 # 12. Middleware dispatch: context isolation between requests
