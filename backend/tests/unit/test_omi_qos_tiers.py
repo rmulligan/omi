@@ -98,6 +98,8 @@ class TestModelQosProfiles:
         assert premium['proactive_notification'] == 'gpt-4.1-mini'
         # Simple features use gpt-4.1-nano
         assert premium['conv_app_select'] == 'gpt-4.1-nano'
+        # Vision features use gpt-4.1-mini
+        assert premium['openglass'] == 'gpt-4.1-mini'
         # Free-text features migrated to Gemini 2.5 Flash-Lite
         assert premium['session_titles'] == 'gemini-2.5-flash-lite'
         assert premium['followup'] == 'gemini-2.5-flash-lite'
@@ -824,10 +826,18 @@ class TestRuntimeProviderRouting:
 
     def test_gemini_feature_routes_to_gemini_endpoint(self):
         """Free-text features on gemini-2.5-flash-lite should route via Google's OpenAI-compat endpoint."""
-        from utils.llm.clients import _GEMINI_OPENAI_BASE_URL, _GeminiChatProxy
+        from utils.llm.clients import _BYOKChatProxy, _GeminiChatProxy
 
         llm = get_llm('followup')
         assert isinstance(llm, _GeminiChatProxy), 'followup should route through _GeminiChatProxy'
+        assert isinstance(llm, _BYOKChatProxy), 'all chat proxies inherit from _BYOKChatProxy'
+
+    def test_openglass_routes_to_openai(self):
+        """openglass (vision) should route to OpenAI gpt-4.1-mini."""
+        from utils.llm.clients import _OpenAIChatProxy
+
+        llm = get_llm('openglass')
+        assert isinstance(llm, _OpenAIChatProxy)
 
     def test_override_to_openrouter_model_routes_to_openrouter(self, monkeypatch):
         """If an override sets an OpenRouter model, get_llm should route via OpenRouter."""
@@ -846,3 +856,33 @@ class TestRuntimeProviderRouting:
         expected_temp = _OPENROUTER_TEMPERATURES.get('persona_chat')
         assert expected_temp == 0.8, "persona_chat should have temp 0.8 in config"
         assert llm.temperature == expected_temp, "get_llm should apply _OPENROUTER_TEMPERATURES"
+
+
+class TestProxyHierarchy:
+    """Verify all ChatOpenAI proxies share _BYOKChatProxy base."""
+
+    def test_all_chat_proxies_inherit_from_base(self):
+        from utils.llm.clients import _BYOKChatProxy, _GeminiChatProxy, _OpenAIChatProxy, _OpenRouterGeminiProxy
+
+        assert issubclass(_OpenAIChatProxy, _BYOKChatProxy)
+        assert issubclass(_GeminiChatProxy, _BYOKChatProxy)
+        assert issubclass(_OpenRouterGeminiProxy, _BYOKChatProxy)
+
+    def test_no_legacy_llm_medium_or_llm_large(self):
+        """Dead legacy instances must not exist in clients module."""
+        import utils.llm.clients as mod
+
+        for name in [
+            'llm_medium',
+            'llm_large',
+            'llm_high',
+            'llm_agent',
+            'llm_gemini_flash',
+            'llm_mini_stream',
+            'llm_medium_stream',
+            'llm_large_stream',
+            'llm_high_stream',
+            'llm_agent_stream',
+            'llm_medium_experiment',
+        ]:
+            assert not hasattr(mod, name), f'{name} should have been removed from clients.py'
