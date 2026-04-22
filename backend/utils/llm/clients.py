@@ -526,16 +526,22 @@ def get_llm(feature: str, streaming: bool = False, cache_key: Optional[str] = No
 
     if provider == 'openrouter':
         temp = _OPENROUTER_TEMPERATURES.get(feature)
-        return _get_or_create_openrouter_llm(model, streaming, temp)
+        result = _get_or_create_openrouter_llm(model, streaming, temp)
+    elif provider == 'gemini':
+        result = _get_or_create_gemini_llm(model, streaming)
+    else:
+        # Default: OpenAI
+        result = _get_or_create_openai_llm(model, streaming)
 
-    if provider == 'gemini':
-        return _get_or_create_gemini_llm(model, streaming)
+    # Eagerly resolve BYOK wrapper so callers always get a proper Runnable.
+    # This is safe because get_llm() is called within the request handler
+    # where the BYOK contextvar is already set by the middleware.
+    if isinstance(result, _BYOKChatWrapper):
+        result = result._resolve()
 
-    # Default: OpenAI
-    llm = _get_or_create_openai_llm(model, streaming)
     if cache_key and model in _CACHE_KEY_MODELS:
-        return llm.bind(prompt_cache_key=cache_key)
-    return llm
+        return result.bind(prompt_cache_key=cache_key)
+    return result
 
 
 def get_qos_info() -> Dict[str, Dict[str, str]]:
