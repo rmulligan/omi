@@ -45,6 +45,7 @@ import type {
 } from "./protocol.js";
 import { startOAuthFlow, type OAuthFlowHandle } from "./oauth-flow.js";
 import type { PromptBlock } from "./adapters/interface.js";
+import { detectImageMimeType } from "./mime-detect.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -71,7 +72,7 @@ function send(msg: OutboundMessage): void {
 }
 
 function logErr(msg: string): void {
-  process.stderr.write(`[acp-bridge] ${msg}\n`);
+  process.stderr.write(`[agent] ${msg}\n`);
 }
 
 // --- OMI tools relay via Unix socket ---
@@ -235,10 +236,10 @@ function acpNotify(
 
 /** Start the ACP subprocess */
 function startAcpProcess(): void {
-  // Build environment for ACP subprocess
-  // If ANTHROPIC_API_KEY is present (Mode A), keep it so ACP uses OMI's key.
-  // If absent (Mode B), ACP will use user's own OAuth.
+  // Build environment for ACP subprocess — user's own Claude OAuth only (issue #6594).
+  // ANTHROPIC_API_KEY is never passed to the ACP subprocess.
   const env = { ...process.env };
+  delete env.ANTHROPIC_API_KEY;
   delete env.CLAUDE_CODE_USE_VERTEX;
   // Remove CLAUDECODE so the ACP subprocess (and the Claude Code it spawns) don't
   // inherit the nested-session guard. Without this, `--resume` silently fails when
@@ -251,8 +252,7 @@ function startAcpProcess(): void {
   const acpEntry = join(__dirname, "patched-acp-entry.mjs");
   const nodeBin = process.execPath;
 
-  const mode = env.ANTHROPIC_API_KEY ? "Mode A (Omi API key)" : "Mode B (Your Claude Account / OAuth)";
-  logErr(`Starting ACP subprocess [${mode}]: ${nodeBin} ${acpEntry}`);
+  logErr(`Starting ACP subprocess [Claude OAuth]: ${nodeBin} ${acpEntry}`);
 
   acpProcess = spawn(nodeBin, [acpEntry], {
     env,
@@ -768,7 +768,8 @@ async function handleQuery(msg: QueryMessage): Promise<void> {
     const sendPrompt = async (): Promise<void> => {
       const promptBlocks: Array<Record<string, unknown>> = [];
       if (msg.imageBase64) {
-        promptBlocks.push({ type: "image", data: msg.imageBase64, mimeType: "image/webp" });
+        const imgMime = detectImageMimeType(msg.imageBase64);
+        promptBlocks.push({ type: "image", data: msg.imageBase64, mimeType: imgMime });
       }
       promptBlocks.push({ type: "text", text: fullPrompt });
 
@@ -1065,11 +1066,11 @@ function handleSessionUpdate(
 
 // --- Error handling ---
 
-/** Write to /tmp/acp-bridge-crash.log as fallback when stderr might be lost */
+/** Write to /tmp/agent-crash.log as fallback when stderr might be lost */
 function logCrash(msg: string): void {
   try {
     const ts = new Date().toISOString();
-    appendFileSync("/tmp/acp-bridge-crash.log", `[${ts}] ${msg}\n`);
+    appendFileSync("/tmp/agent-crash.log", `[${ts}] ${msg}\n`);
   } catch {
     // ignore
   }
@@ -1129,8 +1130,6 @@ async function runPiMonoMode(): Promise<void> {
   logErr("omi-tools relay started for pi-mono");
 
   const config = {
-    passApiKey: false,
-    apiKey: undefined,
     omiApiBaseUrl: process.env.OMI_API_BASE_URL,
     authToken: omiAuthToken,
   };
@@ -1258,8 +1257,9 @@ async function runPiMonoMode(): Promise<void> {
           // Build prompt blocks — include screenshot if available
           const promptBlocks: PromptBlock[] = [];
           if (qm.imageBase64) {
-            promptBlocks.push({ type: "image" as const, data: qm.imageBase64, mimeType: "image/jpeg" });
-            logErr("Pi-mono: including screenshot image in prompt");
+            const mimeType = detectImageMimeType(qm.imageBase64);
+            promptBlocks.push({ type: "image" as const, data: qm.imageBase64, mimeType });
+            logErr(`Pi-mono: including screenshot image in prompt (${mimeType})`);
           }
           promptBlocks.push({ type: "text" as const, text: qm.prompt });
 
