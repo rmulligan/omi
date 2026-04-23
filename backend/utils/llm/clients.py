@@ -469,12 +469,18 @@ if _active_profile_name not in MODEL_QOS_PROFILES:
     _active_profile_name = 'premium'
 _active_profile = MODEL_QOS_PROFILES[_active_profile_name]
 
-# BYOK QoS profile — when set, BYOK users get upgraded model routing.
-# Set BYOK_QOS=byok_high or BYOK_QOS=byok_max to enable.
-_byok_profile_name = os.environ.get('BYOK_QOS', '').strip().lower() or None
-if _byok_profile_name and _byok_profile_name not in MODEL_QOS_PROFILES:
-    logger.warning('BYOK_QOS=%s is not a valid profile, BYOK profile disabled', _byok_profile_name)
-    _byok_profile_name = None
+# BYOK QoS mapping — automatic profile upgrade when a BYOK key is active.
+# BYOK users pay their own API costs, so we route them to higher-quality models.
+# Source of truth: this dict. No env var needed.
+_BYOK_PROFILE_MAP: Dict[str, str] = {
+    'premium': 'byok_high',
+    'premium1': 'byok_high',
+    'max': 'byok_max',
+    'max1': 'byok_max',
+    'byok_high': 'byok_high',
+    'byok_max': 'byok_max',
+}
+_byok_profile_name = _BYOK_PROFILE_MAP.get(_active_profile_name)
 _byok_profile = MODEL_QOS_PROFILES.get(_byok_profile_name) if _byok_profile_name else None
 
 # Features that can't go through get_llm() (non-ChatOpenAI providers).
@@ -710,10 +716,7 @@ def get_qos_info() -> Dict[str, Dict[str, str]]:
 logger.info('Model QoS profile=%s (%d features)', _active_profile_name, len(_active_profile))
 for _feat, (_model, _provider) in sorted(_active_profile.items()):
     logger.info('  QoS %s: %s [%s]', _feat, _model, _provider)
-if _byok_profile_name:
-    logger.info('BYOK QoS profile=%s (%d features)', _byok_profile_name, len(_byok_profile))
-else:
-    logger.info('BYOK QoS profile=none (BYOK users use server profile)')
+logger.info('BYOK QoS profile=%s (auto-mapped from %s)', _byok_profile_name, _active_profile_name)
 
 # Log structured output features on Gemini for compatibility monitoring
 _so_gemini = {f for f in _STRUCTURED_OUTPUT_FEATURES if _active_profile.get(f, _DEFAULT_CONFIG)[1] == 'gemini'}
