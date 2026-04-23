@@ -31,7 +31,6 @@ os.environ.setdefault('ANTHROPIC_API_KEY', 'sk-ant-test-fake-key')
 from utils.llm.clients import (
     MODEL_QOS_PROFILES,
     _ANTHROPIC_ONLY_FEATURES,
-    _BYOK_PROFILE_MAP,
     _CACHE_KEY_MODELS,
     _PERPLEXITY_ONLY_FEATURES,
     _PINNED_FEATURES,
@@ -985,38 +984,18 @@ class TestBYOKProfiles:
             assert byok_features == premium_features, f'{name} features differ: {byok_features ^ premium_features}'
 
 
-class TestBYOKProfileAutoMapping:
-    """Verify BYOK QoS profile is auto-derived from active profile (no env var)."""
+class TestBYOKProfileFixed:
+    """Verify BYOK QoS profile is always byok_high."""
 
-    def test_byok_map_covers_all_profiles(self):
-        """Every profile in MODEL_QOS_PROFILES must have a BYOK mapping."""
-        for profile_name in MODEL_QOS_PROFILES:
-            assert profile_name in _BYOK_PROFILE_MAP, f'{profile_name} missing from _BYOK_PROFILE_MAP'
+    def test_byok_profile_is_byok_high(self):
+        assert _byok_profile_name == 'byok_high'
 
-    def test_byok_map_targets_exist(self):
-        """Every BYOK mapping target must exist in MODEL_QOS_PROFILES."""
-        for target in set(_BYOK_PROFILE_MAP.values()):
-            assert target in MODEL_QOS_PROFILES, f'BYOK target {target} not in MODEL_QOS_PROFILES'
-
-    def test_premium_maps_to_byok_high(self):
-        assert _BYOK_PROFILE_MAP['premium'] == 'byok_high'
-
-    def test_premium1_maps_to_byok_high(self):
-        assert _BYOK_PROFILE_MAP['premium1'] == 'byok_high'
-
-    def test_max_maps_to_byok_max(self):
-        assert _BYOK_PROFILE_MAP['max'] == 'byok_max'
-
-    def test_max1_maps_to_byok_max(self):
-        assert _BYOK_PROFILE_MAP['max1'] == 'byok_max'
-
-    def test_active_profile_has_byok_mapping(self):
-        """The current active profile must have a BYOK mapping resolved."""
-        assert _byok_profile_name is not None
+    def test_byok_profile_exists(self):
         assert _byok_profile is not None
+        assert _byok_profile is MODEL_QOS_PROFILES['byok_high']
 
-    def test_auto_mapping_via_subprocess(self):
-        """Verify auto-mapping works in a fresh process (premium → byok_high)."""
+    def test_byok_profile_via_subprocess(self):
+        """Verify byok_high is set regardless of MODEL_QOS value."""
         import subprocess
 
         result = subprocess.run(
@@ -1031,7 +1010,7 @@ class TestBYOKProfileAutoMapping:
                     "'database','database._client','database.llm_usage']]; "
                     "import os; os.environ['OPENAI_API_KEY']='sk-test'; "
                     "os.environ['ANTHROPIC_API_KEY']='sk-ant-test'; "
-                    "os.environ['MODEL_QOS']='premium'; "
+                    "os.environ['MODEL_QOS']='max'; "
                     "from utils.llm.clients import _byok_profile_name, _byok_profile; "
                     "assert _byok_profile_name == 'byok_high', f'Expected byok_high, got {_byok_profile_name}'; "
                     "assert _byok_profile is not None"
@@ -1041,7 +1020,7 @@ class TestBYOKProfileAutoMapping:
             text=True,
             cwd=str(os.path.join(os.path.dirname(__file__), '..', '..')),
         )
-        assert result.returncode == 0, f"auto-mapping test failed: {result.stderr}"
+        assert result.returncode == 0, f"byok profile test failed: {result.stderr}"
 
 
 class TestEffectiveBYOKProvider:
