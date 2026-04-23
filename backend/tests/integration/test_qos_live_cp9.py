@@ -6,7 +6,7 @@ Tests every code path changed in the QoS profile refactor:
   P2: get_model()/get_provider() resolution across all 6 profiles
   P3: _create_byok_client() factory (mocked key, real client construction)
   P4: _effective_byok_provider() mapping
-  P5: BYOK profile hardcoded to byok_high
+  P5: BYOK profile hardcoded to byok
   P6: Structured output compatibility on OpenAI (real .with_structured_output() call)
   P7: Prompt caching (cache_key binding for gpt-5.4-mini)
   P8: Streaming client construction and invocation
@@ -108,9 +108,9 @@ class TestP2_ModelProviderResolution:
             assert model == _active_profile[feature][0]
             assert provider == _active_profile[feature][1]
 
-    def test_six_profiles_exist(self):
-        assert len(MODEL_QOS_PROFILES) == 6
-        assert set(MODEL_QOS_PROFILES.keys()) == {'premium', 'premium1', 'max', 'max1', 'byok_high', 'byok_max'}
+    def test_five_profiles_exist(self):
+        assert len(MODEL_QOS_PROFILES) == 5
+        assert set(MODEL_QOS_PROFILES.keys()) == {'premium', 'premium_0424', 'max', 'max_0424', 'byok'}
 
 
 # ---------------------------------------------------------------------------
@@ -170,35 +170,33 @@ class TestP4_EffectiveBYOKProvider:
 
 
 # ---------------------------------------------------------------------------
-# P5: BYOK profile hardcoded to byok_high
+# P5: BYOK profile hardcoded to byok
 # ---------------------------------------------------------------------------
 class TestP5_BYOKProfileFixed:
-    """P5: BYOK profile is always hardcoded to byok_high regardless of active profile."""
+    """P5: BYOK profile is always hardcoded to 'byok' regardless of active profile."""
 
-    def test_byok_profile_is_byok_high(self):
-        assert _byok_profile_name == 'byok_high'
+    def test_byok_profile_is_byok(self):
+        assert _byok_profile_name == 'byok'
 
     def test_byok_profile_exists(self):
         assert _byok_profile is not None
-        assert _byok_profile is MODEL_QOS_PROFILES['byok_high']
+        assert _byok_profile is MODEL_QOS_PROFILES['byok']
 
     def test_byok_profile_independent_of_active(self):
-        """BYOK profile should always be byok_high regardless of MODEL_QOS setting."""
-        assert _byok_profile_name == 'byok_high'
+        """BYOK profile should always be 'byok' regardless of MODEL_QOS setting."""
+        assert _byok_profile_name == 'byok'
         assert _active_profile_name in MODEL_QOS_PROFILES
-        # Even if active is 'max', BYOK stays byok_high
-        assert _byok_profile_name != _active_profile_name or _active_profile_name == 'byok_high'
+        # Even if active is 'max', BYOK stays 'byok'
+        assert _byok_profile_name != _active_profile_name or _active_profile_name == 'byok'
 
-    def test_byok_high_mostly_openai(self):
-        """byok_high profile should use OpenAI for most features (chat_agent/web_search are exceptions)."""
+    def test_byok_mostly_openai(self):
+        """byok profile should use OpenAI for most features (chat_agent/web_search are exceptions)."""
         exceptions = {'chat_agent': 'anthropic', 'web_search': 'perplexity', 'wrapped_analysis': 'openrouter'}
-        for feature, (model, provider) in MODEL_QOS_PROFILES['byok_high'].items():
+        for feature, (model, provider) in MODEL_QOS_PROFILES['byok'].items():
             if feature in exceptions:
-                assert (
-                    provider == exceptions[feature]
-                ), f'byok_high {feature} expected {exceptions[feature]}, got {provider}'
+                assert provider == exceptions[feature], f'byok {feature} expected {exceptions[feature]}, got {provider}'
             else:
-                assert provider == 'openai', f'byok_high feature {feature} uses {provider}, expected openai'
+                assert provider == 'openai', f'byok feature {feature} uses {provider}, expected openai'
 
 
 # ---------------------------------------------------------------------------
