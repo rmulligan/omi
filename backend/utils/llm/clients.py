@@ -168,19 +168,18 @@ def get_openai_chat(model: str, **kwargs) -> ChatOpenAI:
 # Global switch:     MODEL_QOS=premium        (selects entire profile)
 #
 # Profiles:
-#   premium      — maximize cost savings while preserving 80% of max quality
-#   premium_0424 — same 80% quality preservation as premium, migrated to Gemini for deeper savings
-#   max          — 100% quality, best models available, no cost optimization
-#   max_0424     — preserve 100% quality on Gemini models for cost savings
-#   byok         — BYOK users get max quality (they pay their own API costs)
+#   premium  — maximize cost savings while preserving 80% of max quality
+#   max      — 100% quality, best models available, no cost optimization
+#   max_0424 — preserve 100% quality on Gemini models for cost savings
+#   byok     — BYOK users get max quality (they pay their own API costs)
 # ---------------------------------------------------------------------------
 
 MODEL_QOS_PROFILES: Dict[str, Dict[str, Tuple[str, str]]] = {
     # -----------------------------------------------------------------------
     # premium — maximize cost savings while preserving 80% of max quality.
     # Uses gpt-5.4-mini (not gpt-5.4) for core features, gpt-4.1-mini (not gpt-4.1)
-    # for quality-sensitive tasks, gpt-4.1-nano for simple routing, and Gemini
-    # flash-lite for low-complexity text (summaries, categories, titles).
+    # for quality-sensitive tasks, gpt-4.1-nano for simple routing/classification,
+    # and Gemini flash-lite for low-complexity free-text (titles, followups, onboarding).
     # -----------------------------------------------------------------------
     'premium': {
         # OpenAI — conversation processing
@@ -191,13 +190,13 @@ MODEL_QOS_PROFILES: Dict[str, Dict[str, Tuple[str, str]]] = {
         'conv_folder': ('gpt-4.1-nano', 'openai'),
         'conv_discard': ('gpt-4.1-nano', 'openai'),
         'daily_summary': ('gpt-5.4-mini', 'openai'),
-        'daily_summary_simple': ('gemini-2.5-flash-lite', 'gemini'),
+        'daily_summary_simple': ('gpt-4.1-nano', 'openai'),
         'external_structure': ('gpt-4.1-mini', 'openai'),
         # OpenAI — memories & knowledge
         'memories': ('gpt-4.1-mini', 'openai'),
         'learnings': ('gpt-5.4-mini', 'openai'),
         'memory_conflict': ('gpt-4.1-mini', 'openai'),
-        'memory_category': ('gemini-2.5-flash-lite', 'gemini'),
+        'memory_category': ('gpt-4.1-nano', 'openai'),
         'knowledge_graph': ('gpt-4.1-mini', 'openai'),
         # OpenAI — chat
         'chat_responses': ('gpt-5.4-mini', 'openai'),
@@ -225,55 +224,6 @@ MODEL_QOS_PROFILES: Dict[str, Dict[str, Tuple[str, str]]] = {
         # OpenRouter
         'wrapped_analysis': ('gemini-3-flash-preview', 'openrouter'),
         # Perplexity
-        'web_search': ('sonar-pro', 'perplexity'),
-    },
-    # -----------------------------------------------------------------------
-    # premium_0424 — same 80% quality preservation as premium, migrated to Gemini
-    # for deeper cost savings. Release April 24 2026.
-    # gpt-5.4-mini→gemini-2.5-pro, gpt-4.1-mini→flash, gpt-4.1-nano→flash-lite.
-    #
-    # ⚠️  Features marked [SO] use with_structured_output(method="json_schema")
-    #     which may need method="function_calling" fallback on Gemini.
-    # -----------------------------------------------------------------------
-    'premium_0424': {
-        # Gemini 2.5 Pro — flagship tier (Phase 1+4: replaces gpt-5.4-mini)
-        'conv_action_items': ('gemini-2.5-pro', 'gemini'),  # PydanticOutputParser — safe
-        'conv_structure': ('gemini-2.5-pro', 'gemini'),  # PydanticOutputParser — safe
-        'conv_app_result': ('gemini-2.5-pro', 'gemini'),  # free-text
-        'daily_summary': ('gemini-2.5-pro', 'gemini'),  # free-text
-        'learnings': ('gemini-2.5-pro', 'gemini'),  # PydanticOutputParser — safe
-        'chat_responses': ('gemini-2.5-pro', 'gemini'),  # free-text streaming
-        'goals_advice': ('gemini-2.5-pro', 'gemini'),  # free-text
-        'app_generator': ('gemini-2.5-pro', 'gemini'),  # free-text
-        'persona_clone': ('gemini-2.5-pro', 'gemini'),  # free-text
-        'persona_chat_premium': ('gemini-2.5-pro', 'gemini'),  # free-text
-        # Gemini 2.5 Flash — quality-sensitive (Phase 3+4: replaces gpt-4.1-mini)
-        'external_structure': ('gemini-2.5-flash', 'gemini'),  # [SO] with_structured_output
-        'memories': ('gemini-2.5-flash', 'gemini'),  # PydanticOutputParser — safe
-        'memory_conflict': ('gemini-2.5-flash', 'gemini'),  # PydanticOutputParser — safe
-        'knowledge_graph': ('gemini-2.5-flash', 'gemini'),  # free-text
-        'chat_extraction': ('gemini-2.5-flash', 'gemini'),  # [SO] with_structured_output (10+ schemas)
-        'chat_graph': ('gemini-2.5-flash', 'gemini'),  # free-text
-        'goals': ('gemini-2.5-flash', 'gemini'),  # free-text
-        'proactive_notification': ('gemini-2.5-flash', 'gemini'),  # [SO] with_structured_output
-        'notifications': ('gemini-2.5-flash', 'gemini'),  # free-text
-        'openglass': ('gemini-2.5-flash', 'gemini'),  # free-text (vision)
-        'smart_glasses': ('gemini-2.5-flash', 'gemini'),  # free-text (vision/multimodal)
-        # Gemini 2.5 Flash-Lite — simple tasks (Phase 2+3: replaces gpt-4.1-nano)
-        'conv_app_select': ('gemini-2.5-flash-lite', 'gemini'),  # [SO] with_structured_output
-        'conv_folder': ('gemini-2.5-flash-lite', 'gemini'),  # PydanticOutputParser chain — safe
-        'conv_discard': ('gemini-2.5-flash-lite', 'gemini'),  # PydanticOutputParser chain — safe
-        'daily_summary_simple': ('gemini-2.5-flash-lite', 'gemini'),
-        'memory_category': ('gemini-2.5-flash-lite', 'gemini'),
-        'session_titles': ('gemini-2.5-flash-lite', 'gemini'),
-        'followup': ('gemini-2.5-flash-lite', 'gemini'),
-        'onboarding': ('gemini-2.5-flash-lite', 'gemini'),
-        'app_integration': ('gemini-2.5-flash-lite', 'gemini'),
-        'trends': ('gemini-2.5-flash-lite', 'gemini'),  # [SO] with_structured_output
-        'persona_chat': ('gemini-2.5-flash-lite', 'gemini'),
-        # Keep on original provider (no Gemini equivalent)
-        'chat_agent': ('claude-sonnet-4-6', 'anthropic'),
-        'wrapped_analysis': ('gemini-3-flash-preview', 'openrouter'),
         'web_search': ('sonar-pro', 'perplexity'),
     },
     # -----------------------------------------------------------------------
