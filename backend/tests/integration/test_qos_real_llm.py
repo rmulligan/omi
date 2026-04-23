@@ -36,6 +36,7 @@ from utils.llm.clients import (
 )
 
 SIMPLE_PROMPT = "Reply with exactly one word: hello"
+HAS_GEMINI_KEY = bool(os.environ.get('GEMINI_API_KEY', ''))
 
 
 # ---------------------------------------------------------------------------
@@ -169,6 +170,7 @@ class TestPremiumGemini:
         'trends',
     ]
 
+    @pytest.mark.skipif(not HAS_GEMINI_KEY, reason="GEMINI_API_KEY not set")
     @pytest.mark.parametrize("feature", GEMINI_FEATURES)
     def test_gemini_feature_responds(self, feature):
         model = get_model(feature)
