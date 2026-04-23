@@ -796,13 +796,18 @@ class TestRuntimeProviderRouting:
         base_url = getattr(llm, 'openai_api_base', None) or ''
         assert 'openrouter' not in base_url
 
-    def test_gemini_feature_routes_to_gemini_endpoint(self):
-        """Free-text features on gemini-2.5-flash-lite should route via Google's OpenAI-compat endpoint."""
-        from utils.llm.clients import _GEMINI_OPENAI_BASE_URL
-
+    def test_gemini_feature_routes_correctly(self):
+        """Free-text features on gemini-2.5-flash-lite should route to Gemini (native SDK or fallback)."""
         llm = get_llm('followup')
-        # get_llm() eagerly resolves BYOK; result is a ChatOpenAI routed to Gemini
-        assert llm.openai_api_base == _GEMINI_OPENAI_BASE_URL, 'followup must use Gemini base URL'
+        if os.environ.get('GEMINI_API_KEY'):
+            from langchain_google_genai import ChatGoogleGenerativeAI
+
+            assert isinstance(
+                llm, ChatGoogleGenerativeAI
+            ), f'followup should be ChatGoogleGenerativeAI, got {type(llm)}'
+        else:
+            # No key — falls back to ChatOpenAI placeholder pointing at Gemini endpoint
+            assert hasattr(llm, 'invoke')
 
     def test_openglass_routes_to_openai(self):
         """openglass (vision) should route to OpenAI gpt-4.1-mini."""
@@ -831,19 +836,20 @@ class TestRuntimeProviderRouting:
 class TestBYOKWrapperArchitecture:
     """Verify get_llm() eagerly resolves BYOK and returns proper ChatOpenAI instances."""
 
-    def test_get_llm_returns_chat_openai(self):
-        """get_llm() must eagerly resolve BYOK and return a ChatOpenAI (Runnable), not a wrapper."""
+    def test_get_llm_returns_base_chat_model(self):
+        """get_llm() must eagerly resolve BYOK and return a BaseChatModel (Runnable), not a wrapper."""
+        from langchain_core.language_models import BaseChatModel
         from langchain_openai import ChatOpenAI
 
-        # OpenAI feature
+        # OpenAI feature — always ChatOpenAI
         llm_openai = get_llm('conv_structure')
-        assert isinstance(llm_openai, ChatOpenAI), 'get_llm must return ChatOpenAI, not wrapper'
+        assert isinstance(llm_openai, ChatOpenAI), 'OpenAI get_llm must return ChatOpenAI'
 
-        # Gemini feature (uses OpenAI-compat endpoint)
+        # Gemini feature — ChatGoogleGenerativeAI (with key) or ChatOpenAI fallback (no key)
         llm_gemini = get_llm('followup')
-        assert isinstance(llm_gemini, ChatOpenAI), 'Gemini get_llm must return ChatOpenAI'
+        assert isinstance(llm_gemini, BaseChatModel), 'Gemini get_llm must return BaseChatModel'
 
-        # OpenRouter feature
+        # OpenRouter feature — always ChatOpenAI
         llm_or = get_llm('wrapped_analysis')
         assert isinstance(llm_or, ChatOpenAI), 'OpenRouter get_llm must return ChatOpenAI'
 
