@@ -363,6 +363,98 @@ MODEL_QOS_PROFILES: Dict[str, Dict[str, Tuple[str, str]]] = {
         'wrapped_analysis': ('gemini-3-flash-preview', 'openrouter'),
         'web_search': ('sonar-pro', 'perplexity'),
     },
+    # -----------------------------------------------------------------------
+    # byok_high — quality-optimized for BYOK users (all OpenAI, upgraded tiers)
+    # BYOK users pay their own API costs, so we upgrade mid-tier models.
+    # Flagship: gpt-5.4-mini, Quality: gpt-4.1 (up from 4.1-mini), Simple: gpt-4.1-mini (up from nano)
+    # -----------------------------------------------------------------------
+    'byok_high': {
+        # gpt-5.4-mini — flagship (same quality as premium)
+        'conv_action_items': ('gpt-5.4-mini', 'openai'),
+        'conv_structure': ('gpt-5.4-mini', 'openai'),
+        'conv_app_result': ('gpt-5.4-mini', 'openai'),
+        'daily_summary': ('gpt-5.4-mini', 'openai'),
+        'learnings': ('gpt-5.4-mini', 'openai'),
+        'chat_responses': ('gpt-5.4-mini', 'openai'),
+        'goals_advice': ('gpt-5.4-mini', 'openai'),
+        'app_generator': ('gpt-5.4-mini', 'openai'),
+        'persona_clone': ('gpt-5.4-mini', 'openai'),
+        'persona_chat_premium': ('gpt-5.4-mini', 'openai'),
+        'notifications': ('gpt-5.4-mini', 'openai'),
+        # gpt-4.1 — quality tier (upgraded from gpt-4.1-mini)
+        'external_structure': ('gpt-4.1', 'openai'),
+        'memories': ('gpt-4.1', 'openai'),
+        'memory_conflict': ('gpt-4.1', 'openai'),
+        'knowledge_graph': ('gpt-4.1', 'openai'),
+        'chat_extraction': ('gpt-4.1', 'openai'),
+        'chat_graph': ('gpt-4.1', 'openai'),
+        'goals': ('gpt-4.1', 'openai'),
+        'proactive_notification': ('gpt-4.1', 'openai'),
+        'openglass': ('gpt-4.1', 'openai'),
+        # gpt-4.1-mini — simple tasks (upgraded from gpt-4.1-nano)
+        'conv_app_select': ('gpt-4.1-mini', 'openai'),
+        'conv_folder': ('gpt-4.1-mini', 'openai'),
+        'conv_discard': ('gpt-4.1-mini', 'openai'),
+        'smart_glasses': ('gpt-4.1-mini', 'openai'),
+        'persona_chat': ('gpt-4.1-mini', 'openai'),
+        'daily_summary_simple': ('gpt-4.1-mini', 'openai'),
+        'memory_category': ('gpt-4.1-mini', 'openai'),
+        'session_titles': ('gpt-4.1-mini', 'openai'),
+        'followup': ('gpt-4.1-mini', 'openai'),
+        'onboarding': ('gpt-4.1-mini', 'openai'),
+        'app_integration': ('gpt-4.1-mini', 'openai'),
+        'trends': ('gpt-4.1-mini', 'openai'),
+        # Keep on original provider
+        'chat_agent': ('claude-sonnet-4-6', 'anthropic'),
+        'wrapped_analysis': ('gemini-3-flash-preview', 'openrouter'),
+        'web_search': ('sonar-pro', 'perplexity'),
+    },
+    # -----------------------------------------------------------------------
+    # byok_max — maximum quality for BYOK users (all OpenAI, top-tier models)
+    # gpt-5.4 flagship, gpt-5.4-mini quality, o4-mini reasoning, gpt-4.1-mini simple
+    # -----------------------------------------------------------------------
+    'byok_max': {
+        # gpt-5.4 — top-tier flagship
+        'conv_action_items': ('gpt-5.4', 'openai'),
+        'conv_structure': ('gpt-5.4', 'openai'),
+        'conv_app_result': ('gpt-5.4', 'openai'),
+        'daily_summary': ('gpt-5.4', 'openai'),
+        'chat_responses': ('gpt-5.4', 'openai'),
+        'goals_advice': ('gpt-5.4', 'openai'),
+        'app_generator': ('gpt-5.4', 'openai'),
+        'persona_clone': ('gpt-5.4', 'openai'),
+        'persona_chat_premium': ('gpt-5.4', 'openai'),
+        'notifications': ('gpt-5.4', 'openai'),
+        'chat_graph': ('gpt-5.4', 'openai'),
+        # o4-mini — reasoning tier
+        'learnings': ('o4-mini', 'openai'),
+        # gpt-5.4-mini — quality tier (upgraded from gpt-4.1-mini)
+        'external_structure': ('gpt-5.4-mini', 'openai'),
+        'memories': ('gpt-5.4-mini', 'openai'),
+        'memory_conflict': ('gpt-5.4-mini', 'openai'),
+        'knowledge_graph': ('gpt-5.4-mini', 'openai'),
+        'chat_extraction': ('gpt-5.4-mini', 'openai'),
+        'goals': ('gpt-5.4-mini', 'openai'),
+        'proactive_notification': ('gpt-5.4-mini', 'openai'),
+        'openglass': ('gpt-5.4-mini', 'openai'),
+        'smart_glasses': ('gpt-5.4-mini', 'openai'),
+        # gpt-4.1-mini — simple tasks (upgraded from gpt-4.1-nano)
+        'conv_app_select': ('gpt-4.1-mini', 'openai'),
+        'conv_folder': ('gpt-4.1-mini', 'openai'),
+        'conv_discard': ('gpt-4.1-mini', 'openai'),
+        'persona_chat': ('gpt-4.1-mini', 'openai'),
+        'daily_summary_simple': ('gpt-4.1-mini', 'openai'),
+        'memory_category': ('gpt-4.1-mini', 'openai'),
+        'session_titles': ('gpt-4.1-mini', 'openai'),
+        'followup': ('gpt-4.1-mini', 'openai'),
+        'onboarding': ('gpt-4.1-mini', 'openai'),
+        'app_integration': ('gpt-4.1-mini', 'openai'),
+        'trends': ('gpt-4.1-mini', 'openai'),
+        # Keep on original provider
+        'chat_agent': ('claude-sonnet-4-6', 'anthropic'),
+        'wrapped_analysis': ('gemini-3-flash-preview', 'openrouter'),
+        'web_search': ('sonar-pro', 'perplexity'),
+    },
 }
 
 # Pinned features — (model, provider) fixed regardless of profile or env override.
@@ -376,6 +468,14 @@ if _active_profile_name not in MODEL_QOS_PROFILES:
     logger.warning('MODEL_QOS=%s is not a valid profile, falling back to premium', _active_profile_name)
     _active_profile_name = 'premium'
 _active_profile = MODEL_QOS_PROFILES[_active_profile_name]
+
+# BYOK QoS profile — when set, BYOK users get upgraded model routing.
+# Set BYOK_QOS=byok_high or BYOK_QOS=byok_max to enable.
+_byok_profile_name = os.environ.get('BYOK_QOS', '').strip().lower() or None
+if _byok_profile_name and _byok_profile_name not in MODEL_QOS_PROFILES:
+    logger.warning('BYOK_QOS=%s is not a valid profile, BYOK profile disabled', _byok_profile_name)
+    _byok_profile_name = None
+_byok_profile = MODEL_QOS_PROFILES.get(_byok_profile_name) if _byok_profile_name else None
 
 # Features that can't go through get_llm() (non-ChatOpenAI providers).
 _ANTHROPIC_ONLY_FEATURES = {'chat_agent'}
@@ -392,6 +492,15 @@ _OPENROUTER_TEMPERATURES: Dict[str, float] = {
 
 # Models that support OpenAI prompt caching (prompt_cache_key routing).
 _CACHE_KEY_MODELS = {'gpt-5.4', 'gpt-5.4-mini'}
+
+# Features that call .with_structured_output() — logged when resolving to Gemini for compat monitoring.
+_STRUCTURED_OUTPUT_FEATURES = {
+    'chat_extraction',
+    'proactive_notification',
+    'conv_app_select',
+    'external_structure',
+    'trends',
+}
 
 _DEFAULT_CONFIG: Tuple[str, str] = ('gpt-4.1-mini', 'openai')
 
@@ -506,6 +615,13 @@ def _get_default_client(model: str, provider: str, streaming: bool, feature: str
     return _get_or_create_openai_llm(model, streaming)
 
 
+def _effective_byok_provider(model: str, provider: str) -> str:
+    """Map provider to the actual BYOK key type needed (Gemini-based OpenRouter → Gemini key)."""
+    if provider == 'openrouter' and model.startswith('gemini'):
+        return 'gemini'
+    return provider
+
+
 def get_llm(feature: str, streaming: bool = False, cache_key: Optional[str] = None) -> ChatOpenAI:
     """Get the LLM client for a feature based on the active Model QoS profile.
 
@@ -544,18 +660,30 @@ def get_llm(feature: str, streaming: bool = False, cache_key: Optional[str] = No
             f"Feature '{feature}' resolved to Perplexity model '{model}' — use get_model() with Perplexity HTTP client"
         )
 
-    # Check for BYOK key — if the user provided their own key, create a
-    # per-request client instead of using the cached default.
-    # Safe because get_llm() runs within the request handler where the
-    # BYOK contextvar is already set by the middleware.
-    byok_provider = 'gemini' if provider == 'openrouter' and model.startswith('gemini') else provider
+    # Log structured output compatibility when feature resolves to Gemini
+    if feature in _STRUCTURED_OUTPUT_FEATURES and provider == 'gemini':
+        logger.debug(
+            'QoS structured_output on gemini: feature=%s model=%s profile=%s', feature, model, _active_profile_name
+        )
+
+    # BYOK resolution — if the user provided their own key, create a per-request client.
+    # When a BYOK QoS profile is configured, upgrade model selection for BYOK users.
+    byok_provider = _effective_byok_provider(model, provider)
     byok_key = get_byok_key(byok_provider)
+
+    if byok_key and _byok_profile:
+        # Try upgrading to BYOK profile's model selection
+        byok_model, byok_prov = _byok_profile.get(feature, (model, provider))
+        byok_prov_eff = _effective_byok_provider(byok_model, byok_prov)
+        byok_key_for_profile = get_byok_key(byok_prov_eff)
+        if byok_key_for_profile:
+            logger.debug('BYOK QoS upgrade: feature=%s %s/%s→%s/%s', feature, model, provider, byok_model, byok_prov)
+            model, provider = byok_model, byok_prov
+            byok_key = byok_key_for_profile
+
     if byok_key:
         byok_client = _create_byok_client(model, provider, byok_key, streaming, feature)
-        if byok_client is not None:
-            result = byok_client
-        else:
-            result = _get_default_client(model, provider, streaming, feature)
+        result = byok_client if byok_client is not None else _get_default_client(model, provider, streaming, feature)
     else:
         result = _get_default_client(model, provider, streaming, feature)
 
@@ -582,6 +710,15 @@ def get_qos_info() -> Dict[str, Dict[str, str]]:
 logger.info('Model QoS profile=%s (%d features)', _active_profile_name, len(_active_profile))
 for _feat, (_model, _provider) in sorted(_active_profile.items()):
     logger.info('  QoS %s: %s [%s]', _feat, _model, _provider)
+if _byok_profile_name:
+    logger.info('BYOK QoS profile=%s (%d features)', _byok_profile_name, len(_byok_profile))
+else:
+    logger.info('BYOK QoS profile=none (BYOK users use server profile)')
+
+# Log structured output features on Gemini for compatibility monitoring
+_so_gemini = {f for f in _STRUCTURED_OUTPUT_FEATURES if _active_profile.get(f, _DEFAULT_CONFIG)[1] == 'gemini'}
+if _so_gemini:
+    logger.info('Structured output features on Gemini: %s', ', '.join(sorted(_so_gemini)))
 
 
 # ---------------------------------------------------------------------------
