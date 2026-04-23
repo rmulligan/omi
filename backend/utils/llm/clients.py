@@ -469,19 +469,10 @@ if _active_profile_name not in MODEL_QOS_PROFILES:
     _active_profile_name = 'premium'
 _active_profile = MODEL_QOS_PROFILES[_active_profile_name]
 
-# BYOK QoS mapping — automatic profile upgrade when a BYOK key is active.
-# BYOK users pay their own API costs, so we route them to higher-quality models.
-# Source of truth: this dict. No env var needed.
-_BYOK_PROFILE_MAP: Dict[str, str] = {
-    'premium': 'byok_high',
-    'premium1': 'byok_high',
-    'max': 'byok_max',
-    'max1': 'byok_max',
-    'byok_high': 'byok_high',
-    'byok_max': 'byok_max',
-}
-_byok_profile_name = _BYOK_PROFILE_MAP.get(_active_profile_name)
-_byok_profile = MODEL_QOS_PROFILES.get(_byok_profile_name) if _byok_profile_name else None
+# BYOK QoS — all BYOK users get routed to byok_high (quality upgrade, all-OpenAI).
+# BYOK users pay their own API costs, so we give them higher-quality models.
+_byok_profile_name = 'byok_high'
+_byok_profile = MODEL_QOS_PROFILES[_byok_profile_name]
 
 # Features that can't go through get_llm() (non-ChatOpenAI providers).
 _ANTHROPIC_ONLY_FEATURES = {'chat_agent'}
@@ -716,7 +707,7 @@ def get_qos_info() -> Dict[str, Dict[str, str]]:
 logger.info('Model QoS profile=%s (%d features)', _active_profile_name, len(_active_profile))
 for _feat, (_model, _provider) in sorted(_active_profile.items()):
     logger.info('  QoS %s: %s [%s]', _feat, _model, _provider)
-logger.info('BYOK QoS profile=%s (auto-mapped from %s)', _byok_profile_name, _active_profile_name)
+logger.info('BYOK QoS profile=%s', _byok_profile_name)
 
 # Log structured output features on Gemini for compatibility monitoring
 _so_gemini = {f for f in _STRUCTURED_OUTPUT_FEATURES if _active_profile.get(f, _DEFAULT_CONFIG)[1] == 'gemini'}
