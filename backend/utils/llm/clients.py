@@ -166,19 +166,19 @@ def get_openai_chat(model: str, **kwargs) -> ChatOpenAI:
 # Global switch:     MODEL_QOS=premium        (selects entire profile)
 #
 # Profiles:
-#   premium      — cost-effective default, ~80% of max quality (OpenAI + Gemini cost savings)
-#   premium_0424 — full Gemini migration of premium, same quality target, ~40-60% cheaper
-#   max          — maximum quality, 100% flagship OpenAI, no cost optimization
-#   max_0424     — full Gemini migration of max, same quality target + o4-mini reasoning
-#   byok         — BYOK users, top-tier all-OpenAI (users pay their own API costs)
+#   premium      — maximize cost savings while preserving 80% of max quality
+#   premium_0424 — same 80% quality preservation as premium, migrated to Gemini for deeper savings
+#   max          — 100% quality, best models available, no cost optimization
+#   max_0424     — preserve 100% quality on Gemini models for cost savings
+#   byok         — BYOK users get max quality (they pay their own API costs)
 # ---------------------------------------------------------------------------
 
 MODEL_QOS_PROFILES: Dict[str, Dict[str, Tuple[str, str]]] = {
     # -----------------------------------------------------------------------
-    # premium — cost-effective default, ~80% of max quality.
-    # Uses OpenAI flagship (gpt-5.4-mini) for core features, mid-tier (gpt-4.1-mini)
-    # for quality-sensitive tasks, nano for simple routing, and Gemini flash-lite
-    # for low-complexity text tasks (summaries, categories, titles) to save cost.
+    # premium — maximize cost savings while preserving 80% of max quality.
+    # Uses gpt-5.4-mini (not gpt-5.4) for core features, gpt-4.1-mini (not gpt-4.1)
+    # for quality-sensitive tasks, gpt-4.1-nano for simple routing, and Gemini
+    # flash-lite for low-complexity text (summaries, categories, titles).
     # -----------------------------------------------------------------------
     'premium': {
         # OpenAI — conversation processing
@@ -226,10 +226,9 @@ MODEL_QOS_PROFILES: Dict[str, Dict[str, Tuple[str, str]]] = {
         'web_search': ('sonar-pro', 'perplexity'),
     },
     # -----------------------------------------------------------------------
-    # premium_0424 — full Gemini migration, release April 24 2026.
-    # Replaces all OpenAI models with Gemini equivalents for ~40-60% cost savings.
-    # Quality target: same as premium (80% of max) but on Gemini models.
-    # gpt-5.4-mini→Pro, gpt-4.1-mini→Flash, gpt-4.1-nano→Flash-Lite.
+    # premium_0424 — same 80% quality preservation as premium, migrated to Gemini
+    # for deeper cost savings. Release April 24 2026.
+    # gpt-5.4-mini→gemini-2.5-pro, gpt-4.1-mini→flash, gpt-4.1-nano→flash-lite.
     #
     # ⚠️  Features marked [SO] use with_structured_output(method="json_schema")
     #     which may need method="function_calling" fallback on Gemini.
@@ -276,10 +275,9 @@ MODEL_QOS_PROFILES: Dict[str, Dict[str, Tuple[str, str]]] = {
         'web_search': ('sonar-pro', 'perplexity'),
     },
     # -----------------------------------------------------------------------
-    # max — maximum quality, 100% flagship OpenAI models.
+    # max — 100% quality, best models available, no cost optimization.
     # Uses gpt-5.4 for all core features, o4-mini for reasoning (learnings),
-    # gpt-4.1 for chat graph. No Gemini — pure OpenAI for best quality.
-    # Reserved for users who need the highest accuracy regardless of cost.
+    # gpt-4.1 for chat graph. Pure OpenAI for highest accuracy.
     # -----------------------------------------------------------------------
     'max': {
         # OpenAI — conversation processing
@@ -327,10 +325,10 @@ MODEL_QOS_PROFILES: Dict[str, Dict[str, Tuple[str, str]]] = {
         'web_search': ('sonar-pro', 'perplexity'),
     },
     # -----------------------------------------------------------------------
-    # max_0424 — max quality with Gemini optimization, release April 24 2026.
-    # Same migration as premium_0424 but targets 100% quality on Gemini.
-    # Uses gemini-2.5-pro for flagship, gemini-2.5-flash for quality tier
-    # (not flash-lite), and keeps o4-mini for reasoning (learnings).
+    # max_0424 — preserve 100% quality on Gemini for cost savings.
+    # Release April 24 2026. Uses gemini-2.5-pro for flagship,
+    # gemini-2.5-flash (not flash-lite) for quality tier to match max quality,
+    # keeps o4-mini for reasoning (no Gemini equivalent).
     # -----------------------------------------------------------------------
     'max_0424': {
         # Gemini 2.5 Pro — flagship tier (replaces gpt-5.4)
@@ -375,9 +373,8 @@ MODEL_QOS_PROFILES: Dict[str, Dict[str, Tuple[str, str]]] = {
         'web_search': ('sonar-pro', 'perplexity'),
     },
     # -----------------------------------------------------------------------
-    # byok — BYOK (Bring Your Own Key) users, maximum quality on all-OpenAI.
-    # BYOK users pay their own API costs, so we give them top-tier models.
-    # Uses gpt-5.4 flagship, gpt-5.4-mini quality, o4-mini reasoning,
+    # byok — BYOK users get max quality (they pay their own API costs).
+    # All-OpenAI: gpt-5.4 flagship, gpt-5.4-mini quality, o4-mini reasoning,
     # gpt-4.1-mini simple. No Gemini — BYOK keys are OpenAI keys.
     # -----------------------------------------------------------------------
     'byok': {
