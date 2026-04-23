@@ -58,8 +58,8 @@ from utils.llm.clients import (
 class TestModelQosProfiles:
     """Verify profile structure and completeness."""
 
-    def test_five_profiles_exist(self):
-        assert set(MODEL_QOS_PROFILES.keys()) == {'premium', 'premium_0424', 'max', 'max_0424', 'byok'}
+    def test_four_profiles_exist(self):
+        assert set(MODEL_QOS_PROFILES.keys()) == {'premium', 'max', 'max_0424', 'byok'}
 
     def test_all_profiles_have_same_features(self):
         feature_sets = {name: set(profile.keys()) for name, profile in MODEL_QOS_PROFILES.items()}
@@ -82,7 +82,7 @@ class TestModelQosProfiles:
             providers = {p for _m, p in MODEL_QOS_PROFILES[name].values()}
             assert 'openai' in providers, f'{name} missing OpenAI models'
         # Gemini-optimized profiles must have Gemini provider
-        for name in ('premium', 'premium_0424', 'max_0424'):
+        for name in ('premium', 'max_0424'):
             providers = {p for _m, p in MODEL_QOS_PROFILES[name].values()}
             assert 'gemini' in providers, f'{name} should have Gemini direct models'
 
@@ -106,12 +106,13 @@ class TestModelQosProfiles:
         assert premium['conv_app_select'] == ('gpt-4.1-nano', 'openai')
         # Vision features use gpt-4.1-mini on openai
         assert premium['openglass'] == ('gpt-4.1-mini', 'openai')
-        # Free-text features migrated to Gemini 2.5 Flash-Lite on gemini provider
+        # Free-text features use Gemini 2.5 Flash-Lite on gemini provider
         assert premium['session_titles'] == ('gemini-2.5-flash-lite', 'gemini')
         assert premium['followup'] == ('gemini-2.5-flash-lite', 'gemini')
         assert premium['onboarding'] == ('gemini-2.5-flash-lite', 'gemini')
-        assert premium['memory_category'] == ('gemini-2.5-flash-lite', 'gemini')
-        assert premium['daily_summary_simple'] == ('gemini-2.5-flash-lite', 'gemini')
+        # Simple classification uses gpt-4.1-nano on openai
+        assert premium['memory_category'] == ('gpt-4.1-nano', 'openai')
+        assert premium['daily_summary_simple'] == ('gpt-4.1-nano', 'openai')
         assert premium['app_integration'] == ('gemini-2.5-flash-lite', 'gemini')
         assert premium['trends'] == ('gemini-2.5-flash-lite', 'gemini')
         # Anthropic & Perplexity with explicit provider
@@ -163,38 +164,6 @@ class TestModelQosProfiles:
             'sonar-pro',
         }
         assert distinct_models == expected
-
-    def test_premium_0424_all_gemini_except_special(self):
-        """premium_0424 should route everything to Gemini except chat_agent/web_search/wrapped_analysis."""
-        p1 = MODEL_QOS_PROFILES['premium_0424']
-        for feature, (model, provider) in p1.items():
-            if feature in ('chat_agent', 'web_search', 'wrapped_analysis'):
-                continue
-            assert provider == 'gemini', f'premium_0424 {feature} should be gemini, got {provider}'
-
-    def test_premium_0424_model_tiers(self):
-        """premium_0424 uses 3 Gemini tiers: pro (flagship), flash (quality), flash-lite (simple)."""
-        p1 = MODEL_QOS_PROFILES['premium_0424']
-        assert p1['conv_action_items'] == ('gemini-2.5-pro', 'gemini')
-        assert p1['chat_responses'] == ('gemini-2.5-pro', 'gemini')
-        assert p1['memories'] == ('gemini-2.5-flash', 'gemini')
-        assert p1['chat_extraction'] == ('gemini-2.5-flash', 'gemini')
-        assert p1['conv_folder'] == ('gemini-2.5-flash-lite', 'gemini')
-        assert p1['session_titles'] == ('gemini-2.5-flash-lite', 'gemini')
-
-    def test_premium_0424_model_variants(self):
-        """premium_0424 uses 6 distinct model IDs."""
-        p1 = MODEL_QOS_PROFILES['premium_0424']
-        distinct = {model for model, _p in p1.values()}
-        expected = {
-            'gemini-2.5-pro',
-            'gemini-2.5-flash',
-            'gemini-2.5-flash-lite',
-            'claude-sonnet-4-6',
-            'gemini-3-flash-preview',
-            'sonar-pro',
-        }
-        assert distinct == expected
 
     def test_max_0424_keeps_o4_mini_for_learnings(self):
         """max_0424 keeps o4-mini for learnings (reasoning model, no Gemini equivalent)."""
@@ -1023,12 +992,6 @@ class TestStructuredOutputFeatureTracking:
         premium = MODEL_QOS_PROFILES['premium']
         gemini_so = {f for f in _STRUCTURED_OUTPUT_FEATURES if premium[f][1] == 'gemini'}
         assert gemini_so == {'trends'}, f'Expected only trends on Gemini SO in premium, got {gemini_so}'
-
-    def test_premium_0424_gemini_structured_output(self):
-        """In premium_0424 profile, all structured output features are on Gemini."""
-        p1 = MODEL_QOS_PROFILES['premium_0424']
-        gemini_so = {f for f in _STRUCTURED_OUTPUT_FEATURES if p1[f][1] == 'gemini'}
-        assert gemini_so == _STRUCTURED_OUTPUT_FEATURES
 
     def test_byok_no_gemini_structured_output(self):
         """BYOK profile routes all structured output features to OpenAI (no Gemini compat risk)."""
