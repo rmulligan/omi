@@ -6,7 +6,9 @@ from typing import Any, Dict, List, Optional, Tuple
 import anthropic
 import httpx
 from cachetools import TTLCache
+from langchain_core.language_models import BaseChatModel
 from langchain_core.output_parsers import PydanticOutputParser
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 import tiktoken
 
@@ -27,8 +29,8 @@ _usage_callback = get_usage_callback()
 # provide lazy resolution since there's no request context at import time.
 # ---------------------------------------------------------------------------
 
-# Google's OpenAI-compatible endpoint lets us keep langchain_openai.ChatOpenAI
-# as the client class while routing to Gemini directly — no new langchain dep.
+# Google's OpenAI-compatible endpoint — used only for BYOK users who bring their
+# own AI Studio API key. Platform calls use ChatGoogleGenerativeAI (native SDK).
 _GEMINI_OPENAI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai/"
 
 
@@ -549,24 +551,44 @@ def _get_or_create_openrouter_llm(
     return _llm_cache[key]
 
 
-def _get_or_create_gemini_llm(model_name: str, streaming: bool = False) -> ChatOpenAI:
-    """Get or create a cached ChatOpenAI for a Gemini model via Google's OpenAI-compat endpoint."""
+def _get_or_create_gemini_llm(model_name: str, streaming: bool = False) -> BaseChatModel:
+    """Get or create a cached ChatGoogleGenerativeAI for a Gemini model via native SDK.
+
+    Routing priority:
+      1. GOOGLE_CLOUD_PROJECT set → Vertex AI (uses ADC / google-credentials.json, paid quota)
+      2. GEMINI_API_KEY set → AI Studio (paid-tier key, no OpenAI-compat rate limits)
+      3. Neither → placeholder that fails at invoke time (unit tests)
+
+    BYOK users still go through the OpenAI-compat endpoint via _create_byok_client().
+    """
     key = (model_name, streaming, 'gemini')
     if key not in _llm_cache:
+        gcp_project = os.environ.get('GOOGLE_CLOUD_PROJECT', '')
+        gemini_key = os.environ.get('GEMINI_API_KEY', '')
         kwargs: Dict[str, Any] = {'callbacks': [_usage_callback]}
         if streaming:
             kwargs['streaming'] = True
-            kwargs['stream_options'] = {"include_usage": True}
-        _llm_cache[key] = ChatOpenAI(
-            model=model_name,
-            api_key=os.environ.get('GEMINI_API_KEY', ''),
-            base_url=_GEMINI_OPENAI_BASE_URL,
-            **kwargs,
-        )
+
+        if gcp_project:
+            # Vertex AI — uses ADC (GOOGLE_APPLICATION_CREDENTIALS), project-level paid quota
+            gcp_location = os.environ.get('GCP_LOCATION', 'us-central1')
+            _llm_cache[key] = ChatGoogleGenerativeAI(
+                model=model_name, project=gcp_project, location=gcp_location, **kwargs
+            )
+        elif gemini_key:
+            # AI Studio — uses API key, paid-tier quota
+            kwargs['google_api_key'] = gemini_key
+            _llm_cache[key] = ChatGoogleGenerativeAI(model=model_name, **kwargs)
+        else:
+            # No credentials — constructable placeholder, fails at invoke time
+            logger.warning('No GOOGLE_CLOUD_PROJECT or GEMINI_API_KEY — Gemini calls will fail at invoke time')
+            _llm_cache[key] = ChatOpenAI(
+                model=model_name, api_key='not-set', base_url=_GEMINI_OPENAI_BASE_URL, **kwargs
+            )
     return _llm_cache[key]
 
 
-def _get_default_client(model: str, provider: str, streaming: bool, feature: str) -> ChatOpenAI:
+def _get_default_client(model: str, provider: str, streaming: bool, feature: str) -> BaseChatModel:
     """Get the cached default client for a model/provider combo."""
     if provider == 'openrouter':
         temp = _OPENROUTER_TEMPERATURES.get(feature)
@@ -583,10 +605,12 @@ def _effective_byok_provider(model: str, provider: str) -> str:
     return provider
 
 
-def get_llm(feature: str, streaming: bool = False, cache_key: Optional[str] = None) -> ChatOpenAI:
+def get_llm(feature: str, streaming: bool = False, cache_key: Optional[str] = None) -> BaseChatModel:
     """Get the LLM client for a feature based on the active Model QoS profile.
 
-    Works for OpenAI, Gemini, and OpenRouter features. Always returns a ChatOpenAI.
+    Works for OpenAI, Gemini, and OpenRouter features. Returns a BaseChatModel
+    (ChatOpenAI for OpenAI/OpenRouter, ChatGoogleGenerativeAI for Gemini).
+    All share the same interface: .invoke(), .ainvoke(), .stream(), .with_structured_output().
     For Anthropic/Perplexity, use get_model(feature) to get the model string.
 
     Args:
