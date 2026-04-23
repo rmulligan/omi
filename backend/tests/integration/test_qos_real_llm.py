@@ -256,10 +256,6 @@ class TestProfileRouting:
         distinct = {model for model, _provider in MODEL_QOS_PROFILES['max'].values()}
         assert len(distinct) == 9, f"Expected 9 variants in max, got {len(distinct)}: {distinct}"
 
-    def test_premium_0424_profile_has_expected_variant_count(self):
-        distinct = {model for model, _provider in MODEL_QOS_PROFILES['premium_0424'].values()}
-        assert len(distinct) == 6, f"Expected 6 variants in premium_0424, got {len(distinct)}: {distinct}"
-
     def test_max_0424_profile_has_expected_variant_count(self):
         distinct = {model for model, _provider in MODEL_QOS_PROFILES['max_0424'].values()}
         assert len(distinct) == 7, f"Expected 7 variants in max_0424, got {len(distinct)}: {distinct}"
