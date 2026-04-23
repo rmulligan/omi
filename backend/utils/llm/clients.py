@@ -1,7 +1,7 @@
 import hashlib
 import logging
 import os
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import anthropic
 import httpx
@@ -19,47 +19,17 @@ logger = logging.getLogger(__name__)
 _usage_callback = get_usage_callback()
 
 # ---------------------------------------------------------------------------
-# BYOK wrappers — generic, provider-agnostic
+# BYOK (Bring Your Own Key)
 #
-# BYOK is a per-request feature that substitutes the user's own API key.
-# Wrappers sit on top of the QoS routing layer — they are not the base.
-# The QoS layer creates a plain client, then optionally wraps it with BYOK.
+# Per-request feature that substitutes the user's own API key.
+# For get_llm() callers: resolved inline — no wrapper class needed.
+# For module-level singletons (anthropic_client, embeddings): proxy classes
+# provide lazy resolution since there's no request context at import time.
 # ---------------------------------------------------------------------------
 
 # Google's OpenAI-compatible endpoint lets us keep langchain_openai.ChatOpenAI
 # as the client class while routing to Gemini directly — no new langchain dep.
 _GEMINI_OPENAI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai/"
-
-
-class _BYOKChatWrapper:
-    """Wraps any ChatOpenAI client with per-request BYOK key substitution.
-
-    NOT a base class. A decorator/wrapper applied by get_llm() on top of
-    provider-specific clients. The provider tag determines which BYOK key
-    pool to check. The byok_factory constructs a BYOK-keyed client when needed.
-    """
-
-    __slots__ = ('_default', '_provider', '_byok_factory')
-
-    def __init__(self, default: ChatOpenAI, provider: str, byok_factory: Callable[[str], ChatOpenAI]):
-        object.__setattr__(self, '_default', default)
-        object.__setattr__(self, '_provider', provider)
-        object.__setattr__(self, '_byok_factory', byok_factory)
-
-    def _resolve(self) -> ChatOpenAI:
-        byok = get_byok_key(self._provider)
-        if byok:
-            return self._byok_factory(byok)
-        return self._default
-
-    def __getattr__(self, name: str):
-        return getattr(self._resolve(), name)
-
-    def __or__(self, other):
-        return self._resolve() | other
-
-    def __ror__(self, other):
-        return other | self._resolve()
 
 
 class _AnthropicClientProxy:
@@ -135,34 +105,33 @@ def _cached_anthropic(api_key: str) -> anthropic.AsyncAnthropic:
     return inst
 
 
-def _wrap_byok(default: ChatOpenAI, model: str, provider: str, ctor_kwargs: Dict[str, Any]) -> _BYOKChatWrapper:
-    """Wrap a ChatOpenAI client with BYOK resolution for the given provider."""
-    # Strip api_key/base_url from kwargs — BYOK factory supplies its own
-    clean_kwargs = {k: v for k, v in ctor_kwargs.items() if k not in ('api_key', 'base_url')}
+def _create_byok_client(
+    model: str, provider: str, byok_key: str, streaming: bool = False, feature: str = ''
+) -> Optional[ChatOpenAI]:
+    """Create a ChatOpenAI using the user's BYOK key. Returns None if BYOK not supported for this provider."""
+    kwargs: Dict[str, Any] = {'callbacks': [_usage_callback]}
+    if model == 'gpt-5.1':
+        kwargs['extra_body'] = {"prompt_cache_retention": "24h"}
+    if streaming:
+        kwargs['streaming'] = True
+        kwargs['stream_options'] = {"include_usage": True}
+
+    if provider == 'openai':
+        return _cached_openai_chat(model, byok_key, kwargs)
 
     if provider == 'gemini':
+        return _cached_openai_chat(model, byok_key, {**kwargs, 'base_url': _GEMINI_OPENAI_BASE_URL})
 
-        def _factory(byok_key: str) -> ChatOpenAI:
-            return _cached_openai_chat(model, byok_key, {**clean_kwargs, 'base_url': _GEMINI_OPENAI_BASE_URL})
+    if provider == 'openrouter':
+        # Gemini-based OpenRouter models reroute to Gemini direct via BYOK
+        if model.startswith('gemini'):
+            temp = _OPENROUTER_TEMPERATURES.get(feature)
+            if temp is not None:
+                kwargs['temperature'] = temp
+            return _cached_openai_chat(model, byok_key, {**kwargs, 'base_url': _GEMINI_OPENAI_BASE_URL})
+        return None  # Non-Gemini OpenRouter: no BYOK support
 
-    elif provider == 'openrouter':
-        # Only Gemini-based OpenRouter models support BYOK reroute to Gemini direct
-        bare_model = model.split('/', 1)[1] if '/' in model else model
-        if bare_model.startswith('gemini'):
-
-            def _factory(byok_key: str) -> ChatOpenAI:
-                return _cached_openai_chat(bare_model, byok_key, {**clean_kwargs, 'base_url': _GEMINI_OPENAI_BASE_URL})
-
-            return _BYOKChatWrapper(default=default, provider='gemini', byok_factory=_factory)
-        # Non-Gemini OpenRouter: no BYOK support, always use Omi's key
-        return default
-    else:
-        # OpenAI and any future OpenAI-compatible provider
-
-        def _factory(byok_key: str) -> ChatOpenAI:
-            return _cached_openai_chat(model, byok_key, clean_kwargs)
-
-    return _BYOKChatWrapper(default=default, provider=provider, byok_factory=_factory)
+    return None
 
 
 # Anthropic client for chat agent (module-level, BYOK-aware)
@@ -360,14 +329,15 @@ def get_provider(feature: str) -> str:
 
 # ---------------------------------------------------------------------------
 # Client factories — provider-specific, cached per (model, streaming, provider)
-# Each factory creates a plain ChatOpenAI, then wraps it with _BYOKChatWrapper.
+# Each factory creates and caches a plain ChatOpenAI using Omi's default keys.
+# BYOK resolution happens inline in get_llm() at request time.
 # ---------------------------------------------------------------------------
 
 _llm_cache: Dict[tuple, Any] = {}
 
 
-def _get_or_create_openai_llm(model_name: str, streaming: bool = False) -> _BYOKChatWrapper:
-    """Get or create a BYOK-wrapped ChatOpenAI for an OpenAI model."""
+def _get_or_create_openai_llm(model_name: str, streaming: bool = False) -> ChatOpenAI:
+    """Get or create a cached ChatOpenAI for an OpenAI model."""
     key = (model_name, streaming, 'openai')
     if key not in _llm_cache:
         kwargs: Dict[str, Any] = {'callbacks': [_usage_callback]}
@@ -376,15 +346,14 @@ def _get_or_create_openai_llm(model_name: str, streaming: bool = False) -> _BYOK
         if streaming:
             kwargs['streaming'] = True
             kwargs['stream_options'] = {"include_usage": True}
-        default = ChatOpenAI(model=model_name, **kwargs)
-        _llm_cache[key] = _wrap_byok(default, model_name, 'openai', kwargs)
+        _llm_cache[key] = ChatOpenAI(model=model_name, **kwargs)
     return _llm_cache[key]
 
 
 def _get_or_create_openrouter_llm(
     model_name: str, streaming: bool = False, temperature: Optional[float] = None
-) -> _BYOKChatWrapper:
-    """Get or create a BYOK-wrapped ChatOpenAI for an OpenRouter model.
+) -> ChatOpenAI:
+    """Get or create a cached ChatOpenAI for an OpenRouter model.
 
     Model names in the profile are bare (e.g. 'gemini-3-flash-preview').
     OpenRouter API requires vendor prefix (e.g. 'google/gemini-3-flash-preview').
@@ -404,33 +373,41 @@ def _get_or_create_openrouter_llm(
         if streaming:
             kwargs['streaming'] = True
             kwargs['stream_options'] = {"include_usage": True}
-        default = ChatOpenAI(model=api_model, **kwargs)
-        _llm_cache[key] = _wrap_byok(default, model_name, 'openrouter', kwargs)
+        _llm_cache[key] = ChatOpenAI(model=api_model, **kwargs)
     return _llm_cache[key]
 
 
-def _get_or_create_gemini_llm(model_name: str, streaming: bool = False) -> _BYOKChatWrapper:
-    """Get or create a BYOK-wrapped ChatOpenAI for a Gemini model via Google's OpenAI-compat endpoint."""
+def _get_or_create_gemini_llm(model_name: str, streaming: bool = False) -> ChatOpenAI:
+    """Get or create a cached ChatOpenAI for a Gemini model via Google's OpenAI-compat endpoint."""
     key = (model_name, streaming, 'gemini')
     if key not in _llm_cache:
         kwargs: Dict[str, Any] = {'callbacks': [_usage_callback]}
         if streaming:
             kwargs['streaming'] = True
             kwargs['stream_options'] = {"include_usage": True}
-        default = ChatOpenAI(
+        _llm_cache[key] = ChatOpenAI(
             model=model_name,
             api_key=os.environ.get('GEMINI_API_KEY', ''),
             base_url=_GEMINI_OPENAI_BASE_URL,
             **kwargs,
         )
-        _llm_cache[key] = _wrap_byok(default, model_name, 'gemini', kwargs)
     return _llm_cache[key]
+
+
+def _get_default_client(model: str, provider: str, streaming: bool, feature: str) -> ChatOpenAI:
+    """Get the cached default client for a model/provider combo."""
+    if provider == 'openrouter':
+        temp = _OPENROUTER_TEMPERATURES.get(feature)
+        return _get_or_create_openrouter_llm(model, streaming, temp)
+    if provider == 'gemini':
+        return _get_or_create_gemini_llm(model, streaming)
+    return _get_or_create_openai_llm(model, streaming)
 
 
 def get_llm(feature: str, streaming: bool = False, cache_key: Optional[str] = None) -> ChatOpenAI:
     """Get the LLM client for a feature based on the active Model QoS profile.
 
-    Works for OpenAI, Gemini, and OpenRouter features (returns ChatOpenAI or BYOK wrapper).
+    Works for OpenAI, Gemini, and OpenRouter features. Always returns a ChatOpenAI.
     For Anthropic/Perplexity, use get_model(feature) to get the model string.
 
     Args:
@@ -465,20 +442,20 @@ def get_llm(feature: str, streaming: bool = False, cache_key: Optional[str] = No
             f"Feature '{feature}' resolved to Perplexity model '{model}' — use get_model() with Perplexity HTTP client"
         )
 
-    if provider == 'openrouter':
-        temp = _OPENROUTER_TEMPERATURES.get(feature)
-        result = _get_or_create_openrouter_llm(model, streaming, temp)
-    elif provider == 'gemini':
-        result = _get_or_create_gemini_llm(model, streaming)
+    # Check for BYOK key — if the user provided their own key, create a
+    # per-request client instead of using the cached default.
+    # Safe because get_llm() runs within the request handler where the
+    # BYOK contextvar is already set by the middleware.
+    byok_provider = 'gemini' if provider == 'openrouter' and model.startswith('gemini') else provider
+    byok_key = get_byok_key(byok_provider)
+    if byok_key:
+        byok_client = _create_byok_client(model, provider, byok_key, streaming, feature)
+        if byok_client is not None:
+            result = byok_client
+        else:
+            result = _get_default_client(model, provider, streaming, feature)
     else:
-        # Default: OpenAI
-        result = _get_or_create_openai_llm(model, streaming)
-
-    # Eagerly resolve BYOK wrapper so callers always get a proper Runnable.
-    # This is safe because get_llm() is called within the request handler
-    # where the BYOK contextvar is already set by the middleware.
-    if isinstance(result, _BYOKChatWrapper):
-        result = result._resolve()
+        result = _get_default_client(model, provider, streaming, feature)
 
     if cache_key and model in _CACHE_KEY_MODELS:
         return result.bind(prompt_cache_key=cache_key)
@@ -516,8 +493,7 @@ ANTHROPIC_AGENT_COMPLEX_MODEL = get_model('chat_agent')
 # Legacy module-level alias (kept for test compatibility).
 # Production code should use get_llm(feature) exclusively.
 # ---------------------------------------------------------------------------
-_llm_mini_default = ChatOpenAI(model='gpt-4.1-mini', callbacks=[_usage_callback])
-llm_mini = _wrap_byok(_llm_mini_default, 'gpt-4.1-mini', 'openai', {'callbacks': [_usage_callback]})
+llm_mini = ChatOpenAI(model='gpt-4.1-mini', callbacks=[_usage_callback])
 
 # ---------------------------------------------------------------------------
 # Embeddings, parser, utilities
