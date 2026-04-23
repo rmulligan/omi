@@ -165,14 +165,20 @@ def get_openai_chat(model: str, **kwargs) -> ChatOpenAI:
 #
 # Global switch:     MODEL_QOS=premium        (selects entire profile)
 #
-# Two profiles:
-#   premium — cost-effective default (80% of max quality)
-#   max     — maximum quality, latest flagship models
+# Profiles:
+#   premium      — cost-effective default, ~80% of max quality (OpenAI + Gemini cost savings)
+#   premium_0424 — full Gemini migration of premium, same quality target, ~40-60% cheaper
+#   max          — maximum quality, 100% flagship OpenAI, no cost optimization
+#   max_0424     — full Gemini migration of max, same quality target + o4-mini reasoning
+#   byok         — BYOK users, top-tier all-OpenAI (users pay their own API costs)
 # ---------------------------------------------------------------------------
 
 MODEL_QOS_PROFILES: Dict[str, Dict[str, Tuple[str, str]]] = {
     # -----------------------------------------------------------------------
-    # premium — cost-effective default (OpenAI + some Gemini for simple tasks)
+    # premium — cost-effective default, ~80% of max quality.
+    # Uses OpenAI flagship (gpt-5.4-mini) for core features, mid-tier (gpt-4.1-mini)
+    # for quality-sensitive tasks, nano for simple routing, and Gemini flash-lite
+    # for low-complexity text tasks (summaries, categories, titles) to save cost.
     # -----------------------------------------------------------------------
     'premium': {
         # OpenAI — conversation processing
@@ -220,14 +226,15 @@ MODEL_QOS_PROFILES: Dict[str, Dict[str, Tuple[str, str]]] = {
         'web_search': ('sonar-pro', 'perplexity'),
     },
     # -----------------------------------------------------------------------
-    # premium1 — full Gemini migration (40-60% OpenAI savings)
-    # All 5 phases from issue #6873: gpt-5.4-mini→Pro, gpt-4.1-mini→Flash,
-    # gpt-4.1-nano→Flash-Lite. Only chat_agent/web_search/wrapped stay.
+    # premium_0424 — full Gemini migration, release April 24 2026.
+    # Replaces all OpenAI models with Gemini equivalents for ~40-60% cost savings.
+    # Quality target: same as premium (80% of max) but on Gemini models.
+    # gpt-5.4-mini→Pro, gpt-4.1-mini→Flash, gpt-4.1-nano→Flash-Lite.
     #
     # ⚠️  Features marked [SO] use with_structured_output(method="json_schema")
     #     which may need method="function_calling" fallback on Gemini.
     # -----------------------------------------------------------------------
-    'premium1': {
+    'premium_0424': {
         # Gemini 2.5 Pro — flagship tier (Phase 1+4: replaces gpt-5.4-mini)
         'conv_action_items': ('gemini-2.5-pro', 'gemini'),  # PydanticOutputParser — safe
         'conv_structure': ('gemini-2.5-pro', 'gemini'),  # PydanticOutputParser — safe
@@ -269,7 +276,10 @@ MODEL_QOS_PROFILES: Dict[str, Dict[str, Tuple[str, str]]] = {
         'web_search': ('sonar-pro', 'perplexity'),
     },
     # -----------------------------------------------------------------------
-    # max — maximum quality, flagship OpenAI models
+    # max — maximum quality, 100% flagship OpenAI models.
+    # Uses gpt-5.4 for all core features, o4-mini for reasoning (learnings),
+    # gpt-4.1 for chat graph. No Gemini — pure OpenAI for best quality.
+    # Reserved for users who need the highest accuracy regardless of cost.
     # -----------------------------------------------------------------------
     'max': {
         # OpenAI — conversation processing
@@ -317,11 +327,12 @@ MODEL_QOS_PROFILES: Dict[str, Dict[str, Tuple[str, str]]] = {
         'web_search': ('sonar-pro', 'perplexity'),
     },
     # -----------------------------------------------------------------------
-    # max1 — max quality with Gemini optimization
-    # Same migration as premium1 but keeps o4-mini for learnings (reasoning).
-    # Upgrades gpt-4.1-mini tier to gemini-2.5-flash (not flash-lite).
+    # max_0424 — max quality with Gemini optimization, release April 24 2026.
+    # Same migration as premium_0424 but targets 100% quality on Gemini.
+    # Uses gemini-2.5-pro for flagship, gemini-2.5-flash for quality tier
+    # (not flash-lite), and keeps o4-mini for reasoning (learnings).
     # -----------------------------------------------------------------------
-    'max1': {
+    'max_0424': {
         # Gemini 2.5 Pro — flagship tier (replaces gpt-5.4)
         'conv_action_items': ('gemini-2.5-pro', 'gemini'),
         'conv_structure': ('gemini-2.5-pro', 'gemini'),
@@ -364,56 +375,12 @@ MODEL_QOS_PROFILES: Dict[str, Dict[str, Tuple[str, str]]] = {
         'web_search': ('sonar-pro', 'perplexity'),
     },
     # -----------------------------------------------------------------------
-    # byok_high — quality-optimized for BYOK users (all OpenAI, upgraded tiers)
-    # BYOK users pay their own API costs, so we upgrade mid-tier models.
-    # Flagship: gpt-5.4-mini, Quality: gpt-4.1 (up from 4.1-mini), Simple: gpt-4.1-mini (up from nano)
+    # byok — BYOK (Bring Your Own Key) users, maximum quality on all-OpenAI.
+    # BYOK users pay their own API costs, so we give them top-tier models.
+    # Uses gpt-5.4 flagship, gpt-5.4-mini quality, o4-mini reasoning,
+    # gpt-4.1-mini simple. No Gemini — BYOK keys are OpenAI keys.
     # -----------------------------------------------------------------------
-    'byok_high': {
-        # gpt-5.4-mini — flagship (same quality as premium)
-        'conv_action_items': ('gpt-5.4-mini', 'openai'),
-        'conv_structure': ('gpt-5.4-mini', 'openai'),
-        'conv_app_result': ('gpt-5.4-mini', 'openai'),
-        'daily_summary': ('gpt-5.4-mini', 'openai'),
-        'learnings': ('gpt-5.4-mini', 'openai'),
-        'chat_responses': ('gpt-5.4-mini', 'openai'),
-        'goals_advice': ('gpt-5.4-mini', 'openai'),
-        'app_generator': ('gpt-5.4-mini', 'openai'),
-        'persona_clone': ('gpt-5.4-mini', 'openai'),
-        'persona_chat_premium': ('gpt-5.4-mini', 'openai'),
-        'notifications': ('gpt-5.4-mini', 'openai'),
-        # gpt-4.1 — quality tier (upgraded from gpt-4.1-mini)
-        'external_structure': ('gpt-4.1', 'openai'),
-        'memories': ('gpt-4.1', 'openai'),
-        'memory_conflict': ('gpt-4.1', 'openai'),
-        'knowledge_graph': ('gpt-4.1', 'openai'),
-        'chat_extraction': ('gpt-4.1', 'openai'),
-        'chat_graph': ('gpt-4.1', 'openai'),
-        'goals': ('gpt-4.1', 'openai'),
-        'proactive_notification': ('gpt-4.1', 'openai'),
-        'openglass': ('gpt-4.1', 'openai'),
-        # gpt-4.1-mini — simple tasks (upgraded from gpt-4.1-nano)
-        'conv_app_select': ('gpt-4.1-mini', 'openai'),
-        'conv_folder': ('gpt-4.1-mini', 'openai'),
-        'conv_discard': ('gpt-4.1-mini', 'openai'),
-        'smart_glasses': ('gpt-4.1-mini', 'openai'),
-        'persona_chat': ('gpt-4.1-mini', 'openai'),
-        'daily_summary_simple': ('gpt-4.1-mini', 'openai'),
-        'memory_category': ('gpt-4.1-mini', 'openai'),
-        'session_titles': ('gpt-4.1-mini', 'openai'),
-        'followup': ('gpt-4.1-mini', 'openai'),
-        'onboarding': ('gpt-4.1-mini', 'openai'),
-        'app_integration': ('gpt-4.1-mini', 'openai'),
-        'trends': ('gpt-4.1-mini', 'openai'),
-        # Keep on original provider
-        'chat_agent': ('claude-sonnet-4-6', 'anthropic'),
-        'wrapped_analysis': ('gemini-3-flash-preview', 'openrouter'),
-        'web_search': ('sonar-pro', 'perplexity'),
-    },
-    # -----------------------------------------------------------------------
-    # byok_max — maximum quality for BYOK users (all OpenAI, top-tier models)
-    # gpt-5.4 flagship, gpt-5.4-mini quality, o4-mini reasoning, gpt-4.1-mini simple
-    # -----------------------------------------------------------------------
-    'byok_max': {
+    'byok': {
         # gpt-5.4 — top-tier flagship
         'conv_action_items': ('gpt-5.4', 'openai'),
         'conv_structure': ('gpt-5.4', 'openai'),
@@ -469,9 +436,9 @@ if _active_profile_name not in MODEL_QOS_PROFILES:
     _active_profile_name = 'premium'
 _active_profile = MODEL_QOS_PROFILES[_active_profile_name]
 
-# BYOK QoS — all BYOK users get routed to byok_high (quality upgrade, all-OpenAI).
-# BYOK users pay their own API costs, so we give them higher-quality models.
-_byok_profile_name = 'byok_high'
+# BYOK QoS — all BYOK users get routed to 'byok' profile (top-tier all-OpenAI).
+# BYOK users pay their own API costs, so we give them maximum quality models.
+_byok_profile_name = 'byok'
 _byok_profile = MODEL_QOS_PROFILES[_byok_profile_name]
 
 # Features that can't go through get_llm() (non-ChatOpenAI providers).
