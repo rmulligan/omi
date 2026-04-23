@@ -262,6 +262,14 @@ class TestProfileRouting:
         distinct = {model for model, _provider in MODEL_QOS_PROFILES['max1'].values()}
         assert len(distinct) == 7, f"Expected 7 variants in max1, got {len(distinct)}: {distinct}"
 
+    def test_byok_high_profile_has_expected_variant_count(self):
+        distinct = {model for model, _provider in MODEL_QOS_PROFILES['byok_high'].values()}
+        assert len(distinct) == 6, f"Expected 6 variants in byok_high, got {len(distinct)}: {distinct}"
+
+    def test_byok_max_profile_has_expected_variant_count(self):
+        distinct = {model for model, _provider in MODEL_QOS_PROFILES['byok_max'].values()}
+        assert len(distinct) == 7, f"Expected 7 variants in byok_max, got {len(distinct)}: {distinct}"
+
 
 # ---------------------------------------------------------------------------
 # Streaming support — verify streaming clients work
