@@ -58,8 +58,8 @@ from utils.llm.clients import (
 class TestModelQosProfiles:
     """Verify profile structure and completeness."""
 
-    def test_six_profiles_exist(self):
-        assert set(MODEL_QOS_PROFILES.keys()) == {'premium', 'premium1', 'max', 'max1', 'byok_high', 'byok_max'}
+    def test_five_profiles_exist(self):
+        assert set(MODEL_QOS_PROFILES.keys()) == {'premium', 'premium_0424', 'max', 'max_0424', 'byok'}
 
     def test_all_profiles_have_same_features(self):
         feature_sets = {name: set(profile.keys()) for name, profile in MODEL_QOS_PROFILES.items()}
@@ -78,11 +78,11 @@ class TestModelQosProfiles:
             assert 'perplexity' in providers, f'{profile_name} missing Perplexity models'
             assert 'openrouter' in providers, f'{profile_name} should have OpenRouter (wrapped_analysis)'
         # OpenAI-based profiles must have OpenAI provider
-        for name in ('premium', 'max', 'byok_high', 'byok_max'):
+        for name in ('premium', 'max', 'byok'):
             providers = {p for _m, p in MODEL_QOS_PROFILES[name].values()}
             assert 'openai' in providers, f'{name} missing OpenAI models'
         # Gemini-optimized profiles must have Gemini provider
-        for name in ('premium', 'premium1', 'max1'):
+        for name in ('premium', 'premium_0424', 'max_0424'):
             providers = {p for _m, p in MODEL_QOS_PROFILES[name].values()}
             assert 'gemini' in providers, f'{name} should have Gemini direct models'
 
@@ -164,17 +164,17 @@ class TestModelQosProfiles:
         }
         assert distinct_models == expected
 
-    def test_premium1_all_gemini_except_special(self):
-        """premium1 should route everything to Gemini except chat_agent/web_search/wrapped_analysis."""
-        p1 = MODEL_QOS_PROFILES['premium1']
+    def test_premium_0424_all_gemini_except_special(self):
+        """premium_0424 should route everything to Gemini except chat_agent/web_search/wrapped_analysis."""
+        p1 = MODEL_QOS_PROFILES['premium_0424']
         for feature, (model, provider) in p1.items():
             if feature in ('chat_agent', 'web_search', 'wrapped_analysis'):
                 continue
-            assert provider == 'gemini', f'premium1 {feature} should be gemini, got {provider}'
+            assert provider == 'gemini', f'premium_0424 {feature} should be gemini, got {provider}'
 
-    def test_premium1_model_tiers(self):
-        """premium1 uses 3 Gemini tiers: pro (flagship), flash (quality), flash-lite (simple)."""
-        p1 = MODEL_QOS_PROFILES['premium1']
+    def test_premium_0424_model_tiers(self):
+        """premium_0424 uses 3 Gemini tiers: pro (flagship), flash (quality), flash-lite (simple)."""
+        p1 = MODEL_QOS_PROFILES['premium_0424']
         assert p1['conv_action_items'] == ('gemini-2.5-pro', 'gemini')
         assert p1['chat_responses'] == ('gemini-2.5-pro', 'gemini')
         assert p1['memories'] == ('gemini-2.5-flash', 'gemini')
@@ -182,9 +182,9 @@ class TestModelQosProfiles:
         assert p1['conv_folder'] == ('gemini-2.5-flash-lite', 'gemini')
         assert p1['session_titles'] == ('gemini-2.5-flash-lite', 'gemini')
 
-    def test_premium1_model_variants(self):
-        """premium1 uses 6 distinct model IDs."""
-        p1 = MODEL_QOS_PROFILES['premium1']
+    def test_premium_0424_model_variants(self):
+        """premium_0424 uses 6 distinct model IDs."""
+        p1 = MODEL_QOS_PROFILES['premium_0424']
         distinct = {model for model, _p in p1.values()}
         expected = {
             'gemini-2.5-pro',
@@ -196,14 +196,14 @@ class TestModelQosProfiles:
         }
         assert distinct == expected
 
-    def test_max1_keeps_o4_mini_for_learnings(self):
-        """max1 keeps o4-mini for learnings (reasoning model, no Gemini equivalent)."""
-        m1 = MODEL_QOS_PROFILES['max1']
+    def test_max_0424_keeps_o4_mini_for_learnings(self):
+        """max_0424 keeps o4-mini for learnings (reasoning model, no Gemini equivalent)."""
+        m1 = MODEL_QOS_PROFILES['max_0424']
         assert m1['learnings'] == ('o4-mini', 'openai')
 
-    def test_max1_model_variants(self):
-        """max1 uses 7 distinct model IDs."""
-        m1 = MODEL_QOS_PROFILES['max1']
+    def test_max_0424_model_variants(self):
+        """max_0424 uses 7 distinct model IDs."""
+        m1 = MODEL_QOS_PROFILES['max_0424']
         distinct = {model for model, _p in m1.values()}
         expected = {
             'gemini-2.5-pro',
@@ -216,9 +216,9 @@ class TestModelQosProfiles:
         }
         assert distinct == expected
 
-    def test_max1_uses_flash_not_flashlite_for_quality(self):
-        """max1 uses gemini-2.5-flash (not lite) for quality-sensitive features."""
-        m1 = MODEL_QOS_PROFILES['max1']
+    def test_max_0424_uses_flash_not_flashlite_for_quality(self):
+        """max_0424 uses gemini-2.5-flash (not lite) for quality-sensitive features."""
+        m1 = MODEL_QOS_PROFILES['max_0424']
         assert m1['memories'] == ('gemini-2.5-flash', 'gemini')
         assert m1['daily_summary_simple'] == ('gemini-2.5-flash', 'gemini')
         assert m1['memory_category'] == ('gemini-2.5-flash', 'gemini')
@@ -867,50 +867,20 @@ class TestBYOKWrapperArchitecture:
             assert not hasattr(mod, name), f'{name} should have been removed from clients.py'
 
 
-class TestBYOKProfiles:
-    """Verify BYOK QoS profiles structure and model selections."""
+class TestBYOKProfile:
+    """Verify BYOK QoS profile structure and model selections."""
 
-    def test_byok_high_all_openai_except_special(self):
-        """byok_high routes all features to OpenAI except chat_agent/web_search/wrapped_analysis."""
-        bh = MODEL_QOS_PROFILES['byok_high']
-        for feature, (model, provider) in bh.items():
+    def test_byok_all_openai_except_special(self):
+        """byok routes all features to OpenAI except chat_agent/web_search/wrapped_analysis."""
+        bk = MODEL_QOS_PROFILES['byok']
+        for feature, (model, provider) in bk.items():
             if feature in ('chat_agent', 'web_search', 'wrapped_analysis'):
                 continue
-            assert provider == 'openai', f'byok_high {feature} should be openai, got {provider}'
+            assert provider == 'openai', f'byok {feature} should be openai, got {provider}'
 
-    def test_byok_max_all_openai_except_special(self):
-        """byok_max routes all features to OpenAI except chat_agent/web_search/wrapped_analysis."""
-        bm = MODEL_QOS_PROFILES['byok_max']
-        for feature, (model, provider) in bm.items():
-            if feature in ('chat_agent', 'web_search', 'wrapped_analysis'):
-                continue
-            assert provider == 'openai', f'byok_max {feature} should be openai, got {provider}'
-
-    def test_byok_high_upgrades_quality_tier(self):
-        """byok_high upgrades gpt-4.1-mini quality features to gpt-4.1."""
-        bh = MODEL_QOS_PROFILES['byok_high']
-        for feature in [
-            'external_structure',
-            'memories',
-            'memory_conflict',
-            'knowledge_graph',
-            'chat_extraction',
-            'chat_graph',
-            'goals',
-            'proactive_notification',
-            'openglass',
-        ]:
-            assert bh[feature][0] == 'gpt-4.1', f'byok_high {feature} should be gpt-4.1, got {bh[feature][0]}'
-
-    def test_byok_high_upgrades_simple_tier(self):
-        """byok_high upgrades gpt-4.1-nano simple features to gpt-4.1-mini."""
-        bh = MODEL_QOS_PROFILES['byok_high']
-        for feature in ['conv_app_select', 'conv_folder', 'conv_discard', 'smart_glasses', 'persona_chat']:
-            assert bh[feature][0] == 'gpt-4.1-mini', f'byok_high {feature} should be gpt-4.1-mini, got {bh[feature][0]}'
-
-    def test_byok_max_uses_gpt54_flagship(self):
-        """byok_max uses gpt-5.4 for flagship features."""
-        bm = MODEL_QOS_PROFILES['byok_max']
+    def test_byok_uses_gpt54_flagship(self):
+        """byok uses gpt-5.4 for flagship features."""
+        bk = MODEL_QOS_PROFILES['byok']
         for feature in [
             'conv_action_items',
             'conv_structure',
@@ -924,11 +894,11 @@ class TestBYOKProfiles:
             'notifications',
             'chat_graph',
         ]:
-            assert bm[feature][0] == 'gpt-5.4', f'byok_max {feature} should be gpt-5.4, got {bm[feature][0]}'
+            assert bk[feature][0] == 'gpt-5.4', f'byok {feature} should be gpt-5.4, got {bk[feature][0]}'
 
-    def test_byok_max_uses_gpt54_mini_quality(self):
-        """byok_max upgrades quality tier to gpt-5.4-mini."""
-        bm = MODEL_QOS_PROFILES['byok_max']
+    def test_byok_uses_gpt54_mini_quality(self):
+        """byok upgrades quality tier to gpt-5.4-mini."""
+        bk = MODEL_QOS_PROFILES['byok']
         for feature in [
             'external_structure',
             'memories',
@@ -940,31 +910,17 @@ class TestBYOKProfiles:
             'openglass',
             'smart_glasses',
         ]:
-            assert bm[feature][0] == 'gpt-5.4-mini', f'byok_max {feature} should be gpt-5.4-mini, got {bm[feature][0]}'
+            assert bk[feature][0] == 'gpt-5.4-mini', f'byok {feature} should be gpt-5.4-mini, got {bk[feature][0]}'
 
-    def test_byok_max_keeps_o4_mini_for_learnings(self):
-        """byok_max keeps o4-mini for learnings (reasoning model)."""
-        bm = MODEL_QOS_PROFILES['byok_max']
-        assert bm['learnings'] == ('o4-mini', 'openai')
+    def test_byok_keeps_o4_mini_for_learnings(self):
+        """byok keeps o4-mini for learnings (reasoning model)."""
+        bk = MODEL_QOS_PROFILES['byok']
+        assert bk['learnings'] == ('o4-mini', 'openai')
 
-    def test_byok_high_model_variants(self):
-        """byok_high uses expected distinct model IDs."""
-        bh = MODEL_QOS_PROFILES['byok_high']
-        distinct = {model for model, _p in bh.values()}
-        expected = {
-            'gpt-5.4-mini',
-            'gpt-4.1',
-            'gpt-4.1-mini',
-            'claude-sonnet-4-6',
-            'gemini-3-flash-preview',
-            'sonar-pro',
-        }
-        assert distinct == expected
-
-    def test_byok_max_model_variants(self):
-        """byok_max uses expected distinct model IDs."""
-        bm = MODEL_QOS_PROFILES['byok_max']
-        distinct = {model for model, _p in bm.values()}
+    def test_byok_model_variants(self):
+        """byok uses expected distinct model IDs."""
+        bk = MODEL_QOS_PROFILES['byok']
+        distinct = {model for model, _p in bk.values()}
         expected = {
             'gpt-5.4',
             'gpt-5.4-mini',
@@ -976,26 +932,25 @@ class TestBYOKProfiles:
         }
         assert distinct == expected
 
-    def test_byok_profiles_have_same_features_as_premium(self):
-        """BYOK profiles must cover the same feature set as premium."""
+    def test_byok_has_same_features_as_premium(self):
+        """BYOK profile must cover the same feature set as premium."""
         premium_features = set(MODEL_QOS_PROFILES['premium'].keys())
-        for name in ('byok_high', 'byok_max'):
-            byok_features = set(MODEL_QOS_PROFILES[name].keys())
-            assert byok_features == premium_features, f'{name} features differ: {byok_features ^ premium_features}'
+        byok_features = set(MODEL_QOS_PROFILES['byok'].keys())
+        assert byok_features == premium_features, f'byok features differ: {byok_features ^ premium_features}'
 
 
 class TestBYOKProfileFixed:
-    """Verify BYOK QoS profile is always byok_high."""
+    """Verify BYOK QoS profile is always 'byok'."""
 
-    def test_byok_profile_is_byok_high(self):
-        assert _byok_profile_name == 'byok_high'
+    def test_byok_profile_is_byok(self):
+        assert _byok_profile_name == 'byok'
 
     def test_byok_profile_exists(self):
         assert _byok_profile is not None
-        assert _byok_profile is MODEL_QOS_PROFILES['byok_high']
+        assert _byok_profile is MODEL_QOS_PROFILES['byok']
 
     def test_byok_profile_via_subprocess(self):
-        """Verify byok_high is set regardless of MODEL_QOS value."""
+        """Verify byok is set regardless of MODEL_QOS value."""
         import subprocess
 
         result = subprocess.run(
@@ -1012,7 +967,7 @@ class TestBYOKProfileFixed:
                     "os.environ['ANTHROPIC_API_KEY']='sk-ant-test'; "
                     "os.environ['MODEL_QOS']='max'; "
                     "from utils.llm.clients import _byok_profile_name, _byok_profile; "
-                    "assert _byok_profile_name == 'byok_high', f'Expected byok_high, got {_byok_profile_name}'; "
+                    "assert _byok_profile_name == 'byok', f'Expected byok, got {_byok_profile_name}'; "
                     "assert _byok_profile is not None"
                 ),
             ],
@@ -1063,15 +1018,14 @@ class TestStructuredOutputFeatureTracking:
         gemini_so = {f for f in _STRUCTURED_OUTPUT_FEATURES if premium[f][1] == 'gemini'}
         assert gemini_so == {'trends'}, f'Expected only trends on Gemini SO in premium, got {gemini_so}'
 
-    def test_premium1_gemini_structured_output(self):
-        """In premium1 profile, all structured output features are on Gemini."""
-        p1 = MODEL_QOS_PROFILES['premium1']
+    def test_premium_0424_gemini_structured_output(self):
+        """In premium_0424 profile, all structured output features are on Gemini."""
+        p1 = MODEL_QOS_PROFILES['premium_0424']
         gemini_so = {f for f in _STRUCTURED_OUTPUT_FEATURES if p1[f][1] == 'gemini'}
         assert gemini_so == _STRUCTURED_OUTPUT_FEATURES
 
-    def test_byok_profiles_no_gemini_structured_output(self):
-        """BYOK profiles route all structured output features to OpenAI (no Gemini compat risk)."""
-        for name in ('byok_high', 'byok_max'):
-            profile = MODEL_QOS_PROFILES[name]
-            for feature in _STRUCTURED_OUTPUT_FEATURES:
-                assert profile[feature][1] == 'openai', f'{name} {feature} should be openai, got {profile[feature][1]}'
+    def test_byok_no_gemini_structured_output(self):
+        """BYOK profile routes all structured output features to OpenAI (no Gemini compat risk)."""
+        profile = MODEL_QOS_PROFILES['byok']
+        for feature in _STRUCTURED_OUTPUT_FEATURES:
+            assert profile[feature][1] == 'openai', f'byok {feature} should be openai, got {profile[feature][1]}'
