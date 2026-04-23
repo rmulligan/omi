@@ -33,6 +33,8 @@ sys.modules.setdefault('utils.other.storage', MagicMock())
 
 import warnings
 
+from langchain_openai import ChatOpenAI
+
 warnings.filterwarnings('ignore', message='.*stream_options.*')
 
 
@@ -592,65 +594,37 @@ class TestCacheRouting:
         inst2 = _cached_anthropic(api_key)
         assert inst1 is inst2
 
-    def test_gemini_wrapper_routes_to_byok(self):
-        from utils.llm.clients import _BYOKChatWrapper, _GEMINI_OPENAI_BASE_URL, _wrap_byok
+    def test_gemini_byok_routes_to_gemini_endpoint(self):
+        from utils.llm.clients import _create_byok_client, _GEMINI_OPENAI_BASE_URL
 
-        mock_default = MagicMock()
-        wrapper = _wrap_byok(mock_default, 'gemini-2.5-flash-lite', 'gemini', {})
-        assert isinstance(wrapper, _BYOKChatWrapper)
-        with patch('utils.llm.clients.get_byok_key', side_effect=lambda p: 'AIza-byok-key' if p == 'gemini' else None):
-            resolved = wrapper._resolve()
-        assert resolved.openai_api_base == _GEMINI_OPENAI_BASE_URL
+        client = _create_byok_client('gemini-2.5-flash-lite', 'gemini', 'AIza-byok-key')
+        assert isinstance(client, ChatOpenAI)
+        assert client.openai_api_base == _GEMINI_OPENAI_BASE_URL
 
-    def test_gemini_wrapper_falls_back_to_default(self):
-        from utils.llm.clients import _BYOKChatWrapper, _wrap_byok
+    def test_openai_byok_creates_client(self):
+        from utils.llm.clients import _create_byok_client
 
-        mock_default = MagicMock()
-        wrapper = _wrap_byok(mock_default, 'gemini-2.5-flash-lite', 'gemini', {})
-        assert isinstance(wrapper, _BYOKChatWrapper)
-        with patch('utils.llm.clients.get_byok_key', return_value=None):
-            resolved = wrapper._resolve()
-        assert resolved is mock_default
+        client = _create_byok_client('gpt-4.1-mini', 'openai', 'sk-byok-test-key')
+        assert isinstance(client, ChatOpenAI)
+        assert client.model_name == 'gpt-4.1-mini'
 
-    def test_openrouter_wrapper_byok_routes_to_gemini_direct(self):
-        """OpenRouter BYOK wraps to Gemini direct — must not forward OpenRouter api_key."""
-        from utils.llm.clients import _BYOKChatWrapper, _GEMINI_OPENAI_BASE_URL, _wrap_byok
+    def test_openrouter_gemini_byok_routes_to_gemini_direct(self):
+        """OpenRouter BYOK for Gemini models reroutes to Gemini direct endpoint."""
+        from utils.llm.clients import _create_byok_client, _GEMINI_OPENAI_BASE_URL
 
-        mock_default = MagicMock()
-        or_kwargs = {
-            'api_key': 'sk-or-openrouter-key',
-            'base_url': 'https://openrouter.ai/api/v1',
-            'callbacks': [],
-        }
-        wrapper = _wrap_byok(mock_default, 'google/gemini-3-flash-preview', 'openrouter', or_kwargs)
-        assert isinstance(wrapper, _BYOKChatWrapper)
-        assert wrapper._provider == 'gemini'  # OpenRouter BYOK resolves via Gemini
-
-        with patch('utils.llm.clients.get_byok_key', side_effect=lambda p: 'AIza-byok-key' if p == 'gemini' else None):
-            resolved = wrapper._resolve()
+        client = _create_byok_client('gemini-3-flash-preview', 'openrouter', 'AIza-byok-key')
+        assert isinstance(client, ChatOpenAI)
         # Must use Gemini base URL, not OpenRouter
-        assert resolved.openai_api_base == _GEMINI_OPENAI_BASE_URL
-        # Must not contain the OpenRouter api_key
-        assert resolved.openai_api_key != 'sk-or-openrouter-key'
+        assert client.openai_api_base == _GEMINI_OPENAI_BASE_URL
+        # Must use the bare model name for Gemini direct API
+        assert client.model_name == 'gemini-3-flash-preview'
 
-    def test_openrouter_wrapper_strips_vendor_prefix(self):
-        """OpenRouter BYOK must strip google/ prefix for Gemini direct API."""
-        from utils.llm.clients import _BYOKChatWrapper, _wrap_byok
+    def test_non_gemini_openrouter_returns_none(self):
+        """Non-Gemini OpenRouter models have no BYOK support — returns None."""
+        from utils.llm.clients import _create_byok_client
 
-        mock_default = MagicMock()
-        wrapper = _wrap_byok(mock_default, 'google/gemini-3-flash-preview', 'openrouter', {'api_key': 'sk-or-key'})
-        with patch('utils.llm.clients.get_byok_key', side_effect=lambda p: 'AIza-byok-key' if p == 'gemini' else None):
-            resolved = wrapper._resolve()
-        assert resolved.model_name == 'gemini-3-flash-preview'
-
-    def test_non_gemini_openrouter_returns_default_directly(self):
-        """Non-Gemini OpenRouter models have no BYOK support — returns default client unchanged."""
-        from utils.llm.clients import _BYOKChatWrapper, _wrap_byok
-
-        mock_default = MagicMock()
-        result = _wrap_byok(mock_default, 'anthropic/claude-3.5-sonnet', 'openrouter', {'api_key': 'sk-or-key'})
-        assert result is mock_default  # No wrapper, returns default directly
-        assert not isinstance(result, _BYOKChatWrapper)
+        result = _create_byok_client('anthropic/claude-3.5-sonnet', 'openrouter', 'sk-or-key')
+        assert result is None
 
 
 # ---------------------------------------------------------------------------
