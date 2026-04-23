@@ -6,7 +6,7 @@ Tests every code path changed in the QoS profile refactor:
   P2: get_model()/get_provider() resolution across all 6 profiles
   P3: _create_byok_client() factory (mocked key, real client construction)
   P4: _effective_byok_provider() mapping
-  P5: BYOK profile auto-mapping (_BYOK_PROFILE_MAP)
+  P5: BYOK profile hardcoded to byok_high
   P6: Structured output compatibility on OpenAI (real .with_structured_output() call)
   P7: Prompt caching (cache_key binding for gpt-5.4-mini)
   P8: Streaming client construction and invocation
@@ -38,7 +38,6 @@ load_dotenv(os.path.join(os.path.dirname(__file__), '..', '..', '.env'))
 
 from utils.llm.clients import (
     MODEL_QOS_PROFILES,
-    _BYOK_PROFILE_MAP,
     _CACHE_KEY_MODELS,
     _GEMINI_OPENAI_BASE_URL,
     _STRUCTURED_OUTPUT_FEATURES,
@@ -171,26 +170,35 @@ class TestP4_EffectiveBYOKProvider:
 
 
 # ---------------------------------------------------------------------------
-# P5: BYOK profile auto-mapping
+# P5: BYOK profile hardcoded to byok_high
 # ---------------------------------------------------------------------------
-class TestP5_BYOKAutoMapping:
-    """P5: _BYOK_PROFILE_MAP auto-derives BYOK profile from active profile."""
+class TestP5_BYOKProfileFixed:
+    """P5: BYOK profile is always hardcoded to byok_high regardless of active profile."""
 
-    def test_all_profiles_mapped(self):
-        for name in MODEL_QOS_PROFILES:
-            assert name in _BYOK_PROFILE_MAP, f'{name} missing from _BYOK_PROFILE_MAP'
+    def test_byok_profile_is_byok_high(self):
+        assert _byok_profile_name == 'byok_high'
 
-    def test_premium_maps_to_byok_high(self):
-        assert _BYOK_PROFILE_MAP['premium'] == 'byok_high'
-        assert _BYOK_PROFILE_MAP['premium1'] == 'byok_high'
-
-    def test_max_maps_to_byok_max(self):
-        assert _BYOK_PROFILE_MAP['max'] == 'byok_max'
-        assert _BYOK_PROFILE_MAP['max1'] == 'byok_max'
-
-    def test_active_has_byok_mapping(self):
-        assert _byok_profile_name is not None
+    def test_byok_profile_exists(self):
         assert _byok_profile is not None
+        assert _byok_profile is MODEL_QOS_PROFILES['byok_high']
+
+    def test_byok_profile_independent_of_active(self):
+        """BYOK profile should always be byok_high regardless of MODEL_QOS setting."""
+        assert _byok_profile_name == 'byok_high'
+        assert _active_profile_name in MODEL_QOS_PROFILES
+        # Even if active is 'max', BYOK stays byok_high
+        assert _byok_profile_name != _active_profile_name or _active_profile_name == 'byok_high'
+
+    def test_byok_high_mostly_openai(self):
+        """byok_high profile should use OpenAI for most features (chat_agent/web_search are exceptions)."""
+        exceptions = {'chat_agent': 'anthropic', 'web_search': 'perplexity', 'wrapped_analysis': 'openrouter'}
+        for feature, (model, provider) in MODEL_QOS_PROFILES['byok_high'].items():
+            if feature in exceptions:
+                assert (
+                    provider == exceptions[feature]
+                ), f'byok_high {feature} expected {exceptions[feature]}, got {provider}'
+            else:
+                assert provider == 'openai', f'byok_high feature {feature} uses {provider}, expected openai'
 
 
 # ---------------------------------------------------------------------------
