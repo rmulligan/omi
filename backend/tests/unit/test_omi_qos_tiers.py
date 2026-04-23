@@ -54,13 +54,14 @@ from utils.llm.clients import (
 class TestModelQosProfiles:
     """Verify profile structure and completeness."""
 
-    def test_two_profiles_exist(self):
-        assert set(MODEL_QOS_PROFILES.keys()) == {'premium', 'max'}
+    def test_four_profiles_exist(self):
+        assert set(MODEL_QOS_PROFILES.keys()) == {'premium', 'premium1', 'max', 'max1'}
 
     def test_all_profiles_have_same_features(self):
-        premium_features = set(MODEL_QOS_PROFILES['premium'].keys())
-        max_features = set(MODEL_QOS_PROFILES['max'].keys())
-        assert premium_features == max_features
+        feature_sets = {name: set(profile.keys()) for name, profile in MODEL_QOS_PROFILES.items()}
+        reference = feature_sets['premium']
+        for name, features in feature_sets.items():
+            assert features == reference, f'{name} features differ from premium: {features ^ reference}'
 
     def test_premium_profile_is_default(self):
         assert _active_profile_name == 'premium'
@@ -69,16 +70,17 @@ class TestModelQosProfiles:
         """Each profile should have features across expected providers."""
         for profile_name, profile in MODEL_QOS_PROFILES.items():
             providers = {provider for _model, provider in profile.values()}
-            assert 'openai' in providers, f'{profile_name} missing OpenAI models'
             assert 'anthropic' in providers, f'{profile_name} missing Anthropic models'
             assert 'perplexity' in providers, f'{profile_name} missing Perplexity models'
-        # Both profiles keep OpenRouter for wrapped_analysis
-        for profile_name in MODEL_QOS_PROFILES:
-            providers = {provider for _m, provider in MODEL_QOS_PROFILES[profile_name].values()}
             assert 'openrouter' in providers, f'{profile_name} should have OpenRouter (wrapped_analysis)'
-        # Premium profile uses Gemini direct for free-text features
-        premium_providers = {provider for _m, provider in MODEL_QOS_PROFILES['premium'].values()}
-        assert 'gemini' in premium_providers, 'premium should have Gemini direct models'
+        # OpenAI-based profiles must have OpenAI provider
+        for name in ('premium', 'max'):
+            providers = {p for _m, p in MODEL_QOS_PROFILES[name].values()}
+            assert 'openai' in providers, f'{name} missing OpenAI models'
+        # Gemini-optimized profiles must have Gemini provider
+        for name in ('premium', 'premium1', 'max1'):
+            providers = {p for _m, p in MODEL_QOS_PROFILES[name].values()}
+            assert 'gemini' in providers, f'{name} should have Gemini direct models'
 
     def test_premium_profile_models(self):
         """Premium uses gpt-5.4-mini for flagship, gpt-4.1-mini for quality-sensitive, gemini for free-text."""
@@ -157,6 +159,65 @@ class TestModelQosProfiles:
             'sonar-pro',
         }
         assert distinct_models == expected
+
+    def test_premium1_all_gemini_except_special(self):
+        """premium1 should route everything to Gemini except chat_agent/web_search/wrapped_analysis."""
+        p1 = MODEL_QOS_PROFILES['premium1']
+        for feature, (model, provider) in p1.items():
+            if feature in ('chat_agent', 'web_search', 'wrapped_analysis'):
+                continue
+            assert provider == 'gemini', f'premium1 {feature} should be gemini, got {provider}'
+
+    def test_premium1_model_tiers(self):
+        """premium1 uses 3 Gemini tiers: pro (flagship), flash (quality), flash-lite (simple)."""
+        p1 = MODEL_QOS_PROFILES['premium1']
+        assert p1['conv_action_items'] == ('gemini-2.5-pro', 'gemini')
+        assert p1['chat_responses'] == ('gemini-2.5-pro', 'gemini')
+        assert p1['memories'] == ('gemini-2.5-flash', 'gemini')
+        assert p1['chat_extraction'] == ('gemini-2.5-flash', 'gemini')
+        assert p1['conv_folder'] == ('gemini-2.5-flash-lite', 'gemini')
+        assert p1['session_titles'] == ('gemini-2.5-flash-lite', 'gemini')
+
+    def test_premium1_model_variants(self):
+        """premium1 uses 6 distinct model IDs."""
+        p1 = MODEL_QOS_PROFILES['premium1']
+        distinct = {model for model, _p in p1.values()}
+        expected = {
+            'gemini-2.5-pro',
+            'gemini-2.5-flash',
+            'gemini-2.5-flash-lite',
+            'claude-sonnet-4-6',
+            'gemini-3-flash-preview',
+            'sonar-pro',
+        }
+        assert distinct == expected
+
+    def test_max1_keeps_o4_mini_for_learnings(self):
+        """max1 keeps o4-mini for learnings (reasoning model, no Gemini equivalent)."""
+        m1 = MODEL_QOS_PROFILES['max1']
+        assert m1['learnings'] == ('o4-mini', 'openai')
+
+    def test_max1_model_variants(self):
+        """max1 uses 7 distinct model IDs."""
+        m1 = MODEL_QOS_PROFILES['max1']
+        distinct = {model for model, _p in m1.values()}
+        expected = {
+            'gemini-2.5-pro',
+            'gemini-2.5-flash',
+            'gemini-2.5-flash-lite',
+            'o4-mini',
+            'claude-sonnet-4-6',
+            'gemini-3-flash-preview',
+            'sonar-pro',
+        }
+        assert distinct == expected
+
+    def test_max1_uses_flash_not_flashlite_for_quality(self):
+        """max1 uses gemini-2.5-flash (not lite) for quality-sensitive features."""
+        m1 = MODEL_QOS_PROFILES['max1']
+        assert m1['memories'] == ('gemini-2.5-flash', 'gemini')
+        assert m1['daily_summary_simple'] == ('gemini-2.5-flash', 'gemini')
+        assert m1['memory_category'] == ('gemini-2.5-flash', 'gemini')
 
     def test_new_features_present(self):
         """Verify newly added features exist in both profiles."""
