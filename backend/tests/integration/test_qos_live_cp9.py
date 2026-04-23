@@ -13,7 +13,7 @@ Tests every code path changed in the QoS profile refactor:
   P9: OpenRouter vendor prefix and temperature config
   P10: Anthropic client via get_model() + anthropic_client
   P11: Perplexity via get_model() + HTTP client
-  P12: _get_or_create_gemini_llm() client factory (construction only, no GEMINI_API_KEY needed)
+  P12: _get_or_create_gemini_llm() client factory (native SDK, ChatGoogleGenerativeAI)
   P13: get_qos_info() debugging helper
 
 Requires: OPENAI_API_KEY, OPENROUTER_API_KEY, ANTHROPIC_API_KEY, PERPLEXITY_API_KEY in .env
@@ -39,7 +39,6 @@ load_dotenv(os.path.join(os.path.dirname(__file__), '..', '..', '.env'))
 from utils.llm.clients import (
     MODEL_QOS_PROFILES,
     _CACHE_KEY_MODELS,
-    _GEMINI_OPENAI_BASE_URL,
     _STRUCTURED_OUTPUT_FEATURES,
     _active_profile,
     _active_profile_name,
@@ -368,11 +367,13 @@ class TestP11_Perplexity:
 # P12: Gemini client factory (construction — no key needed for factory test)
 # ---------------------------------------------------------------------------
 class TestP12_GeminiFactory:
-    """P12: _get_or_create_gemini_llm constructs valid ChatOpenAI pointing to Gemini endpoint."""
+    """P12: _get_or_create_gemini_llm constructs valid ChatGoogleGenerativeAI using native SDK."""
 
-    def test_gemini_factory_base_url(self):
+    def test_gemini_factory_is_native_sdk(self):
+        from langchain_google_genai import ChatGoogleGenerativeAI
+
         llm = _get_or_create_gemini_llm('gemini-2.5-flash')
-        assert llm.openai_api_base == _GEMINI_OPENAI_BASE_URL
+        assert isinstance(llm, ChatGoogleGenerativeAI)
 
     def test_gemini_factory_cached(self):
         llm1 = _get_or_create_gemini_llm('gemini-2.5-flash')
@@ -386,7 +387,7 @@ class TestP12_GeminiFactory:
 
     @pytest.mark.skipif(not HAS_GEMINI_KEY, reason="GEMINI_API_KEY not set")
     def test_gemini_real_invocation(self):
-        """Real Gemini API call via OpenAI-compat endpoint."""
+        """Real Gemini API call via native SDK (not OpenAI-compat)."""
         llm = _get_or_create_gemini_llm('gemini-2.5-flash-lite')
         response = llm.invoke(SIMPLE_PROMPT)
         assert response.content.strip()
