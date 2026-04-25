@@ -471,9 +471,16 @@ def get_llm(feature: str, streaming: bool = False, cache_key: Optional[str] = No
 
     if provider == 'openrouter':
         temp = _OPENROUTER_TEMPERATURES.get(feature)
-        return _get_or_create_openrouter_llm(model, streaming, temp)
+        llm = _get_or_create_openrouter_llm(model, streaming, temp)
+    else:
+        llm = _get_or_create_openai_llm(model, streaming)
 
-    llm = _get_or_create_openai_llm(model, streaming)
+    # LangChain pipe composition (`prompt | llm | parser`) requires the object
+    # to be a Runnable. Resolve BYOK-aware proxies at factory time so callers
+    # always receive the underlying ChatOpenAI instance.
+    if isinstance(llm, (_OpenAIChatProxy, _OpenRouterGeminiProxy)):
+        llm = llm._resolve()
+
     if cache_key and model in _CACHE_KEY_MODELS:
         return llm.bind(prompt_cache_key=cache_key)
     return llm
