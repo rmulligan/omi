@@ -186,32 +186,71 @@ Future reportMessageServer(String messageId) async {
 /// Cloud Run's 32 MB request-body limit.  Transcripts are concatenated
 /// client-side with a space separator — same behaviour as the backend's
 /// multi-file mode but without a single oversized upload.
-Future<String> transcribeVoiceMessage(List<File> audioFiles, {String? language}) async {
-  final transcripts = <String>[];
+///
+/// Per-chunk retry: each chunk is attempted up to 3 times with 1s/3s backoff
+/// before bubbling the failure. A single transient blip on chunk N no longer
+/// invalidates the chunks before it.
+///
+/// Resume support: pass [existingTranscripts] (length must equal [audioFiles])
+/// to skip chunks that already produced a transcript on a prior attempt. The
+/// optional [onChunkSuccess] callback fires after each chunk completes so the
+/// caller can persist partial progress to disk.
+Future<String> transcribeVoiceMessage(
+  List<File> audioFiles, {
+  String? language,
+  List<String?>? existingTranscripts,
+  void Function(int index, String transcript)? onChunkSuccess,
+}) async {
+  final results = existingTranscripts != null && existingTranscripts.length == audioFiles.length
+      ? List<String?>.from(existingTranscripts)
+      : List<String?>.filled(audioFiles.length, null);
 
-  for (final file in audioFiles) {
-    try {
-      var response = await makeMultipartApiCallUnpooled(
-        url: '${Env.apiBaseUrl}v2/voice-message/transcribe',
-        files: [file],
-        fields: language != null ? {'language': language} : {},
-      );
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        final transcript = data['transcript'] ?? '';
-        if (transcript.isNotEmpty) {
-          transcripts.add(transcript);
-        }
-      } else {
-        Logger.debug('Failed to transcribe voice message chunk: ${response.statusCode} ${response.body}');
-        throw Exception('Failed to transcribe voice message');
-      }
-    } catch (e) {
-      Logger.debug('Error transcribing voice message chunk: $e');
-      throw Exception('Error transcribing voice message: $e');
+  for (int i = 0; i < audioFiles.length; i++) {
+    if (results[i] != null) {
+      // Already transcribed on a prior attempt; skip the upload.
+      continue;
     }
+
+    final file = audioFiles[i];
+    String? transcript;
+    Object? lastError;
+
+    for (int attempt = 0; attempt < 3; attempt++) {
+      try {
+        final response = await makeMultipartApiCallUnpooled(
+          url: '${Env.apiBaseUrl}v2/voice-message/transcribe',
+          files: [file],
+          fields: language != null ? {'language': language} : {},
+        );
+
+        if (response.statusCode == 200) {
+          final data = jsonDecode(response.body);
+          transcript = (data['transcript'] ?? '') as String;
+          break;
+        }
+
+        lastError = 'status ${response.statusCode}';
+        Logger.debug(
+          'Transcribe chunk $i attempt ${attempt + 1} failed: ${response.statusCode} ${response.body}',
+        );
+      } catch (e) {
+        lastError = e;
+        Logger.debug('Transcribe chunk $i attempt ${attempt + 1} threw: $e');
+      }
+
+      if (attempt < 2) {
+        // Backoff: 1s, then 3s.
+        await Future.delayed(Duration(seconds: attempt == 0 ? 1 : 3));
+      }
+    }
+
+    if (transcript == null) {
+      throw Exception('Failed to transcribe voice message chunk $i: $lastError');
+    }
+
+    results[i] = transcript;
+    onChunkSuccess?.call(i, transcript);
   }
 
-  return transcripts.join(' ');
+  return results.whereType<String>().where((t) => t.isNotEmpty).join(' ');
 }
