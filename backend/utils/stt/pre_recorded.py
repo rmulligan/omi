@@ -262,6 +262,7 @@ def deepgram_prerecorded_from_bytes(
     language: Optional[str] = None,
     model: str = "nova-3",
     return_language: bool = False,
+    keywords: Optional[Sequence[str]] = None,
 ) -> Union[List[dict], Tuple[List[dict], str]]:
     """
     Transcribe audio bytes using Deepgram's pre-recorded API.
@@ -308,6 +309,13 @@ def deepgram_prerecorded_from_bytes(
             options["encoding"] = encoding
             options["sample_rate"] = sample_rate
             options["channels"] = channels
+
+        # Optional keyterm bias — same wiring as the URL variant.
+        if keywords:
+            if model in ('nova-3',):
+                options["keyterm"] = list(keywords)
+            else:
+                options["keywords"] = list(keywords)
 
         # Wrap bytes in BytesIO for Deepgram client
         audio_buffer = BytesIO(audio_bytes)
@@ -361,7 +369,16 @@ def deepgram_prerecorded_from_bytes(
         logger.error(f'Deepgram prerecorded from bytes error: {e}')
         if attempts < 2:
             return deepgram_prerecorded_from_bytes(
-                audio_bytes, sample_rate, diarize, attempts + 1, encoding, channels, language, model, return_language
+                audio_bytes,
+                sample_rate,
+                diarize,
+                attempts + 1,
+                encoding,
+                channels,
+                language,
+                model,
+                return_language,
+                keywords,
             )
         raise RuntimeError(f'Deepgram transcription failed after {attempts + 1} attempts: {e}')
 
