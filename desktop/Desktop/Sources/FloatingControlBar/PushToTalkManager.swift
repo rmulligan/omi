@@ -53,6 +53,12 @@ class PushToTalkManager: ObservableObject {
   // Live mode: timeout for waiting on final transcript after CloseStream
   private var liveFinalizationTimeout: DispatchWorkItem?
 
+  // Screen-context OCR for keyterm biasing.
+  // Captured at startListening, awaited at finalize, fed to the transcribe call.
+  // Wispr Flow does the same trick (axParsedWords + ocrParsedWords) — they get
+  // names right because the STT sees what's on the user's screen at PTT time.
+  private var screenContextTask: Task<[String], Never>?
+
   private init() {}
 
   // MARK: - Setup / Teardown
@@ -233,6 +239,7 @@ class PushToTalkManager: ObservableObject {
 
 
     startAudioTranscription()
+    captureScreenContextForBias()
     log("PushToTalkManager: started listening (hold mode, followUp=\(isFollowUp))")
   }
 
@@ -261,6 +268,7 @@ class PushToTalkManager: ObservableObject {
 
 
       startAudioTranscription()
+      captureScreenContextForBias()
     }
 
     updateBarState()
@@ -289,6 +297,8 @@ class PushToTalkManager: ObservableObject {
     finalizeWorkItem = nil
     liveFinalizationTimeout?.cancel()
     liveFinalizationTimeout = nil
+    screenContextTask?.cancel()
+    screenContextTask = nil
     stopAudioTranscription()
     state = .idle
     transcriptSegments = []
@@ -348,18 +358,21 @@ class PushToTalkManager: ObservableObject {
         return
       }
 
+      // Status-only string ("Transcribing…") — not the live transcript text.
       barState?.voiceTranscript = "Transcribing..."
 
       Task {
         do {
           let language = AssistantSettings.shared.effectiveTranscriptionLanguage
           let audioSeconds = Double(audioData.count) / (16000.0 * 2.0)
-          log("PushToTalkManager: batch audio \(audioData.count) bytes (\(String(format: "%.1f", audioSeconds))s), language=\(language)")
+          let keyterms = await self.awaitScreenContextKeyterms()
+          log("PushToTalkManager: batch audio \(audioData.count) bytes (\(String(format: "%.1f", audioSeconds))s), language=\(language), keyterms=\(keyterms.count)")
 
           // First attempt with the user's effective language (usually "multi")
           var transcript = try await TranscriptionService.batchTranscribe(
             audioData: audioData,
-            language: language
+            language: language,
+            keywords: keyterms
           )
 
           // If multi-language detection returned empty on short audio (<5s),
@@ -372,7 +385,8 @@ class PushToTalkManager: ObservableObject {
             log("PushToTalkManager: multi returned empty on short audio, retrying with '\(retryLang)'")
             transcript = try await TranscriptionService.batchTranscribe(
               audioData: audioData,
-              language: retryLang
+              language: retryLang,
+              keywords: keyterms
             )
           }
 
@@ -481,13 +495,27 @@ class PushToTalkManager: ObservableObject {
       startMicCapture(batchMode: true)
       log("PushToTalkManager: started audio capture (batch mode)")
     } else {
-      // Live mode: start mic capture and stream to Deepgram
+      // Live mode: start mic capture and stream to Deepgram.
+      // We start mic immediately so the user doesn't lose the first words
+      // while we wait for OCR; keyterms are attached to the WS handshake
+      // (best-effort — capped at 600ms in awaitScreenContextKeyterms).
       startMicCapture()
 
       do {
         let language = AssistantSettings.shared.effectiveTranscriptionLanguage
         let service = try TranscriptionService(language: language, channels: 1)
         transcriptionService = service
+
+        // Attach screen-context keyterms to the WS connection. We do this in
+        // a Task so the live mic doesn't block; the WS connect will pick up
+        // keywords whenever they land (or stay empty if OCR misses the
+        // window).
+        Task { [weak service] in
+          let keyterms = await self.awaitScreenContextKeyterms()
+          await MainActor.run {
+            service?.setKeywords(keyterms)
+          }
+        }
 
         service.start(
           onSegments: { [weak self] segments in
@@ -593,13 +621,12 @@ class PushToTalkManager: ObservableObject {
     }
     lastInterimText = ""
 
-    if state == .listening || state == .lockedListening {
-      let liveText = transcriptSegments.joined(separator: " ")
-      barState?.voiceTranscript = liveText
-      if isCurrentSessionFollowUp {
-        barState?.voiceFollowUpTranscript = liveText
-      }
-    }
+    // We deliberately do NOT push interim text into voiceTranscript /
+    // voiceFollowUpTranscript here. Live word-by-word display flickers and
+    // shows pre-correction tokens (mis-heard names, dropped words) that the
+    // final pass will fix. The hint label ("Release ⌥ to send" / "Listening…")
+    // stays visible while we listen, and the final transcript shows up in the
+    // input via sendTranscript → openAIInputWithQuery.
 
     // In finalizing state, segments mean backend is done — send immediately
     if state == .finalizing {
@@ -609,6 +636,134 @@ class PushToTalkManager: ObservableObject {
       sendTranscript()
     }
   }
+
+  // MARK: - Screen-context OCR for keyterm biasing
+
+  /// Capture the current screen and OCR it on a background task. Result is
+  /// fed to the transcribe call as keyterm bias so names/jargon visible on
+  /// screen survive the STT pass. Mirrors what Wispr Flow does with its
+  /// axParsedWords + ocrParsedWords pipeline.
+  private func captureScreenContextForBias() {
+    screenContextTask?.cancel()
+    let captureStart = Date()
+    screenContextTask = Task.detached(priority: .userInitiated) {
+      // Always include the product-name keyterms even if OCR fails or returns
+      // nothing — Deepgram should never mishear "Omi" as "homie".
+      let baseline = Self.alwaysOnKeyterms
+      guard let screenshotData = ScreenCaptureManager.captureScreenData() else {
+        return baseline
+      }
+      do {
+        let text = try await RewindOCRService.shared.extractText(from: screenshotData)
+        let ocrWords = Self.extractKeytermsFromOCR(text)
+        let elapsed = Int(Date().timeIntervalSince(captureStart) * 1000)
+        let merged = Self.mergeKeyterms(baseline: baseline, ocrTokens: ocrWords)
+        log("PushToTalkManager: screen OCR yielded \(ocrWords.count) tokens, \(merged.count) total keyterms (with baseline) in \(elapsed)ms")
+        return merged
+      } catch {
+        logError("PushToTalkManager: screen OCR failed", error: error)
+        return baseline
+      }
+    }
+  }
+
+  /// Merge baseline always-on keyterms with screen-derived ones, preserving
+  /// baseline priority (they appear first in the list). Dedupes case-insensitively.
+  nonisolated static func mergeKeyterms(baseline: [String], ocrTokens: [String]) -> [String] {
+    var seen = Set<String>()
+    var out: [String] = []
+    for token in baseline + ocrTokens {
+      let key = token.lowercased()
+      if seen.contains(key) { continue }
+      seen.insert(key)
+      out.append(token)
+    }
+    return out
+  }
+
+  /// Wait briefly for screen OCR to land before firing transcribe. Capped at
+  /// `timeoutMs` so PTT never feels laggy if OCR stalls. Falls back to the
+  /// always-on baseline so "Omi" still gets biased even when OCR is missing.
+  private func awaitScreenContextKeyterms(timeoutMs: Int = 600) async -> [String] {
+    guard let task = screenContextTask else { return Self.alwaysOnKeyterms }
+    let timeoutNs = UInt64(timeoutMs) * 1_000_000
+    let waiter = Task<[String], Never> { await task.value }
+    let result = await withTaskGroup(of: [String]?.self) { group -> [String] in
+      group.addTask { await waiter.value }
+      group.addTask {
+        try? await Task.sleep(nanoseconds: timeoutNs)
+        return nil
+      }
+      for await value in group {
+        if let value = value {
+          group.cancelAll()
+          return value
+        } else {
+          // Timeout fired first — bail with the baseline so "Omi" is still biased.
+          group.cancelAll()
+          return Self.alwaysOnKeyterms
+        }
+      }
+      return Self.alwaysOnKeyterms
+    }
+    return result
+  }
+
+  /// Pull useful keyterm tokens out of OCR text. We drop short tokens, common
+  /// English stop words, and pure-punctuation noise; we keep capitalized
+  /// words, mixed-case / camelCase identifiers, and anything that looks like
+  /// a proper noun. Caps total tokens to avoid overflowing Deepgram limits.
+  ///
+  /// Marked `nonisolated` so it can run inside a `Task.detached` block —
+  /// the function is pure and has no main-actor state.
+  nonisolated static func extractKeytermsFromOCR(_ text: String, maxTokens: Int = 80) -> [String] {
+    guard !text.isEmpty else { return [] }
+    let separators = CharacterSet.alphanumerics.inverted
+    let raw = text.components(separatedBy: separators)
+    var seen = Set<String>()
+    var keep: [String] = []
+    for token in raw {
+      let t = token.trimmingCharacters(in: .whitespaces)
+      if t.count < 3 || t.count > 32 { continue }
+      // skip pure-numeric runs
+      if t.allSatisfy({ $0.isNumber }) { continue }
+      // dedupe case-insensitively so we don't ship "Slack" and "slack" both
+      let key = t.lowercased()
+      if Self.ocrStopWords.contains(key) { continue }
+      if seen.contains(key) { continue }
+      // Prefer tokens that look like proper nouns / identifiers — capitalized
+      // first letter, or any uppercase letter past index 0 (camelCase),
+      // or contain digits (model names like "GPT4o", "M4").
+      let firstIsUpper = t.first?.isUppercase == true
+      let hasInnerUpper = t.dropFirst().contains(where: { $0.isUppercase })
+      let hasDigit = t.contains(where: { $0.isNumber })
+      guard firstIsUpper || hasInnerUpper || hasDigit else { continue }
+      seen.insert(key)
+      keep.append(t)
+      if keep.count >= maxTokens { break }
+    }
+    return keep
+  }
+
+  /// Always-on keyterm bias. Names of our own product and adjacent terms that
+  /// the STT mishears constantly ("Omi" → "Only", "Omi" → "homie", etc.).
+  /// Kept short — these are merged with screen-OCR keyterms before send.
+  nonisolated static let alwaysOnKeyterms: [String] = [
+    "Omi", "OMI", "Omi AI",
+  ]
+
+  /// English stop words we never want to ship as keyterms even if capitalized
+  /// (sentence-initial). Kept tight on purpose — biasing on real common words
+  /// hurts recognition of unrelated content.
+  nonisolated private static let ocrStopWords: Set<String> = [
+    "the", "and", "for", "you", "your", "with", "this", "that", "from", "have",
+    "are", "was", "were", "but", "not", "all", "can", "will", "would", "could",
+    "should", "into", "out", "about", "more", "less", "what", "when", "where",
+    "why", "how", "who", "which", "they", "them", "their", "there", "here",
+    "yes", "no", "ok", "okay", "new", "old", "open", "close", "save", "edit",
+    "view", "file", "menu", "search", "settings", "preferences", "help",
+    "show", "hide", "next", "back", "done", "cancel", "submit", "send",
+  ]
 
   // MARK: - Bar State Sync
 
