@@ -125,6 +125,11 @@ class TranscriptionService {
     private let audioBufferSize = 3200  // ~100ms of 16kHz 16-bit audio (16000 * 2 * 0.1)
     private let audioBufferLock = NSLock()
 
+    // Screen-context keyterm bias. Set before connect() to be picked up at
+    // WS handshake; setting after the socket is up is a no-op (Deepgram
+    // keyterm/keywords are a connect-time option).
+    private var pendingKeywords: [String] = []
+
     // MARK: - Initialization
 
     /// Initialize the transcription service for streaming.
@@ -160,6 +165,13 @@ class TranscriptionService {
     /// Routes to `/v2/voice-message/transcribe-stream` (PTT-only transcription).
     convenience init(language: String = "en", channels: Int) throws {
         try self.init(language: language, mode: .ptt)
+    }
+
+    /// Attach screen-context keyterms before WS connect. Effective on the
+    /// initial handshake only — Deepgram doesn't accept keyterm updates on
+    /// an open stream. Safe to call from any thread.
+    func setKeywords(_ keywords: [String]) {
+        pendingKeywords = keywords
     }
 
     /// Flush remaining audio and (for PTT mode) tell the backend to finalize transcription.
@@ -308,12 +320,17 @@ class TranscriptionService {
         case .ptt:
             // PTT-only transcription — no conversation lifecycle
             path = "/v2/voice-message/transcribe-stream"
-            queryItems = [
+            var items: [URLQueryItem] = [
                 URLQueryItem(name: "language", value: language),
                 URLQueryItem(name: "sample_rate", value: String(sampleRate)),
                 URLQueryItem(name: "codec", value: encoding),
                 URLQueryItem(name: "channels", value: String(channels)),
             ]
+            if !pendingKeywords.isEmpty {
+                // Comma-joined; backend splits and forwards to Deepgram.
+                items.append(URLQueryItem(name: "keywords", value: pendingKeywords.joined(separator: ",")))
+            }
+            queryItems = items
         }
 
         guard var components = URLComponents(string: "\(wsBase)\(path)") else {
@@ -541,7 +558,8 @@ extension TranscriptionService {
     static func batchTranscribe(
         audioData: Data,
         language: String = "en",
-        apiKey: String? = nil
+        apiKey: String? = nil,
+        keywords: [String] = []
     ) async throws -> String? {
         // Always use Firebase auth + Python backend
         let authService = await MainActor.run { AuthService.shared }
@@ -551,12 +569,16 @@ extension TranscriptionService {
         guard var components = URLComponents(string: baseURLString) else {
             throw TranscriptionError.connectionFailed(NSError(domain: "Invalid backend URL", code: -1))
         }
-        components.queryItems = [
+        var items: [URLQueryItem] = [
             URLQueryItem(name: "language", value: language),
             URLQueryItem(name: "sample_rate", value: "16000"),
             URLQueryItem(name: "encoding", value: "linear16"),
             URLQueryItem(name: "channels", value: "1"),
         ]
+        if !keywords.isEmpty {
+            items.append(URLQueryItem(name: "keywords", value: keywords.joined(separator: ",")))
+        }
+        components.queryItems = items
 
         guard let url = components.url else {
             throw TranscriptionError.connectionFailed(NSError(domain: "Invalid URL", code: -1))
