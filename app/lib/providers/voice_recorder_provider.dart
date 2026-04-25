@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math' as math;
 import 'dart:typed_data';
@@ -22,6 +23,7 @@ enum VoiceRecorderState { idle, recording, transcribing, transcribeSuccess, tran
 
 class VoiceRecorderProvider extends ChangeNotifier {
   static const _wavPathKey = 'voice_recorder_pending_wav_path';
+  static const _chunkTranscriptsKey = 'voice_recorder_pending_chunk_transcripts';
 
   /// Maximum WAV chunk size in bytes (10 MB of PCM data per chunk).
   /// Each chunk gets its own 44-byte WAV header so the backend can decode it independently.
@@ -38,6 +40,12 @@ class VoiceRecorderProvider extends ChangeNotifier {
 
   // Persisted WAV file for retry (kept until transcription succeeds or user closes)
   File? _wavFile;
+
+  // Per-chunk transcripts cache. Index aligns with the chunks emitted by
+  // splitWavFileIfNeeded for the current WAV. A non-null entry means that
+  // chunk was already transcribed successfully on a prior attempt and should
+  // be skipped on retry. Persisted to SharedPreferences alongside the WAV.
+  List<String?>? _chunkTranscripts;
 
   // Audio visualization
   final List<double> _audioLevels = List.generate(20, (_) => 0.1);
@@ -64,12 +72,40 @@ class VoiceRecorderProvider extends ChangeNotifier {
     final file = File(path);
     if (file.existsSync()) {
       _wavFile = file;
+      _chunkTranscripts = _loadChunkTranscriptsFromPrefs();
       _state = VoiceRecorderState.pendingRecovery;
       notifyListeners();
     } else {
       // File was cleaned up externally — clear the stale preference
       await SharedPreferencesUtil().remove(_wavPathKey);
+      await SharedPreferencesUtil().remove(_chunkTranscriptsKey);
     }
+  }
+
+  List<String?>? _loadChunkTranscriptsFromPrefs() {
+    final raw = SharedPreferencesUtil().getString(_chunkTranscriptsKey);
+    if (raw.isEmpty) return null;
+    try {
+      final decoded = jsonDecode(raw);
+      if (decoded is! List) return null;
+      return decoded.map<String?>((e) => e is String ? e : null).toList();
+    } catch (e) {
+      Logger.debug('Failed to decode chunk transcripts: $e');
+      return null;
+    }
+  }
+
+  Future<void> _persistChunkTranscripts(List<String?> transcripts) async {
+    _chunkTranscripts = List<String?>.from(transcripts);
+    await SharedPreferencesUtil().saveString(
+      _chunkTranscriptsKey,
+      jsonEncode(transcripts),
+    );
+  }
+
+  Future<void> _clearChunkTranscripts() async {
+    _chunkTranscripts = null;
+    await SharedPreferencesUtil().remove(_chunkTranscriptsKey);
   }
 
   void setCallbacks({Function(String transcript)? onTranscriptReady, VoidCallback? onClose}) {
@@ -217,19 +253,7 @@ class VoiceRecorderProvider extends ChangeNotifier {
       // Split into chunks if the WAV is large, then transcribe
       final chunks = await splitWavFileIfNeeded(_wavFile!, 16000, 1);
       try {
-        final transcript = await transcribeVoiceMessage(chunks);
-        _transcript = transcript;
-        _state = VoiceRecorderState.transcribeSuccess;
-        _isProcessing = false;
-        notifyListeners();
-
-        if (transcript.isNotEmpty) {
-          _onTranscriptReady?.call(transcript);
-          close();
-        } else {
-          Logger.debug('Empty transcript received, closing without error');
-          close();
-        }
+        await _runTranscription(chunks);
       } finally {
         _cleanupChunkFiles(chunks);
       }
@@ -271,24 +295,59 @@ class VoiceRecorderProvider extends ChangeNotifier {
     try {
       final chunks = await splitWavFileIfNeeded(_wavFile!, 16000, 1);
       try {
-        final transcript = await transcribeVoiceMessage(chunks);
-        _transcript = transcript;
-        _state = VoiceRecorderState.transcribeSuccess;
-        _isProcessing = false;
-        notifyListeners();
-
-        if (transcript.isNotEmpty) {
-          _onTranscriptReady?.call(transcript);
-          close();
-        } else {
-          Logger.debug('Empty transcript received on retry, closing without error');
-          close();
-        }
+        await _runTranscription(chunks);
       } finally {
         _cleanupChunkFiles(chunks);
       }
     } catch (e) {
       Logger.debug('Error retrying transcription: $e');
+      _state = VoiceRecorderState.transcribeFailed;
+      _isProcessing = false;
+      notifyListeners();
+      AppSnackbar.showSnackbarError(
+        globalNavigatorKey.currentContext?.l10n.voiceFailedToTranscribe ?? 'Failed to transcribe audio',
+      );
+    }
+  }
+
+  /// Shared upload + result handling for [processRecording] and
+  /// [_retryTranscription]. Resumes from any per-chunk transcripts persisted
+  /// on a prior attempt and persists progress as each chunk completes.
+  ///
+  /// On non-empty transcript: closes the recorder (audio is consumed by the
+  /// caller via [_onTranscriptReady]). On empty transcript: treats it as a
+  /// failure, clears the chunk cache, and keeps the WAV so the user can
+  /// retry or dismiss.
+  ///
+  /// Errors propagate to the caller's catch block.
+  Future<void> _runTranscription(List<File> chunks) async {
+    final cache = _chunkTranscripts != null && _chunkTranscripts!.length == chunks.length
+        ? List<String?>.from(_chunkTranscripts!)
+        : List<String?>.filled(chunks.length, null);
+
+    final transcript = await transcribeVoiceMessage(
+      chunks,
+      existingTranscripts: cache,
+      onChunkSuccess: (i, t) async {
+        cache[i] = t;
+        await _persistChunkTranscripts(cache);
+      },
+    );
+
+    _transcript = transcript;
+
+    if (transcript.isNotEmpty) {
+      _state = VoiceRecorderState.transcribeSuccess;
+      _isProcessing = false;
+      notifyListeners();
+      _onTranscriptReady?.call(transcript);
+      close();
+    } else {
+      // All chunks uploaded but produced no speech. Treat as failure so the
+      // user sees feedback and can dismiss or re-record. Reset the chunk
+      // cache so the next refresh actually re-uploads.
+      Logger.debug('Empty transcript received, treating as failure');
+      await _clearChunkTranscripts();
       _state = VoiceRecorderState.transcribeFailed;
       _isProcessing = false;
       notifyListeners();
@@ -347,6 +406,7 @@ class VoiceRecorderProvider extends ChangeNotifier {
     }
     _wavFile = null;
     await SharedPreferencesUtil().remove(_wavPathKey);
+    await _clearChunkTranscripts();
   }
 
   /// Split a WAV file into multiple chunk files if it exceeds [maxChunkPcmBytes].
