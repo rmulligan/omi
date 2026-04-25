@@ -70,6 +70,38 @@ _WS_IDLE_TIMEOUT_S = 60
 # Prevents memory exhaustion from oversized payloads regardless of budget.
 _MAX_PCM_BODY_BYTES = 200_000_000
 
+# Limits for the optional client-supplied keyterm bias on /v2/voice-message/transcribe[-stream].
+# Deepgram caps keyterm count and individual lengths; we trim well below those
+# to stay safe and to keep the per-request bias focused.
+_MAX_TRANSCRIBE_KEYWORDS = 80
+_MAX_TRANSCRIBE_KEYWORD_LEN = 32
+
+
+def _parse_transcribe_keywords(raw: Optional[str]) -> List[str]:
+    """Parse comma-separated keyterm hints from a query param.
+
+    Strips whitespace, drops empties, dedupes case-insensitively, caps length
+    and total count. Returns an empty list when the param is missing or junk.
+    """
+    if not raw:
+        return []
+    seen: set = set()
+    result: List[str] = []
+    for part in raw.split(","):
+        token = part.strip()
+        if not token:
+            continue
+        if len(token) > _MAX_TRANSCRIBE_KEYWORD_LEN:
+            continue
+        key = token.lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        result.append(token)
+        if len(result) >= _MAX_TRANSCRIBE_KEYWORDS:
+            break
+    return result
+
 
 def filter_messages(messages, app_id):
     logger.info(f'filter_messages {len(messages)} {app_id}')
@@ -520,6 +552,10 @@ async def transcribe_voice_message(
             del audio_bytes
             raise HTTPException(status_code=429, detail='Daily transcription budget exhausted')
 
+        # Optional comma-separated keyterm bias (desktop PTT sends OCR-extracted
+        # tokens from the user's screen so names/jargon survive STT).
+        keywords = _parse_transcribe_keywords(request.query_params.get("keywords"))
+
         resolved_language = resolve_voice_message_language(uid, language)
         try:
             transcript, detected_language = transcribe_pcm_bytes(
@@ -529,6 +565,7 @@ async def transcribe_voice_message(
                 encoding=encoding,
                 sample_rate=sample_rate,
                 channels=channels,
+                keywords=keywords,
             )
         except RuntimeError as e:
             logger.error(f'PCM transcription failed: {e}')
@@ -660,6 +697,7 @@ async def transcribe_voice_message_stream(
     sample_rate: int = 16000,
     codec: str = 'linear16',
     channels: int = 1,
+    keywords: Optional[str] = None,
 ):
     """WebSocket endpoint for PTT live mode transcription-only streaming.
 
@@ -756,6 +794,8 @@ async def transcribe_voice_message_stream(
                 websocket_active = False
                 break
 
+    parsed_keywords = _parse_transcribe_keywords(keywords)
+
     try:
         dg_socket = await process_audio_dg(
             stream_transcript,
@@ -763,6 +803,7 @@ async def transcribe_voice_message_stream(
             sample_rate=sample_rate,
             channels=channels,
             model=stt_model,
+            keywords=parsed_keywords,
             is_active=lambda: websocket_active,
         )
 
