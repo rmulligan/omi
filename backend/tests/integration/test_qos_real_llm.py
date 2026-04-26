@@ -127,6 +127,8 @@ class TestPremiumNano:
         'conv_discard',
         'smart_glasses',
         'persona_chat',
+        'daily_summary_simple',
+        'memory_category',
     ]
 
     @pytest.mark.parametrize("feature", NANO_FEATURES)
@@ -161,8 +163,6 @@ class TestPremiumGemini:
     """Test gemini-2.5-flash-lite features in premium profile respond to real prompts."""
 
     GEMINI_FEATURES = [
-        'daily_summary_simple',
-        'memory_category',
         'session_titles',
         'followup',
         'onboarding',
