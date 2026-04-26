@@ -28,7 +28,8 @@ const GEMINI_ALLOWED_ACTIONS: &[&str] = &[
 ];
 
 // Allowed Gemini models — driven by model_qos (issue #6834).
-// Desktop app uses: gemini-3-flash-preview (all features), gemini-embedding-001 (embeddings).
+// Desktop app uses: gemini-2.5-flash or gemini-2.5-pro (tier-dependent), gemini-embedding-001.
+// Provider routing: stable models → Vertex AI, embeddings/preview → AI Studio.
 // Rate limiting may degrade requests above soft limit.
 
 /// Maximum request body size for Gemini proxy routes (5 MB).
@@ -116,14 +117,15 @@ async fn gemini_proxy(
     }
 
     // Build request: Vertex AI (Bearer token) or AI Studio (API key).
-    // Embedding actions (embedContent, batchEmbedContents) always use AI Studio —
-    // Vertex AI does not support the embedding model via this endpoint format.
+    // Routing uses model_qos::is_vertex_available() to decide per-model:
+    //   - Stable models (gemini-2.5-flash, gemini-2.5-pro) → Vertex AI
+    //   - Embedding models, preview models → AI Studio
     // Falls back to AI Studio if Vertex AI token fetch fails at request time.
-    let is_embed = action == "embedContent" || action == "batchEmbedContents";
+    let use_vertex_for_model = crate::llm::model_qos::is_vertex_available(model);
     let mut used_vertex = false;
     let upstream = if let Some(ref vertex) = state.vertex_auth {
-        if is_embed {
-            // Embedding actions: skip Vertex AI, use AI Studio directly
+        if !use_vertex_for_model {
+            // Model not on Vertex AI (embeddings, preview) → AI Studio directly
             let gemini_key = state
                 .config
                 .gemini_api_key
@@ -249,9 +251,22 @@ async fn gemini_stream_proxy(
         );
     }
 
-    // Build request: Vertex AI (Bearer token) or AI Studio (API key).
-    // Falls back to AI Studio if Vertex AI token fetch fails at request time.
+    // Build request: Vertex AI or AI Studio, based on model availability.
+    // Uses model_qos::is_vertex_available() — same routing logic as non-streaming proxy.
+    let use_vertex_for_model = crate::llm::model_qos::is_vertex_available(model);
     let upstream = if let Some(ref vertex) = state.vertex_auth {
+        if !use_vertex_for_model {
+            // Model not on Vertex AI → AI Studio directly
+            let gemini_key = state.config.gemini_api_key.as_ref()
+                .ok_or(ProxyError::Status(StatusCode::SERVICE_UNAVAILABLE))?;
+            let upstream_url = build_gemini_stream_url(&effective_path, gemini_key, &query);
+            reqwest::Client::new()
+                .post(&upstream_url)
+                .header("content-type", "application/json")
+                .body(sanitized_body)
+                .send()
+                .await
+        } else {
         let mut url = vertex.build_url_from_path(&effective_path).ok_or_else(|| {
             tracing::error!("gemini_stream_proxy: failed to parse path for Vertex AI: {}", effective_path);
             ProxyError::Status(StatusCode::BAD_REQUEST)
@@ -289,6 +304,7 @@ async fn gemini_stream_proxy(
                 }
             }
         }
+        } // close else (use_vertex_for_model)
     } else {
         let gemini_key = state
             .config
@@ -538,7 +554,7 @@ fn extract_gemini_action(path: &str) -> &str {
     path.rsplit(':').next().unwrap_or("")
 }
 
-/// Extract the model from a Gemini API path (e.g., "models/gemini-3-flash-preview:generateContent" → "gemini-3-flash-preview")
+/// Extract the model from a Gemini API path (e.g., "models/gemini-2.5-flash:generateContent" → "gemini-2.5-flash")
 fn extract_gemini_model(path: &str) -> &str {
     path.strip_prefix("models/")
         .and_then(|rest| rest.split(':').next())
@@ -778,16 +794,16 @@ mod tests {
     #[test]
     fn extract_model_flash() {
         assert_eq!(
-            extract_gemini_model("models/gemini-3-flash-preview:generateContent"),
-            "gemini-3-flash-preview"
+            extract_gemini_model("models/gemini-2.5-flash:generateContent"),
+            "gemini-2.5-flash"
         );
     }
 
     #[test]
     fn extract_model_pro() {
         assert_eq!(
-            extract_gemini_model("models/gemini-pro-latest:streamGenerateContent"),
-            "gemini-pro-latest"
+            extract_gemini_model("models/gemini-2.5-pro:streamGenerateContent"),
+            "gemini-2.5-pro"
         );
     }
 
@@ -813,23 +829,24 @@ mod tests {
 
     #[test]
     fn model_allowlist_permits_valid_models() {
-        assert!(is_gemini_model_allowed("gemini-3-flash-preview"));
+        assert!(is_gemini_model_allowed("gemini-2.5-flash"));
+        assert!(is_gemini_model_allowed("gemini-2.5-pro"));
         assert!(is_gemini_model_allowed("gemini-embedding-001"));
     }
 
     #[test]
     fn model_allowlist_blocks_unknown() {
-        assert!(!is_gemini_model_allowed("gemini-pro-latest"), "pro removed from allowlist");
-        assert!(!is_gemini_model_allowed("gemini-2.5-pro"));
+        assert!(!is_gemini_model_allowed("gemini-pro-latest"), "legacy pro not in allowlist");
         assert!(!is_gemini_model_allowed("gemini-1.5-pro"));
         assert!(!is_gemini_model_allowed("gemini-ultra"));
+        assert!(!is_gemini_model_allowed("gemini-3-flash-preview"), "preview not in allowlist");
         assert!(!is_gemini_model_allowed(""));
     }
 
     #[test]
     fn model_allowlist_blocks_prefix_bypass() {
-        assert!(!is_gemini_model_allowed("gemini-3-flash-preview-exp"));
-        assert!(!is_gemini_model_allowed("gemini-pro-latest-2"));
+        assert!(!is_gemini_model_allowed("gemini-2.5-flash-exp"));
+        assert!(!is_gemini_model_allowed("gemini-2.5-pro-latest"));
     }
 
     // --- Body sanitization ---
