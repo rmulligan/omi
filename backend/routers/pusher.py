@@ -77,6 +77,7 @@ def _is_retriable_byok_llm_error(error: Exception) -> bool:
             'authentication',
             'error code: 401',
             'error code: 429',
+            'error processing conversation',
         )
     )
 
