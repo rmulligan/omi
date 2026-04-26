@@ -1212,4 +1212,17 @@ mod tests {
         // In test env (premium tier), extraction == default == flash
         assert_eq!(client.model, "gemini-3-flash-preview");
     }
+
+    #[test]
+    fn with_vertex_none_leaves_vertex_auth_none() {
+        let client = LlmClient::new("test-key".to_string()).with_vertex(None);
+        assert!(client.vertex_auth.is_none());
+    }
+
+    #[test]
+    fn new_without_vertex_has_api_key() {
+        let client = LlmClient::new("my-key".to_string());
+        assert_eq!(client.api_key, "my-key");
+        assert!(client.vertex_auth.is_none());
+    }
 }
