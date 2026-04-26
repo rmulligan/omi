@@ -170,7 +170,7 @@ def get_openai_chat(model: str, **kwargs) -> ChatOpenAI:
 # Profiles:
 #   premium  — maximize cost savings while preserving 80% of max quality
 #   max      — 100% quality, best models available, no cost optimization
-#   byok     — BYOK users get max quality (they pay their own API costs)
+#   byok     — exact copy of max (BYOK users pay their own API costs)
 # ---------------------------------------------------------------------------
 
 MODEL_QOS_PROFILES: Dict[str, Dict[str, Tuple[str, str]]] = {
@@ -276,50 +276,52 @@ MODEL_QOS_PROFILES: Dict[str, Dict[str, Tuple[str, str]]] = {
         'web_search': ('sonar-pro', 'perplexity'),
     },
     # -----------------------------------------------------------------------
-    # byok — BYOK users get max quality (they pay their own API costs).
-    # All-OpenAI: gpt-5.4 flagship, gpt-5.4-mini quality, o4-mini reasoning,
-    # gpt-4.1-mini simple. No Gemini — BYOK keys are OpenAI keys.
+    # byok — exact copy of max. BYOK users pay their own API costs so they
+    # get the same best-quality routing as max subscribers.
     # -----------------------------------------------------------------------
     'byok': {
-        # gpt-5.4 — top-tier flagship
+        # OpenAI — conversation processing
         'conv_action_items': ('gpt-5.4', 'openai'),
         'conv_structure': ('gpt-5.4', 'openai'),
         'conv_app_result': ('gpt-5.4', 'openai'),
-        'daily_summary': ('gpt-5.4', 'openai'),
-        'chat_responses': ('gpt-5.4', 'openai'),
-        'goals_advice': ('gpt-5.4', 'openai'),
-        'app_generator': ('gpt-5.4', 'openai'),
-        'persona_clone': ('gpt-5.4', 'openai'),
-        'persona_chat_premium': ('gpt-5.4', 'openai'),
-        'notifications': ('gpt-5.4', 'openai'),
-        'chat_graph': ('gpt-5.4', 'openai'),
-        # o4-mini — reasoning tier
-        'learnings': ('o4-mini', 'openai'),
-        # gpt-5.4-mini — quality tier (upgraded from gpt-4.1-mini)
-        'external_structure': ('gpt-5.4-mini', 'openai'),
-        'memories': ('gpt-5.4-mini', 'openai'),
-        'memory_conflict': ('gpt-5.4-mini', 'openai'),
-        'knowledge_graph': ('gpt-5.4-mini', 'openai'),
-        'chat_extraction': ('gpt-5.4-mini', 'openai'),
-        'goals': ('gpt-5.4-mini', 'openai'),
-        'proactive_notification': ('gpt-5.4-mini', 'openai'),
-        'openglass': ('gpt-5.4-mini', 'openai'),
-        'smart_glasses': ('gpt-5.4-mini', 'openai'),
-        # gpt-4.1-mini — simple tasks (upgraded from gpt-4.1-nano)
         'conv_app_select': ('gpt-4.1-mini', 'openai'),
         'conv_folder': ('gpt-4.1-mini', 'openai'),
         'conv_discard': ('gpt-4.1-mini', 'openai'),
-        'persona_chat': ('gpt-4.1-mini', 'openai'),
+        'daily_summary': ('gpt-5.4', 'openai'),
         'daily_summary_simple': ('gpt-4.1-mini', 'openai'),
+        'external_structure': ('gpt-4.1-mini', 'openai'),
+        # OpenAI — memories & knowledge
+        'memories': ('gpt-4.1-mini', 'openai'),
+        'learnings': ('o4-mini', 'openai'),
+        'memory_conflict': ('gpt-4.1-mini', 'openai'),
         'memory_category': ('gpt-4.1-mini', 'openai'),
+        'knowledge_graph': ('gpt-4.1-mini', 'openai'),
+        # OpenAI — chat
+        'chat_responses': ('gpt-5.4', 'openai'),
+        'chat_extraction': ('gpt-4.1-mini', 'openai'),
+        'chat_graph': ('gpt-4.1', 'openai'),
         'session_titles': ('gpt-4.1-mini', 'openai'),
+        # Features
+        'goals': ('gpt-4.1-mini', 'openai'),
+        'goals_advice': ('gpt-5.4', 'openai'),
+        'notifications': ('gpt-5.4', 'openai'),
+        'proactive_notification': ('gpt-4.1-mini', 'openai'),
         'followup': ('gpt-4.1-mini', 'openai'),
+        'smart_glasses': ('gpt-4.1-mini', 'openai'),
+        'openglass': ('gpt-4.1-mini', 'openai'),
         'onboarding': ('gpt-4.1-mini', 'openai'),
+        'app_generator': ('gpt-5.4', 'openai'),
         'app_integration': ('gpt-4.1-mini', 'openai'),
+        'persona_clone': ('gpt-5.4', 'openai'),
         'trends': ('gpt-4.1-mini', 'openai'),
-        # Keep on original provider
+        # Anthropic
         'chat_agent': ('claude-sonnet-4-6', 'anthropic'),
+        # Persona
+        'persona_chat': ('gpt-4.1-nano', 'openai'),
+        'persona_chat_premium': ('gpt-5.4-mini', 'openai'),
+        # OpenRouter
         'wrapped_analysis': ('gemini-3-flash-preview', 'openrouter'),
+        # Perplexity
         'web_search': ('sonar-pro', 'perplexity'),
     },
 }

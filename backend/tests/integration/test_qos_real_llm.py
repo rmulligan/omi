@@ -258,7 +258,7 @@ class TestProfileRouting:
 
     def test_byok_profile_has_expected_variant_count(self):
         distinct = {model for model, _provider in MODEL_QOS_PROFILES['byok'].values()}
-        assert len(distinct) == 7, f"Expected 7 variants in byok, got {len(distinct)}: {distinct}"
+        assert len(distinct) == 9, f"Expected 9 variants in byok, got {len(distinct)}: {distinct}"
 
 
 # ---------------------------------------------------------------------------

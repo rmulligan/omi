@@ -817,67 +817,9 @@ class TestBYOKWrapperArchitecture:
 class TestBYOKProfile:
     """Verify BYOK QoS profile structure and model selections."""
 
-    def test_byok_all_openai_except_special(self):
-        """byok routes all features to OpenAI except chat_agent/web_search/wrapped_analysis."""
-        bk = MODEL_QOS_PROFILES['byok']
-        for feature, (model, provider) in bk.items():
-            if feature in ('chat_agent', 'web_search', 'wrapped_analysis'):
-                continue
-            assert provider == 'openai', f'byok {feature} should be openai, got {provider}'
-
-    def test_byok_uses_gpt54_flagship(self):
-        """byok uses gpt-5.4 for flagship features."""
-        bk = MODEL_QOS_PROFILES['byok']
-        for feature in [
-            'conv_action_items',
-            'conv_structure',
-            'conv_app_result',
-            'daily_summary',
-            'chat_responses',
-            'goals_advice',
-            'app_generator',
-            'persona_clone',
-            'persona_chat_premium',
-            'notifications',
-            'chat_graph',
-        ]:
-            assert bk[feature][0] == 'gpt-5.4', f'byok {feature} should be gpt-5.4, got {bk[feature][0]}'
-
-    def test_byok_uses_gpt54_mini_quality(self):
-        """byok upgrades quality tier to gpt-5.4-mini."""
-        bk = MODEL_QOS_PROFILES['byok']
-        for feature in [
-            'external_structure',
-            'memories',
-            'memory_conflict',
-            'knowledge_graph',
-            'chat_extraction',
-            'goals',
-            'proactive_notification',
-            'openglass',
-            'smart_glasses',
-        ]:
-            assert bk[feature][0] == 'gpt-5.4-mini', f'byok {feature} should be gpt-5.4-mini, got {bk[feature][0]}'
-
-    def test_byok_keeps_o4_mini_for_learnings(self):
-        """byok keeps o4-mini for learnings (reasoning model)."""
-        bk = MODEL_QOS_PROFILES['byok']
-        assert bk['learnings'] == ('o4-mini', 'openai')
-
-    def test_byok_model_variants(self):
-        """byok uses expected distinct model IDs."""
-        bk = MODEL_QOS_PROFILES['byok']
-        distinct = {model for model, _p in bk.values()}
-        expected = {
-            'gpt-5.4',
-            'gpt-5.4-mini',
-            'gpt-4.1-mini',
-            'o4-mini',
-            'claude-sonnet-4-6',
-            'gemini-3-flash-preview',
-            'sonar-pro',
-        }
-        assert distinct == expected
+    def test_byok_is_exact_copy_of_max(self):
+        """byok must be an exact copy of max (BYOK users pay their own costs)."""
+        assert MODEL_QOS_PROFILES['byok'] == MODEL_QOS_PROFILES['max']
 
     def test_byok_has_same_features_as_premium(self):
         """BYOK profile must cover the same feature set as premium."""
