@@ -60,6 +60,7 @@ fn gemini_extraction_for(_tier: ModelTier) -> &'static str {
 pub fn gemini_proxy_allowed() -> &'static [&'static str] {
     &[
         "gemini-3-flash-preview",
+        "gemini-2.5-flash",
         "gemini-embedding-001",
     ]
 }
