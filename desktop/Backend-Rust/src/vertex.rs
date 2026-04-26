@@ -50,30 +50,21 @@ impl VertexAuth {
     }
 
     /// Build Vertex AI URL for a Gemini model action.
-    ///
-    /// Vertex AI URL: `https://{location}-aiplatform.googleapis.com/v1/projects/{project}/locations/{location}/publishers/google/models/{model}:{action}`
     pub fn build_url(&self, model: &str, action: &str) -> String {
-        format!(
-            "https://{location}-aiplatform.googleapis.com/v1/projects/{project}/locations/{location}/publishers/google/models/{model}:{action}",
-            location = self.location,
-            project = self.project_id,
-            model = model,
-            action = action,
-        )
+        build_vertex_url(&self.project_id, &self.location, model, action)
     }
 
     /// Build Vertex AI URL from an AI Studio-style path like "models/gemini-3-flash-preview:generateContent".
     /// Returns the full Vertex AI URL, or None if the path can't be parsed.
     pub fn build_url_from_path(&self, path: &str) -> Option<String> {
-        let rest = path.strip_prefix("models/")?;
-        let (model, action) = rest.split_once(':')?;
+        let (model, action) = parse_ai_studio_path(path)?;
         Some(self.build_url(model, action))
     }
 }
 
-/// Standalone URL builder for testing (no auth needed).
-/// Same logic as VertexAuth methods but without requiring a provider.
-#[cfg(test)]
+/// Build a Vertex AI URL from components.
+///
+/// `https://{location}-aiplatform.googleapis.com/v1/projects/{project}/locations/{location}/publishers/google/models/{model}:{action}`
 fn build_vertex_url(project: &str, location: &str, model: &str, action: &str) -> String {
     format!(
         "https://{location}-aiplatform.googleapis.com/v1/projects/{project}/locations/{location}/publishers/google/models/{model}:{action}",
@@ -84,8 +75,7 @@ fn build_vertex_url(project: &str, location: &str, model: &str, action: &str) ->
     )
 }
 
-/// Parse an AI Studio path into (model, action).
-#[cfg(test)]
+/// Parse an AI Studio-style path ("models/{model}:{action}") into (model, action).
 fn parse_ai_studio_path(path: &str) -> Option<(&str, &str)> {
     let rest = path.strip_prefix("models/")?;
     rest.split_once(':')
