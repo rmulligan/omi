@@ -94,9 +94,12 @@ pub fn gemini_degrade_target() -> &'static str {
 
 /// Models available on Vertex AI (GA, confirmed working on based-hardware-dev).
 /// Models NOT in this list must route through AI Studio even when USE_VERTEX_AI=true.
+/// Note: gemini-embedding-001 uses `:predict` action on Vertex (not `:embedContent`),
+/// and requires request/response body transformation — handled in the proxy.
 const VERTEX_AI_MODELS: &[&str] = &[
     "gemini-2.5-flash",
     "gemini-2.5-pro",
+    "gemini-embedding-001",
 ];
 
 /// Check if a model is available on Vertex AI.
@@ -245,11 +248,11 @@ mod tests {
     fn vertex_available_for_stable_models() {
         assert!(is_vertex_available("gemini-2.5-flash"));
         assert!(is_vertex_available("gemini-2.5-pro"));
+        assert!(is_vertex_available("gemini-embedding-001"));
     }
 
     #[test]
-    fn vertex_not_available_for_embeddings_and_preview() {
-        assert!(!is_vertex_available("gemini-embedding-001"));
+    fn vertex_not_available_for_preview() {
         assert!(!is_vertex_available("gemini-3-flash-preview"));
     }
 
@@ -257,7 +260,7 @@ mod tests {
     fn preferred_provider_routes_correctly() {
         assert_eq!(preferred_provider("gemini-2.5-flash"), Provider::VertexAi);
         assert_eq!(preferred_provider("gemini-2.5-pro"), Provider::VertexAi);
-        assert_eq!(preferred_provider("gemini-embedding-001"), Provider::AiStudio);
+        assert_eq!(preferred_provider("gemini-embedding-001"), Provider::VertexAi);
         assert_eq!(preferred_provider("gemini-3-flash-preview"), Provider::AiStudio);
     }
 
