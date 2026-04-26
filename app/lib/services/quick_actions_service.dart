@@ -49,7 +49,7 @@ class QuickActionsService {
     final captureProvider = Provider.of<CaptureProvider>(context, listen: false);
 
     final isDeviceConnected = deviceProvider.isConnected;
-    final isMuted = captureProvider.recordingState.name == 'pause';
+    final isMuted = captureProvider.recordingState == RecordingState.pause;
 
     // iOS displays items in reverse array order (last = top of menu).
     // Desired display (top→bottom): Add Task / Ask Omi Anything / Voice Mode / [Mute|Unmute] / Connect Device|Device Settings
