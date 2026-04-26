@@ -456,22 +456,26 @@ def _get_or_create_gemini_llm(model_name: str, streaming: bool = False) -> BaseC
     """Get or create a cached ChatGoogleGenerativeAI for a Gemini model via native SDK.
 
     Routing priority:
-      1. GOOGLE_CLOUD_PROJECT set → Vertex AI (uses ADC / google-credentials.json, paid quota)
+      1. USE_VERTEX_AI=true + GOOGLE_CLOUD_PROJECT → Vertex AI (ADC, paid quota, ~34% savings with EDP)
       2. GEMINI_API_KEY set → AI Studio (paid-tier key, no OpenAI-compat rate limits)
       3. Neither → placeholder that fails at invoke time (unit tests)
+
+    Vertex AI requires explicit opt-in via USE_VERTEX_AI=true because GOOGLE_CLOUD_PROJECT
+    is already set for Firestore and the service account may lack Vertex AI permissions.
 
     BYOK users still go through the OpenAI-compat endpoint via _create_byok_client().
     """
     key = (model_name, streaming, 'gemini')
     if key not in _llm_cache:
-        gcp_project = os.environ.get('GOOGLE_CLOUD_PROJECT', '')
+        use_vertex = os.environ.get('USE_VERTEX_AI', '').lower() == 'true'
+        gcp_project = os.environ.get('GOOGLE_CLOUD_PROJECT', '') if use_vertex else ''
         gemini_key = os.environ.get('GEMINI_API_KEY', '')
         kwargs: Dict[str, Any] = {'callbacks': [_usage_callback]}
         if streaming:
             kwargs['streaming'] = True
 
         if gcp_project:
-            # Vertex AI — uses ADC (GOOGLE_APPLICATION_CREDENTIALS), project-level paid quota
+            # Vertex AI — explicit opt-in, uses ADC (GOOGLE_APPLICATION_CREDENTIALS)
             gcp_location = os.environ.get('GCP_LOCATION', 'us-central1')
             _llm_cache[key] = ChatGoogleGenerativeAI(
                 model=model_name, project=gcp_project, location=gcp_location, **kwargs
@@ -482,7 +486,7 @@ def _get_or_create_gemini_llm(model_name: str, streaming: bool = False) -> BaseC
             _llm_cache[key] = ChatGoogleGenerativeAI(model=model_name, **kwargs)
         else:
             # No credentials — constructable placeholder, fails at invoke time
-            logger.warning('No GOOGLE_CLOUD_PROJECT or GEMINI_API_KEY — Gemini calls will fail at invoke time')
+            logger.warning('No USE_VERTEX_AI or GEMINI_API_KEY — Gemini calls will fail at invoke time')
             _llm_cache[key] = ChatOpenAI(
                 model=model_name, api_key='not-set', base_url=_GEMINI_OPENAI_BASE_URL, **kwargs
             )
