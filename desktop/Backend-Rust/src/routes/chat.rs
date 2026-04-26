@@ -249,15 +249,12 @@ async fn get_chat_context(
         None
     };
 
-    // Get LLM client (Vertex AI or API key)
-    let api_key = match (&state.vertex_auth, &state.config.gemini_api_key) {
-        (Some(_), _) => String::new(), // Vertex AI handles auth
-        (None, Some(key)) => key.clone(),
-        (None, None) => {
-            tracing::warn!("No Gemini API key configured, returning basic context");
-            return get_basic_context(&state.firestore, &user.uid, user.name.as_deref().unwrap_or("User"), &request).await;
-        }
-    };
+    // Get LLM client (Vertex AI or API key — always pass real key for fallback)
+    let api_key = state.config.gemini_api_key.clone().unwrap_or_default();
+    if state.vertex_auth.is_none() && api_key.is_empty() {
+        tracing::warn!("No Gemini API key configured, returning basic context");
+        return get_basic_context(&state.firestore, &user.uid, user.name.as_deref().unwrap_or("User"), &request).await;
+    }
 
     let llm = LlmClient::new(api_key).with_vertex(state.vertex_auth.clone());
 
@@ -362,22 +359,19 @@ async fn generate_initial_message(
         request.app_id
     );
 
-    // Get LLM client (Vertex AI or API key)
-    let api_key = match (&state.vertex_auth, &state.config.gemini_api_key) {
-        (Some(_), _) => String::new(),
-        (None, Some(key)) => key.clone(),
-        (None, None) => {
-            tracing::warn!("No Gemini API key configured, returning default greeting");
-            return save_and_return_greeting(
-                &state,
-                &user.uid,
-                &request.session_id,
-                request.app_id.as_deref(),
-                "Hello! I'm here to help. What's on your mind?",
-            )
-            .await;
-        }
-    };
+    // Get LLM client (Vertex AI or API key — always pass real key for fallback)
+    let api_key = state.config.gemini_api_key.clone().unwrap_or_default();
+    if state.vertex_auth.is_none() && api_key.is_empty() {
+        tracing::warn!("No Gemini API key configured, returning default greeting");
+        return save_and_return_greeting(
+            &state,
+            &user.uid,
+            &request.session_id,
+            request.app_id.as_deref(),
+            "Hello! I'm here to help. What's on your mind?",
+        )
+        .await;
+    }
 
     let llm = LlmClient::new(api_key).with_vertex(state.vertex_auth.clone());
 
@@ -478,17 +472,14 @@ async fn generate_session_title(
         request.messages.len()
     );
 
-    // Get LLM client (Vertex AI or API key)
-    let api_key = match (&state.vertex_auth, &state.config.gemini_api_key) {
-        (Some(_), _) => String::new(),
-        (None, Some(key)) => key.clone(),
-        (None, None) => {
-            tracing::warn!("No Gemini API key configured, returning default title");
-            return Ok(Json(GenerateTitleResponse {
-                title: "New Chat".to_string(),
-            }));
-        }
-    };
+    // Get LLM client (Vertex AI or API key — always pass real key for fallback)
+    let api_key = state.config.gemini_api_key.clone().unwrap_or_default();
+    if state.vertex_auth.is_none() && api_key.is_empty() {
+        tracing::warn!("No Gemini API key configured, returning default title");
+        return Ok(Json(GenerateTitleResponse {
+            title: "New Chat".to_string(),
+        }));
+    }
 
     let llm = LlmClient::new(api_key).with_vertex(state.vertex_auth.clone());
 
