@@ -237,27 +237,39 @@ impl LlmClient {
 
     /// Send a POST request to the Gemini generateContent endpoint.
     /// Routes through Vertex AI when vertex_auth is set, otherwise AI Studio.
+    /// Falls back to AI Studio API key if Vertex AI token fetch fails at request time.
     async fn post_generate_content<T: serde::Serialize>(
         &self,
         request: &T,
     ) -> Result<reqwest::Response, Box<dyn std::error::Error + Send + Sync>> {
         if let Some(ref vertex) = self.vertex_auth {
-            let url = vertex.build_url(&self.model, "generateContent");
-            let token = vertex.token().await?;
-            Ok(self
-                .client
-                .post(&url)
-                .header("authorization", format!("Bearer {}", token))
-                .json(request)
-                .send()
-                .await?)
-        } else {
-            let url = format!(
-                "https://generativelanguage.googleapis.com/v1beta/models/{}:generateContent?key={}",
-                self.model, self.api_key
-            );
-            Ok(self.client.post(&url).json(request).send().await?)
+            match vertex.token().await {
+                Ok(token) => {
+                    let url = vertex.build_url(&self.model, "generateContent");
+                    return Ok(self
+                        .client
+                        .post(&url)
+                        .header("authorization", format!("Bearer {}", token))
+                        .json(request)
+                        .send()
+                        .await?);
+                }
+                Err(e) => {
+                    // Fall back to AI Studio if API key is available
+                    if !self.api_key.is_empty() {
+                        tracing::warn!("Vertex AI token failed, falling back to API key: {}", e);
+                    } else {
+                        return Err(e);
+                    }
+                }
+            }
         }
+
+        let url = format!(
+            "https://generativelanguage.googleapis.com/v1beta/models/{}:generateContent?key={}",
+            self.model, self.api_key
+        );
+        Ok(self.client.post(&url).json(request).send().await?)
     }
 
     /// Call the LLM with a specific JSON schema for structured output
