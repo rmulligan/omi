@@ -78,7 +78,7 @@ async fn gemini_proxy(
     body: Bytes,
 ) -> Result<Response, ProxyError> {
     // Rewrite preview models to stable equivalents (old app compat)
-    let path = maybe_rewrite_preview_model(&path);
+    let path = crate::llm::model_qos::rewrite_preview_model(&path);
 
     // Validate the action is in our allowlist
     let action = extract_gemini_action(&path);
@@ -119,42 +119,35 @@ async fn gemini_proxy(
         );
     }
 
-    // Build request: Vertex AI (Bearer token) or AI Studio (API key).
-    // Routing uses model_qos::is_vertex_available() to decide per-model.
-    // Embedding special case: embedContent uses `:predict` on Vertex AI with
-    // body transformation; batchEmbedContents stays on AI Studio (single-text limit).
-    // Falls back to AI Studio if Vertex AI token fetch fails at request time.
-    let use_vertex_for_model = crate::llm::model_qos::is_vertex_available(model);
-    let is_batch_embed = action == "batchEmbedContents";
-    let is_single_embed = action == "embedContent";
+    // Resolve provider route: single dispatch point for all provider-specific behavior.
+    // Returns provider, action override, and body transforms needed.
+    use crate::llm::model_qos::{resolve_route, BodyTransform, Provider, ResponseTransform};
+    let route = resolve_route(model, action);
+
+    // Apply request body transform if needed (e.g., embedContent → predict format)
+    let request_body = match route.request_transform {
+        BodyTransform::EmbedToPredict => transform_embed_request_to_vertex(&sanitized_body)
+            .map_err(|e| {
+                tracing::warn!("gemini_proxy: embed body transform failed: {}", e);
+                ProxyError::Status(StatusCode::BAD_REQUEST)
+            })?,
+        BodyTransform::None => sanitized_body.clone(),
+    };
+
+    // Apply Vertex action override (e.g., :embedContent → :predict)
+    let vertex_path = if let Some(override_action) = route.vertex_action {
+        effective_path.replace(&format!(":{}", action), &format!(":{}", override_action))
+    } else {
+        effective_path.to_string()
+    };
+
+    // Build and send request: Vertex AI (Bearer token) or AI Studio (API key).
+    // Falls back to AI Studio if Vertex token fetch fails.
     let mut used_vertex = false;
-    let upstream = if let Some(ref vertex) = state.vertex_auth {
-        if !use_vertex_for_model || is_batch_embed {
-            // Model not on Vertex AI, or batch embed (Vertex only supports single text)
-            // → AI Studio directly
-            let gemini_key = state
-                .config
-                .gemini_api_key
-                .as_ref()
-                .ok_or(ProxyError::Status(StatusCode::SERVICE_UNAVAILABLE))?;
-            let url = build_gemini_url(&effective_path, gemini_key);
-            reqwest::Client::new()
-                .post(&url)
-                .header("content-type", "application/json")
-                .body(sanitized_body.clone())
-                .send()
-                .await
-        } else if is_single_embed {
-            // Single embed on Vertex AI: transform body and use :predict action
-            let vertex_body = transform_embed_request_to_vertex(&sanitized_body)
-                .map_err(|e| {
-                    tracing::warn!("gemini_proxy: embed body transform failed: {}", e);
-                    ProxyError::Status(StatusCode::BAD_REQUEST)
-                })?;
-            // Build URL with :predict instead of :embedContent
-            let predict_path = effective_path.replace(":embedContent", ":predict");
-            let url = vertex.build_url_from_path(&predict_path).ok_or_else(|| {
-                tracing::error!("gemini_proxy: failed to parse path for Vertex AI embed: {}", predict_path);
+    let upstream = if route.provider == Provider::VertexAi {
+        if let Some(ref vertex) = state.vertex_auth {
+            let url = vertex.build_url_from_path(&vertex_path).ok_or_else(|| {
+                tracing::error!("gemini_proxy: failed to parse path for Vertex AI: {}", vertex_path);
                 ProxyError::Status(StatusCode::BAD_REQUEST)
             })?;
             match vertex.token().await {
@@ -164,13 +157,13 @@ async fn gemini_proxy(
                         .post(&url)
                         .header("content-type", "application/json")
                         .header("authorization", format!("Bearer {}", token))
-                        .body(vertex_body)
+                        .body(request_body)
                         .send()
                         .await
                 }
                 Err(e) => {
                     if let Some(gemini_key) = state.config.gemini_api_key.as_ref() {
-                        tracing::warn!("gemini_proxy: Vertex AI token failed for embed, falling back: {}", e);
+                        tracing::warn!("gemini_proxy: Vertex AI token failed, falling back to API key: {}", e);
                         let url = build_gemini_url(&effective_path, gemini_key);
                         reqwest::Client::new()
                             .post(&url)
@@ -185,44 +178,20 @@ async fn gemini_proxy(
                 }
             }
         } else {
-            let url = vertex.build_url_from_path(&effective_path).ok_or_else(|| {
-                tracing::error!("gemini_proxy: failed to parse path for Vertex AI: {}", effective_path);
-                ProxyError::Status(StatusCode::BAD_REQUEST)
-            })?;
-            match vertex.token().await {
-                Ok(token) => {
-                    used_vertex = true;
-                    reqwest::Client::new()
-                        .post(&url)
-                        .header("content-type", "application/json")
-                        .header("authorization", format!("Bearer {}", token))
-                        .body(sanitized_body.clone())
-                        .send()
-                        .await
-                }
-                Err(e) => {
-                    // Fall back to AI Studio if API key is available
-                    if let Some(gemini_key) = state.config.gemini_api_key.as_ref() {
-                        tracing::warn!("gemini_proxy: Vertex AI token failed, falling back to API key: {}", e);
-                        let url = build_gemini_url(&effective_path, gemini_key);
-                        reqwest::Client::new()
-                            .post(&url)
-                            .header("content-type", "application/json")
-                            .body(sanitized_body.clone())
-                            .send()
-                            .await
-                    } else {
-                        tracing::error!("gemini_proxy: Vertex AI token error and no API key fallback: {}", e);
-                        return Err(ProxyError::Status(StatusCode::SERVICE_UNAVAILABLE));
-                    }
-                }
-            }
+            // Vertex AI requested but not configured → AI Studio
+            let gemini_key = state.config.gemini_api_key.as_ref()
+                .ok_or(ProxyError::Status(StatusCode::SERVICE_UNAVAILABLE))?;
+            let url = build_gemini_url(&effective_path, gemini_key);
+            reqwest::Client::new()
+                .post(&url)
+                .header("content-type", "application/json")
+                .body(sanitized_body.clone())
+                .send()
+                .await
         }
     } else {
-        let gemini_key = state
-            .config
-            .gemini_api_key
-            .as_ref()
+        // AI Studio route
+        let gemini_key = state.config.gemini_api_key.as_ref()
             .ok_or(ProxyError::Status(StatusCode::SERVICE_UNAVAILABLE))?;
         let url = build_gemini_url(&effective_path, gemini_key);
         reqwest::Client::new()
@@ -245,13 +214,16 @@ async fn gemini_proxy(
         ProxyError::Status(StatusCode::BAD_GATEWAY)
     })?;
 
-    // Transform Vertex AI predict response back to AI Studio embedContent format
-    // so the desktop app (EmbeddingService.swift) can parse it unchanged.
-    if used_vertex && is_single_embed && status.is_success() {
-        match transform_vertex_embed_response(&bytes) {
-            Ok(transformed) => return Ok((status, transformed).into_response()),
+    // Apply response transform if needed (e.g., Vertex predict → AI Studio embed format)
+    if used_vertex && status.is_success() && route.response_transform != ResponseTransform::None {
+        let transformed = match route.response_transform {
+            ResponseTransform::PredictToEmbed => transform_vertex_embed_response(&bytes),
+            ResponseTransform::None => unreachable!(),
+        };
+        match transformed {
+            Ok(body) => return Ok((status, body).into_response()),
             Err(e) => {
-                tracing::warn!("gemini_proxy: embed response transform failed: {}", e);
+                tracing::warn!("gemini_proxy: response transform failed: {}", e);
                 // Fall through to return raw response
             }
         }
@@ -271,7 +243,7 @@ async fn gemini_stream_proxy(
     body: Bytes,
 ) -> Result<Response, ProxyError> {
     // Rewrite preview models to stable equivalents (old app compat)
-    let path = maybe_rewrite_preview_model(&path);
+    let path = crate::llm::model_qos::rewrite_preview_model(&path);
 
     // Validate the action
     let action = extract_gemini_action(&path);
@@ -311,12 +283,52 @@ async fn gemini_stream_proxy(
         );
     }
 
-    // Build request: Vertex AI or AI Studio, based on model availability.
-    // Uses model_qos::is_vertex_available() — same routing logic as non-streaming proxy.
-    let use_vertex_for_model = crate::llm::model_qos::is_vertex_available(model);
-    let upstream = if let Some(ref vertex) = state.vertex_auth {
-        if !use_vertex_for_model {
-            // Model not on Vertex AI → AI Studio directly
+    // Resolve provider route (same dispatch as non-streaming proxy)
+    use crate::llm::model_qos::{resolve_route, Provider};
+    let route = resolve_route(model, action);
+
+    // Build and send request: Vertex AI or AI Studio
+    let upstream = if route.provider == Provider::VertexAi {
+        if let Some(ref vertex) = state.vertex_auth {
+            let mut url = vertex.build_url_from_path(&effective_path).ok_or_else(|| {
+                tracing::error!("gemini_stream_proxy: failed to parse path for Vertex AI: {}", effective_path);
+                ProxyError::Status(StatusCode::BAD_REQUEST)
+            })?;
+            // Append extra query params (e.g., alt=sse) for streaming
+            for (k, v) in &query {
+                url.push(if url.contains('?') { '&' } else { '?' });
+                url.push_str(&urlencoding::encode(k));
+                url.push('=');
+                url.push_str(&urlencoding::encode(v));
+            }
+            match vertex.token().await {
+                Ok(token) => {
+                    reqwest::Client::new()
+                        .post(&url)
+                        .header("content-type", "application/json")
+                        .header("authorization", format!("Bearer {}", token))
+                        .body(sanitized_body)
+                        .send()
+                        .await
+                }
+                Err(e) => {
+                    if let Some(gemini_key) = state.config.gemini_api_key.as_ref() {
+                        tracing::warn!("gemini_stream_proxy: Vertex AI token failed, falling back to API key: {}", e);
+                        let upstream_url = build_gemini_stream_url(&effective_path, gemini_key, &query);
+                        reqwest::Client::new()
+                            .post(&upstream_url)
+                            .header("content-type", "application/json")
+                            .body(sanitized_body)
+                            .send()
+                            .await
+                    } else {
+                        tracing::error!("gemini_stream_proxy: Vertex AI token error and no fallback: {}", e);
+                        return Err(ProxyError::Status(StatusCode::SERVICE_UNAVAILABLE));
+                    }
+                }
+            }
+        } else {
+            // Vertex AI requested but not configured → AI Studio
             let gemini_key = state.config.gemini_api_key.as_ref()
                 .ok_or(ProxyError::Status(StatusCode::SERVICE_UNAVAILABLE))?;
             let upstream_url = build_gemini_stream_url(&effective_path, gemini_key, &query);
@@ -326,50 +338,10 @@ async fn gemini_stream_proxy(
                 .body(sanitized_body)
                 .send()
                 .await
-        } else {
-        let mut url = vertex.build_url_from_path(&effective_path).ok_or_else(|| {
-            tracing::error!("gemini_stream_proxy: failed to parse path for Vertex AI: {}", effective_path);
-            ProxyError::Status(StatusCode::BAD_REQUEST)
-        })?;
-        // Append extra query params (e.g., alt=sse) for streaming
-        for (k, v) in &query {
-            url.push(if url.contains('?') { '&' } else { '?' });
-            url.push_str(&urlencoding::encode(k));
-            url.push('=');
-            url.push_str(&urlencoding::encode(v));
         }
-        match vertex.token().await {
-            Ok(token) => {
-                reqwest::Client::new()
-                    .post(&url)
-                    .header("content-type", "application/json")
-                    .header("authorization", format!("Bearer {}", token))
-                    .body(sanitized_body)
-                    .send()
-                    .await
-            }
-            Err(e) => {
-                if let Some(gemini_key) = state.config.gemini_api_key.as_ref() {
-                    tracing::warn!("gemini_stream_proxy: Vertex AI token failed, falling back to API key: {}", e);
-                    let upstream_url = build_gemini_stream_url(&effective_path, gemini_key, &query);
-                    reqwest::Client::new()
-                        .post(&upstream_url)
-                        .header("content-type", "application/json")
-                        .body(sanitized_body)
-                        .send()
-                        .await
-                } else {
-                    tracing::error!("gemini_stream_proxy: Vertex AI token error and no API key fallback: {}", e);
-                    return Err(ProxyError::Status(StatusCode::SERVICE_UNAVAILABLE));
-                }
-            }
-        }
-        } // close else (use_vertex_for_model)
     } else {
-        let gemini_key = state
-            .config
-            .gemini_api_key
-            .as_ref()
+        // AI Studio route
+        let gemini_key = state.config.gemini_api_key.as_ref()
             .ok_or(ProxyError::Status(StatusCode::SERVICE_UNAVAILABLE))?;
         let upstream_url = build_gemini_stream_url(&effective_path, gemini_key, &query);
         reqwest::Client::new()
@@ -777,17 +749,6 @@ fn transform_vertex_embed_response(body: &[u8]) -> Result<Vec<u8>, String> {
         "embedding": { "values": values }
     });
     serde_json::to_vec(&ai_studio_response).map_err(|e| format!("failed to serialize: {}", e))
-}
-
-/// Rewrite preview model requests to their stable equivalent.
-/// Old desktop app versions hardcode gemini-3-flash-preview — rewrite to gemini-2.5-flash
-/// so these requests go through Vertex AI instead of AI Studio.
-fn maybe_rewrite_preview_model(path: &str) -> std::borrow::Cow<'_, str> {
-    if path.contains("gemini-3-flash-preview") {
-        std::borrow::Cow::Owned(path.replace("gemini-3-flash-preview", "gemini-2.5-flash"))
-    } else {
-        std::borrow::Cow::Borrowed(path)
-    }
 }
 
 /// Build upstream Gemini URL for non-streaming requests
@@ -1550,33 +1511,4 @@ mod tests {
         assert!(result.is_err());
     }
 
-    // --- Preview model rewrite ---
-
-    #[test]
-    fn preview_rewrite_replaces_preview_model() {
-        let path = "models/gemini-3-flash-preview:generateContent";
-        let result = maybe_rewrite_preview_model(path);
-        assert_eq!(result, "models/gemini-2.5-flash:generateContent");
-    }
-
-    #[test]
-    fn preview_rewrite_preserves_stable_models() {
-        let path = "models/gemini-2.5-flash:generateContent";
-        let result = maybe_rewrite_preview_model(path);
-        assert_eq!(result, path);
-    }
-
-    #[test]
-    fn preview_rewrite_preserves_pro() {
-        let path = "models/gemini-2.5-pro:streamGenerateContent";
-        let result = maybe_rewrite_preview_model(path);
-        assert_eq!(result, path);
-    }
-
-    #[test]
-    fn preview_rewrite_preserves_embedding() {
-        let path = "models/gemini-embedding-001:embedContent";
-        let result = maybe_rewrite_preview_model(path);
-        assert_eq!(result, path);
-    }
 }
