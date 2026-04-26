@@ -54,7 +54,7 @@ impl VertexAuth {
         build_vertex_url(&self.project_id, &self.location, model, action)
     }
 
-    /// Build Vertex AI URL from an AI Studio-style path like "models/gemini-3-flash-preview:generateContent".
+    /// Build Vertex AI URL from an AI Studio-style path like "models/gemini-2.5-flash:generateContent".
     /// Returns the full Vertex AI URL, or None if the path can't be parsed.
     pub fn build_url_from_path(&self, path: &str) -> Option<String> {
         let (model, action) = parse_ai_studio_path(path)?;
@@ -87,10 +87,10 @@ mod tests {
 
     #[test]
     fn build_url_generates_correct_vertex_endpoint() {
-        let url = build_vertex_url("my-project", "us-central1", "gemini-3-flash-preview", "generateContent");
+        let url = build_vertex_url("my-project", "us-central1", "gemini-2.5-flash", "generateContent");
         assert_eq!(
             url,
-            "https://us-central1-aiplatform.googleapis.com/v1/projects/my-project/locations/us-central1/publishers/google/models/gemini-3-flash-preview:generateContent"
+            "https://us-central1-aiplatform.googleapis.com/v1/projects/my-project/locations/us-central1/publishers/google/models/gemini-2.5-flash:generateContent"
         );
     }
 
@@ -103,13 +103,13 @@ mod tests {
 
     #[test]
     fn build_url_stream_action() {
-        let url = build_vertex_url("my-project", "us-central1", "gemini-3-flash-preview", "streamGenerateContent");
+        let url = build_vertex_url("my-project", "us-central1", "gemini-2.5-flash", "streamGenerateContent");
         assert!(url.contains("streamGenerateContent"));
     }
 
     #[test]
     fn build_url_custom_location() {
-        let url = build_vertex_url("prod-project", "europe-west4", "gemini-3-flash-preview", "generateContent");
+        let url = build_vertex_url("prod-project", "europe-west4", "gemini-2.5-flash", "generateContent");
         assert!(url.starts_with("https://europe-west4-aiplatform.googleapis.com/"));
         assert!(url.contains("/projects/prod-project/"));
         assert!(url.contains("/locations/europe-west4/"));
@@ -117,11 +117,11 @@ mod tests {
 
     #[test]
     fn parse_path_generates_content() {
-        let (model, action) = parse_ai_studio_path("models/gemini-3-flash-preview:generateContent").unwrap();
-        assert_eq!(model, "gemini-3-flash-preview");
+        let (model, action) = parse_ai_studio_path("models/gemini-2.5-flash:generateContent").unwrap();
+        assert_eq!(model, "gemini-2.5-flash");
         assert_eq!(action, "generateContent");
         let url = build_vertex_url("p", "us-central1", model, action);
-        assert!(url.contains("gemini-3-flash-preview:generateContent"));
+        assert!(url.contains("gemini-2.5-flash:generateContent"));
     }
 
     #[test]
@@ -133,19 +133,19 @@ mod tests {
 
     #[test]
     fn parse_path_stream() {
-        let (model, action) = parse_ai_studio_path("models/gemini-3-flash-preview:streamGenerateContent").unwrap();
-        assert_eq!(model, "gemini-3-flash-preview");
+        let (model, action) = parse_ai_studio_path("models/gemini-2.5-flash:streamGenerateContent").unwrap();
+        assert_eq!(model, "gemini-2.5-flash");
         assert_eq!(action, "streamGenerateContent");
     }
 
     #[test]
     fn parse_path_rejects_no_prefix() {
-        assert!(parse_ai_studio_path("gemini-3-flash-preview:generateContent").is_none());
+        assert!(parse_ai_studio_path("gemini-2.5-flash:generateContent").is_none());
     }
 
     #[test]
     fn parse_path_rejects_no_colon() {
-        assert!(parse_ai_studio_path("models/gemini-3-flash-preview").is_none());
+        assert!(parse_ai_studio_path("models/gemini-2.5-flash").is_none());
     }
 
     #[test]
