@@ -115,23 +115,42 @@ async fn gemini_proxy(
         );
     }
 
-    // Build request: Vertex AI (Bearer token) or AI Studio (API key)
+    // Build request: Vertex AI (Bearer token) or AI Studio (API key).
+    // Falls back to AI Studio if Vertex AI token fetch fails at request time.
+    let mut used_vertex = false;
     let upstream = if let Some(ref vertex) = state.vertex_auth {
         let url = vertex.build_url_from_path(&effective_path).ok_or_else(|| {
             tracing::error!("gemini_proxy: failed to parse path for Vertex AI: {}", effective_path);
             ProxyError::Status(StatusCode::BAD_REQUEST)
         })?;
-        let token = vertex.token().await.map_err(|e| {
-            tracing::error!("gemini_proxy: Vertex AI token error: {}", e);
-            ProxyError::Status(StatusCode::SERVICE_UNAVAILABLE)
-        })?;
-        reqwest::Client::new()
-            .post(&url)
-            .header("content-type", "application/json")
-            .header("authorization", format!("Bearer {}", token))
-            .body(sanitized_body)
-            .send()
-            .await
+        match vertex.token().await {
+            Ok(token) => {
+                used_vertex = true;
+                reqwest::Client::new()
+                    .post(&url)
+                    .header("content-type", "application/json")
+                    .header("authorization", format!("Bearer {}", token))
+                    .body(sanitized_body.clone())
+                    .send()
+                    .await
+            }
+            Err(e) => {
+                // Fall back to AI Studio if API key is available
+                if let Some(gemini_key) = state.config.gemini_api_key.as_ref() {
+                    tracing::warn!("gemini_proxy: Vertex AI token failed, falling back to API key: {}", e);
+                    let url = build_gemini_url(&effective_path, gemini_key);
+                    reqwest::Client::new()
+                        .post(&url)
+                        .header("content-type", "application/json")
+                        .body(sanitized_body.clone())
+                        .send()
+                        .await
+                } else {
+                    tracing::error!("gemini_proxy: Vertex AI token error and no API key fallback: {}", e);
+                    return Err(ProxyError::Status(StatusCode::SERVICE_UNAVAILABLE));
+                }
+            }
+        }
     } else {
         let gemini_key = state
             .config
@@ -142,11 +161,12 @@ async fn gemini_proxy(
         reqwest::Client::new()
             .post(&url)
             .header("content-type", "application/json")
-            .body(sanitized_body)
+            .body(sanitized_body.clone())
             .send()
             .await
     };
 
+    let _ = used_vertex; // for future logging/metrics
     let upstream = upstream.map_err(|e| {
         tracing::error!("gemini_proxy: upstream request failed: {}", e);
         ProxyError::Status(StatusCode::BAD_GATEWAY)
@@ -210,7 +230,8 @@ async fn gemini_stream_proxy(
         );
     }
 
-    // Build request: Vertex AI (Bearer token) or AI Studio (API key)
+    // Build request: Vertex AI (Bearer token) or AI Studio (API key).
+    // Falls back to AI Studio if Vertex AI token fetch fails at request time.
     let upstream = if let Some(ref vertex) = state.vertex_auth {
         let mut url = vertex.build_url_from_path(&effective_path).ok_or_else(|| {
             tracing::error!("gemini_stream_proxy: failed to parse path for Vertex AI: {}", effective_path);
@@ -223,17 +244,32 @@ async fn gemini_stream_proxy(
             url.push('=');
             url.push_str(&urlencoding::encode(v));
         }
-        let token = vertex.token().await.map_err(|e| {
-            tracing::error!("gemini_stream_proxy: Vertex AI token error: {}", e);
-            ProxyError::Status(StatusCode::SERVICE_UNAVAILABLE)
-        })?;
-        reqwest::Client::new()
-            .post(&url)
-            .header("content-type", "application/json")
-            .header("authorization", format!("Bearer {}", token))
-            .body(sanitized_body)
-            .send()
-            .await
+        match vertex.token().await {
+            Ok(token) => {
+                reqwest::Client::new()
+                    .post(&url)
+                    .header("content-type", "application/json")
+                    .header("authorization", format!("Bearer {}", token))
+                    .body(sanitized_body)
+                    .send()
+                    .await
+            }
+            Err(e) => {
+                if let Some(gemini_key) = state.config.gemini_api_key.as_ref() {
+                    tracing::warn!("gemini_stream_proxy: Vertex AI token failed, falling back to API key: {}", e);
+                    let upstream_url = build_gemini_stream_url(&effective_path, gemini_key, &query);
+                    reqwest::Client::new()
+                        .post(&upstream_url)
+                        .header("content-type", "application/json")
+                        .body(sanitized_body)
+                        .send()
+                        .await
+                } else {
+                    tracing::error!("gemini_stream_proxy: Vertex AI token error and no API key fallback: {}", e);
+                    return Err(ProxyError::Status(StatusCode::SERVICE_UNAVAILABLE));
+                }
+            }
+        }
     } else {
         let gemini_key = state
             .config
