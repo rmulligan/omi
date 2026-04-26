@@ -67,8 +67,8 @@ impl IntoResponse for ProxyError {
 }
 
 /// POST /v1/proxy/gemini/*path
-/// Proxies requests to https://generativelanguage.googleapis.com/v1beta/...
-/// Appends the server-side Gemini API key. Client sends Bearer Firebase token.
+/// Proxies requests to Gemini (AI Studio or Vertex AI depending on config).
+/// Keys stay server-side; desktop client authenticates via Firebase token only.
 /// Rate-limited per user: Tier 1 (allow), Tier 2 (degrade Pro→Flash), Tier 3 (reject 429).
 async fn gemini_proxy(
     State(state): State<AppState>,
@@ -76,12 +76,6 @@ async fn gemini_proxy(
     Path(path): Path<String>,
     body: Bytes,
 ) -> Result<Response, ProxyError> {
-    let gemini_key = state
-        .config
-        .gemini_api_key
-        .as_ref()
-        .ok_or(ProxyError::Status(StatusCode::SERVICE_UNAVAILABLE))?;
-
     // Validate the action is in our allowlist
     let action = extract_gemini_action(&path);
     if !is_gemini_action_allowed(action) {
@@ -121,18 +115,42 @@ async fn gemini_proxy(
         );
     }
 
-    let url = build_gemini_url(&effective_path, gemini_key);
-
-    let upstream = reqwest::Client::new()
-        .post(&url)
-        .header("content-type", "application/json")
-        .body(sanitized_body)
-        .send()
-        .await
-        .map_err(|e| {
-            tracing::error!("gemini_proxy: upstream request failed: {}", e);
-            ProxyError::Status(StatusCode::BAD_GATEWAY)
+    // Build request: Vertex AI (Bearer token) or AI Studio (API key)
+    let upstream = if let Some(ref vertex) = state.vertex_auth {
+        let url = vertex.build_url_from_path(&effective_path).ok_or_else(|| {
+            tracing::error!("gemini_proxy: failed to parse path for Vertex AI: {}", effective_path);
+            ProxyError::Status(StatusCode::BAD_REQUEST)
         })?;
+        let token = vertex.token().await.map_err(|e| {
+            tracing::error!("gemini_proxy: Vertex AI token error: {}", e);
+            ProxyError::Status(StatusCode::SERVICE_UNAVAILABLE)
+        })?;
+        reqwest::Client::new()
+            .post(&url)
+            .header("content-type", "application/json")
+            .header("authorization", format!("Bearer {}", token))
+            .body(sanitized_body)
+            .send()
+            .await
+    } else {
+        let gemini_key = state
+            .config
+            .gemini_api_key
+            .as_ref()
+            .ok_or(ProxyError::Status(StatusCode::SERVICE_UNAVAILABLE))?;
+        let url = build_gemini_url(&effective_path, gemini_key);
+        reqwest::Client::new()
+            .post(&url)
+            .header("content-type", "application/json")
+            .body(sanitized_body)
+            .send()
+            .await
+    };
+
+    let upstream = upstream.map_err(|e| {
+        tracing::error!("gemini_proxy: upstream request failed: {}", e);
+        ProxyError::Status(StatusCode::BAD_GATEWAY)
+    })?;
 
     let status =
         StatusCode::from_u16(upstream.status().as_u16()).unwrap_or(StatusCode::BAD_GATEWAY);
@@ -154,12 +172,6 @@ async fn gemini_stream_proxy(
     axum::extract::Query(query): axum::extract::Query<std::collections::HashMap<String, String>>,
     body: Bytes,
 ) -> Result<Response, ProxyError> {
-    let gemini_key = state
-        .config
-        .gemini_api_key
-        .as_ref()
-        .ok_or(ProxyError::Status(StatusCode::SERVICE_UNAVAILABLE))?;
-
     // Validate the action
     let action = extract_gemini_action(&path);
     if !is_gemini_action_allowed(action) {
@@ -198,19 +210,49 @@ async fn gemini_stream_proxy(
         );
     }
 
-    // Build upstream URL with query params (e.g., alt=sse)
-    let upstream_url = build_gemini_stream_url(&effective_path, gemini_key, &query);
-
-    let upstream = reqwest::Client::new()
-        .post(&upstream_url)
-        .header("content-type", "application/json")
-        .body(sanitized_body)
-        .send()
-        .await
-        .map_err(|e| {
-            tracing::error!("gemini_stream_proxy: upstream request failed: {}", e);
-            ProxyError::Status(StatusCode::BAD_GATEWAY)
+    // Build request: Vertex AI (Bearer token) or AI Studio (API key)
+    let upstream = if let Some(ref vertex) = state.vertex_auth {
+        let mut url = vertex.build_url_from_path(&effective_path).ok_or_else(|| {
+            tracing::error!("gemini_stream_proxy: failed to parse path for Vertex AI: {}", effective_path);
+            ProxyError::Status(StatusCode::BAD_REQUEST)
         })?;
+        // Append extra query params (e.g., alt=sse) for streaming
+        for (k, v) in &query {
+            url.push(if url.contains('?') { '&' } else { '?' });
+            url.push_str(&urlencoding::encode(k));
+            url.push('=');
+            url.push_str(&urlencoding::encode(v));
+        }
+        let token = vertex.token().await.map_err(|e| {
+            tracing::error!("gemini_stream_proxy: Vertex AI token error: {}", e);
+            ProxyError::Status(StatusCode::SERVICE_UNAVAILABLE)
+        })?;
+        reqwest::Client::new()
+            .post(&url)
+            .header("content-type", "application/json")
+            .header("authorization", format!("Bearer {}", token))
+            .body(sanitized_body)
+            .send()
+            .await
+    } else {
+        let gemini_key = state
+            .config
+            .gemini_api_key
+            .as_ref()
+            .ok_or(ProxyError::Status(StatusCode::SERVICE_UNAVAILABLE))?;
+        let upstream_url = build_gemini_stream_url(&effective_path, gemini_key, &query);
+        reqwest::Client::new()
+            .post(&upstream_url)
+            .header("content-type", "application/json")
+            .body(sanitized_body)
+            .send()
+            .await
+    };
+
+    let upstream = upstream.map_err(|e| {
+        tracing::error!("gemini_stream_proxy: upstream request failed: {}", e);
+        ProxyError::Status(StatusCode::BAD_GATEWAY)
+    })?;
 
     let status =
         StatusCode::from_u16(upstream.status().as_u16()).unwrap_or(StatusCode::BAD_GATEWAY);
