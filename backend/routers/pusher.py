@@ -64,6 +64,23 @@ TRANSCRIPT_QUEUE_WARN_SIZE = 50
 AUDIO_BYTES_QUEUE_WARN_SIZE = 20
 
 
+def _is_retriable_byok_llm_error(error: Exception) -> bool:
+    message = str(error).lower()
+    return any(
+        marker in message
+        for marker in (
+            'insufficient_quota',
+            'quota',
+            'invalid_api_key',
+            'incorrect api key',
+            'unauthorized',
+            'authentication',
+            'error code: 401',
+            'error code: 429',
+        )
+    )
+
+
 async def _process_conversation_task(
     uid: str,
     conversation_id: str,
@@ -110,12 +127,29 @@ async def _process_conversation_task(
             # in the same pool causes deadlock under concurrent load.
             # Copy the current context (which holds BYOK keys) into the worker thread so
             # LLM client proxies see the right key when resolving per-request.
-            loop = asyncio.get_running_loop()
-            ctx = contextvars.copy_context()
-            conversation = await loop.run_in_executor(
-                None, lambda: ctx.run(process_conversation, uid, language, conversation)
-            )
-            messages = await trigger_external_integrations(uid, conversation)
+            async def run_processing():
+                loop = asyncio.get_running_loop()
+                ctx = contextvars.copy_context()
+                processed = await loop.run_in_executor(
+                    None, lambda: ctx.run(process_conversation, uid, language, conversation)
+                )
+                integration_messages = await trigger_external_integrations(uid, processed)
+                return processed, integration_messages
+
+            try:
+                conversation, messages = await run_processing()
+            except Exception as e:
+                if not byok_keys or not _is_retriable_byok_llm_error(e):
+                    raise
+
+                logger.warning(
+                    'BYOK LLM processing failed for conversation %s uid=%s; retrying with Omi keys: %s',
+                    conversation_id,
+                    uid,
+                    e,
+                )
+                set_byok_keys({})
+                conversation, messages = await run_processing()
         except Exception as e:
             logger.error(f"Error processing conversation: {e} {uid} {conversation_id}")
             conversations_db.set_conversation_as_discarded(uid, conversation.id)
