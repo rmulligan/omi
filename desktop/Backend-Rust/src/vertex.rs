@@ -4,25 +4,17 @@
 // with service account Bearer auth instead of AI Studio API key auth.
 //
 // Auth: gcp_auth reads GOOGLE_APPLICATION_CREDENTIALS (service account JSON)
-// and handles token caching + automatic refresh.
+// and handles token caching + automatic refresh internally.
 
 use std::sync::Arc;
-use tokio::sync::RwLock;
 
 const VERTEX_AI_SCOPE: &str = "https://www.googleapis.com/auth/cloud-platform";
 
-/// Cached bearer token with expiry tracking.
-struct CachedToken {
-    token: String,
-    /// We refresh proactively 60s before actual expiry to avoid mid-request failures.
-    expires_at: std::time::Instant,
-}
-
 /// Vertex AI auth provider. Wraps gcp_auth for token management.
+/// gcp_auth handles caching and refresh internally — we don't add our own cache.
 #[derive(Clone)]
 pub struct VertexAuth {
     provider: Arc<dyn gcp_auth::TokenProvider>,
-    cache: Arc<RwLock<Option<CachedToken>>>,
     pub project_id: String,
     pub location: String,
 }
@@ -42,47 +34,23 @@ impl VertexAuth {
 
         Ok(Self {
             provider: provider.into(),
-            cache: Arc::new(RwLock::new(None)),
             project_id,
             location,
         })
     }
 
-    /// Get a valid bearer token (cached, auto-refreshes).
+    /// Get a valid bearer token. gcp_auth handles caching and refresh.
     pub async fn token(&self) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
-        // Fast path: check cached token
-        {
-            let cache = self.cache.read().await;
-            if let Some(ref cached) = *cache {
-                if cached.expires_at > std::time::Instant::now() {
-                    return Ok(cached.token.clone());
-                }
-            }
-        }
-
-        // Slow path: fetch new token
         let token = self
             .provider
             .token(&[VERTEX_AI_SCOPE])
             .await
             .map_err(|e| format!("Failed to get Vertex AI token: {}", e))?;
-
-        let token_str = token.as_str().to_string();
-
-        // Cache with 60s safety margin (tokens typically last 3600s)
-        let expires_at = std::time::Instant::now() + std::time::Duration::from_secs(3540);
-        let mut cache = self.cache.write().await;
-        *cache = Some(CachedToken {
-            token: token_str.clone(),
-            expires_at,
-        });
-
-        Ok(token_str)
+        Ok(token.as_str().to_string())
     }
 
     /// Build Vertex AI URL for a Gemini model action.
     ///
-    /// AI Studio path format: `models/{model}:{action}`
     /// Vertex AI URL: `https://{location}-aiplatform.googleapis.com/v1/projects/{project}/locations/{location}/publishers/google/models/{model}:{action}`
     pub fn build_url(&self, model: &str, action: &str) -> String {
         format!(
@@ -95,27 +63,41 @@ impl VertexAuth {
     }
 
     /// Build Vertex AI URL from an AI Studio-style path like "models/gemini-3-flash-preview:generateContent".
-    /// Returns the full Vertex AI URL.
+    /// Returns the full Vertex AI URL, or None if the path can't be parsed.
     pub fn build_url_from_path(&self, path: &str) -> Option<String> {
-        // path = "models/{model}:{action}"
         let rest = path.strip_prefix("models/")?;
         let (model, action) = rest.split_once(':')?;
         Some(self.build_url(model, action))
     }
 }
 
+/// Standalone URL builder for testing (no auth needed).
+/// Same logic as VertexAuth methods but without requiring a provider.
+#[cfg(test)]
+fn build_vertex_url(project: &str, location: &str, model: &str, action: &str) -> String {
+    format!(
+        "https://{location}-aiplatform.googleapis.com/v1/projects/{project}/locations/{location}/publishers/google/models/{model}:{action}",
+        location = location,
+        project = project,
+        model = model,
+        action = action,
+    )
+}
+
+/// Parse an AI Studio path into (model, action).
+#[cfg(test)]
+fn parse_ai_studio_path(path: &str) -> Option<(&str, &str)> {
+    let rest = path.strip_prefix("models/")?;
+    rest.split_once(':')
+}
+
 #[cfg(test)]
 mod tests {
+    use super::*;
+
     #[test]
     fn build_url_generates_correct_vertex_endpoint() {
-        // We can't create a real VertexAuth without credentials, so test URL building directly
-        let url = format!(
-            "https://{location}-aiplatform.googleapis.com/v1/projects/{project}/locations/{location}/publishers/google/models/{model}:{action}",
-            location = "us-central1",
-            project = "my-project",
-            model = "gemini-3-flash-preview",
-            action = "generateContent",
-        );
+        let url = build_vertex_url("my-project", "us-central1", "gemini-3-flash-preview", "generateContent");
         assert_eq!(
             url,
             "https://us-central1-aiplatform.googleapis.com/v1/projects/my-project/locations/us-central1/publishers/google/models/gemini-3-flash-preview:generateContent"
@@ -123,32 +105,67 @@ mod tests {
     }
 
     #[test]
-    fn build_url_from_path_parses_ai_studio_path() {
-        let path = "models/gemini-3-flash-preview:generateContent";
-        let rest = path.strip_prefix("models/").unwrap();
-        let (model, action) = rest.split_once(':').unwrap();
-        assert_eq!(model, "gemini-3-flash-preview");
-        assert_eq!(action, "generateContent");
+    fn build_url_embedding_model() {
+        let url = build_vertex_url("my-project", "us-central1", "gemini-embedding-001", "embedContent");
+        assert!(url.contains("gemini-embedding-001:embedContent"));
+        assert!(url.contains("/projects/my-project/"));
     }
 
     #[test]
-    fn build_url_from_path_handles_embedding() {
-        let path = "models/gemini-embedding-001:embedContent";
-        let rest = path.strip_prefix("models/").unwrap();
-        let (model, action) = rest.split_once(':').unwrap();
+    fn build_url_stream_action() {
+        let url = build_vertex_url("my-project", "us-central1", "gemini-3-flash-preview", "streamGenerateContent");
+        assert!(url.contains("streamGenerateContent"));
+    }
+
+    #[test]
+    fn build_url_custom_location() {
+        let url = build_vertex_url("prod-project", "europe-west4", "gemini-3-flash-preview", "generateContent");
+        assert!(url.starts_with("https://europe-west4-aiplatform.googleapis.com/"));
+        assert!(url.contains("/projects/prod-project/"));
+        assert!(url.contains("/locations/europe-west4/"));
+    }
+
+    #[test]
+    fn parse_path_generates_content() {
+        let (model, action) = parse_ai_studio_path("models/gemini-3-flash-preview:generateContent").unwrap();
+        assert_eq!(model, "gemini-3-flash-preview");
+        assert_eq!(action, "generateContent");
+        let url = build_vertex_url("p", "us-central1", model, action);
+        assert!(url.contains("gemini-3-flash-preview:generateContent"));
+    }
+
+    #[test]
+    fn parse_path_embedding() {
+        let (model, action) = parse_ai_studio_path("models/gemini-embedding-001:embedContent").unwrap();
         assert_eq!(model, "gemini-embedding-001");
         assert_eq!(action, "embedContent");
     }
 
     #[test]
-    fn build_url_from_path_rejects_invalid() {
-        // No "models/" prefix
-        let path = "gemini-3-flash-preview:generateContent";
-        assert!(path.strip_prefix("models/").is_none());
+    fn parse_path_stream() {
+        let (model, action) = parse_ai_studio_path("models/gemini-3-flash-preview:streamGenerateContent").unwrap();
+        assert_eq!(model, "gemini-3-flash-preview");
+        assert_eq!(action, "streamGenerateContent");
+    }
 
-        // No colon separator
-        let path = "models/gemini-3-flash-preview";
-        let rest = path.strip_prefix("models/").unwrap();
-        assert!(rest.split_once(':').is_none());
+    #[test]
+    fn parse_path_rejects_no_prefix() {
+        assert!(parse_ai_studio_path("gemini-3-flash-preview:generateContent").is_none());
+    }
+
+    #[test]
+    fn parse_path_rejects_no_colon() {
+        assert!(parse_ai_studio_path("models/gemini-3-flash-preview").is_none());
+    }
+
+    #[test]
+    fn parse_path_rejects_empty() {
+        assert!(parse_ai_studio_path("").is_none());
+    }
+
+    #[test]
+    fn build_url_batch_embed() {
+        let url = build_vertex_url("p", "us-central1", "gemini-embedding-001", "batchEmbedContents");
+        assert!(url.contains("batchEmbedContents"));
     }
 }
