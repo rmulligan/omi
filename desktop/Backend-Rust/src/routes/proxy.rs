@@ -116,38 +116,57 @@ async fn gemini_proxy(
     }
 
     // Build request: Vertex AI (Bearer token) or AI Studio (API key).
+    // Embedding actions (embedContent, batchEmbedContents) always use AI Studio —
+    // Vertex AI does not support the embedding model via this endpoint format.
     // Falls back to AI Studio if Vertex AI token fetch fails at request time.
+    let is_embed = action == "embedContent" || action == "batchEmbedContents";
     let mut used_vertex = false;
     let upstream = if let Some(ref vertex) = state.vertex_auth {
-        let url = vertex.build_url_from_path(&effective_path).ok_or_else(|| {
-            tracing::error!("gemini_proxy: failed to parse path for Vertex AI: {}", effective_path);
-            ProxyError::Status(StatusCode::BAD_REQUEST)
-        })?;
-        match vertex.token().await {
-            Ok(token) => {
-                used_vertex = true;
-                reqwest::Client::new()
-                    .post(&url)
-                    .header("content-type", "application/json")
-                    .header("authorization", format!("Bearer {}", token))
-                    .body(sanitized_body.clone())
-                    .send()
-                    .await
-            }
-            Err(e) => {
-                // Fall back to AI Studio if API key is available
-                if let Some(gemini_key) = state.config.gemini_api_key.as_ref() {
-                    tracing::warn!("gemini_proxy: Vertex AI token failed, falling back to API key: {}", e);
-                    let url = build_gemini_url(&effective_path, gemini_key);
+        if is_embed {
+            // Embedding actions: skip Vertex AI, use AI Studio directly
+            let gemini_key = state
+                .config
+                .gemini_api_key
+                .as_ref()
+                .ok_or(ProxyError::Status(StatusCode::SERVICE_UNAVAILABLE))?;
+            let url = build_gemini_url(&effective_path, gemini_key);
+            reqwest::Client::new()
+                .post(&url)
+                .header("content-type", "application/json")
+                .body(sanitized_body.clone())
+                .send()
+                .await
+        } else {
+            let url = vertex.build_url_from_path(&effective_path).ok_or_else(|| {
+                tracing::error!("gemini_proxy: failed to parse path for Vertex AI: {}", effective_path);
+                ProxyError::Status(StatusCode::BAD_REQUEST)
+            })?;
+            match vertex.token().await {
+                Ok(token) => {
+                    used_vertex = true;
                     reqwest::Client::new()
                         .post(&url)
                         .header("content-type", "application/json")
+                        .header("authorization", format!("Bearer {}", token))
                         .body(sanitized_body.clone())
                         .send()
                         .await
-                } else {
-                    tracing::error!("gemini_proxy: Vertex AI token error and no API key fallback: {}", e);
-                    return Err(ProxyError::Status(StatusCode::SERVICE_UNAVAILABLE));
+                }
+                Err(e) => {
+                    // Fall back to AI Studio if API key is available
+                    if let Some(gemini_key) = state.config.gemini_api_key.as_ref() {
+                        tracing::warn!("gemini_proxy: Vertex AI token failed, falling back to API key: {}", e);
+                        let url = build_gemini_url(&effective_path, gemini_key);
+                        reqwest::Client::new()
+                            .post(&url)
+                            .header("content-type", "application/json")
+                            .body(sanitized_body.clone())
+                            .send()
+                            .await
+                    } else {
+                        tracing::error!("gemini_proxy: Vertex AI token error and no API key fallback: {}", e);
+                        return Err(ProxyError::Status(StatusCode::SERVICE_UNAVAILABLE));
+                    }
                 }
             }
         }
