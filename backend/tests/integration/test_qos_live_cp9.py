@@ -107,9 +107,9 @@ class TestP2_ModelProviderResolution:
             assert model == _active_profile[feature][0]
             assert provider == _active_profile[feature][1]
 
-    def test_four_profiles_exist(self):
-        assert len(MODEL_QOS_PROFILES) == 4
-        assert set(MODEL_QOS_PROFILES.keys()) == {'premium', 'max', 'max_0424', 'byok'}
+    def test_three_profiles_exist(self):
+        assert len(MODEL_QOS_PROFILES) == 3
+        assert set(MODEL_QOS_PROFILES.keys()) == {'premium', 'max', 'byok'}
 
 
 # ---------------------------------------------------------------------------

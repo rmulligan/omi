@@ -58,8 +58,8 @@ from utils.llm.clients import (
 class TestModelQosProfiles:
     """Verify profile structure and completeness."""
 
-    def test_four_profiles_exist(self):
-        assert set(MODEL_QOS_PROFILES.keys()) == {'premium', 'max', 'max_0424', 'byok'}
+    def test_three_profiles_exist(self):
+        assert set(MODEL_QOS_PROFILES.keys()) == {'premium', 'max', 'byok'}
 
     def test_all_profiles_have_same_features(self):
         feature_sets = {name: set(profile.keys()) for name, profile in MODEL_QOS_PROFILES.items()}
@@ -81,10 +81,9 @@ class TestModelQosProfiles:
         for name in ('premium', 'max', 'byok'):
             providers = {p for _m, p in MODEL_QOS_PROFILES[name].values()}
             assert 'openai' in providers, f'{name} missing OpenAI models'
-        # Gemini-optimized profiles must have Gemini provider
-        for name in ('premium', 'max_0424'):
-            providers = {p for _m, p in MODEL_QOS_PROFILES[name].values()}
-            assert 'gemini' in providers, f'{name} should have Gemini direct models'
+        # Premium profile must have Gemini provider
+        providers = {p for _m, p in MODEL_QOS_PROFILES['premium'].values()}
+        assert 'gemini' in providers, 'premium should have Gemini direct models'
 
     def test_premium_profile_models(self):
         """Premium uses gpt-5.4-mini for flagship, gpt-4.1-mini for quality-sensitive, gemini for free-text."""
@@ -164,33 +163,6 @@ class TestModelQosProfiles:
             'sonar-pro',
         }
         assert distinct_models == expected
-
-    def test_max_0424_keeps_o4_mini_for_learnings(self):
-        """max_0424 keeps o4-mini for learnings (reasoning model, no Gemini equivalent)."""
-        m1 = MODEL_QOS_PROFILES['max_0424']
-        assert m1['learnings'] == ('o4-mini', 'openai')
-
-    def test_max_0424_model_variants(self):
-        """max_0424 uses 7 distinct model IDs."""
-        m1 = MODEL_QOS_PROFILES['max_0424']
-        distinct = {model for model, _p in m1.values()}
-        expected = {
-            'gemini-2.5-pro',
-            'gemini-2.5-flash',
-            'gemini-2.5-flash-lite',
-            'o4-mini',
-            'claude-sonnet-4-6',
-            'gemini-3-flash-preview',
-            'sonar-pro',
-        }
-        assert distinct == expected
-
-    def test_max_0424_uses_flash_not_flashlite_for_quality(self):
-        """max_0424 uses gemini-2.5-flash (not lite) for quality-sensitive features."""
-        m1 = MODEL_QOS_PROFILES['max_0424']
-        assert m1['memories'] == ('gemini-2.5-flash', 'gemini')
-        assert m1['daily_summary_simple'] == ('gemini-2.5-flash', 'gemini')
-        assert m1['memory_category'] == ('gemini-2.5-flash', 'gemini')
 
     def test_new_features_present(self):
         """Verify newly added features exist in both profiles."""
