@@ -831,6 +831,7 @@ mod tests {
     fn model_allowlist_permits_valid_models() {
         assert!(is_gemini_model_allowed("gemini-2.5-flash"));
         assert!(is_gemini_model_allowed("gemini-2.5-pro"));
+        assert!(is_gemini_model_allowed("gemini-3-flash-preview"), "kept for old app compat");
         assert!(is_gemini_model_allowed("gemini-embedding-001"));
     }
 
@@ -839,7 +840,6 @@ mod tests {
         assert!(!is_gemini_model_allowed("gemini-pro-latest"), "legacy pro not in allowlist");
         assert!(!is_gemini_model_allowed("gemini-1.5-pro"));
         assert!(!is_gemini_model_allowed("gemini-ultra"));
-        assert!(!is_gemini_model_allowed("gemini-3-flash-preview"), "preview not in allowlist");
         assert!(!is_gemini_model_allowed(""));
     }
 

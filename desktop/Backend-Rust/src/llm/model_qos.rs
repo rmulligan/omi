@@ -74,10 +74,13 @@ fn gemini_extraction_for(tier: ModelTier) -> &'static str {
 
 /// Allowed models for the Gemini proxy (passthrough from Swift app).
 /// These are the models the desktop app is allowed to request.
+/// Includes gemini-3-flash-preview for backwards compatibility with older app versions
+/// that have it hardcoded — those requests route to AI Studio (not Vertex AI).
 pub fn gemini_proxy_allowed() -> &'static [&'static str] {
     &[
         "gemini-2.5-flash",
         "gemini-2.5-pro",
+        "gemini-3-flash-preview",
         "gemini-embedding-001",
     ]
 }
@@ -225,6 +228,7 @@ mod tests {
         let allowed = gemini_proxy_allowed();
         assert!(allowed.contains(&"gemini-2.5-flash"));
         assert!(allowed.contains(&"gemini-2.5-pro"));
+        assert!(allowed.contains(&"gemini-3-flash-preview"), "kept for old app compat");
         assert!(allowed.contains(&"gemini-embedding-001"));
         assert!(!allowed.contains(&"gemini-pro-latest"), "legacy pro not in allowlist");
         assert!(!allowed.contains(&"gemini-ultra"));
