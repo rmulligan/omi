@@ -10699,5 +10699,12 @@
   "mindMap": "Mind Map",
   "@mindMap": {
     "description": "Section header for memory knowledge graph on home page"
-  }
+  },
+  "quickActionAddTask": "הוסף משימה",
+  "quickActionAskOmiAnything": "שאל את Omi כל דבר",
+  "quickActionVoiceMode": "מצב קול",
+  "quickActionMute": "השתק",
+  "quickActionUnmute": "בטל השתקה",
+  "quickActionConnectDevice": "חבר מכשיר",
+  "quickActionDeviceSettings": "הגדרות מכשיר"
 }

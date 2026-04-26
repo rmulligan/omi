@@ -2991,5 +2991,12 @@
   "mindMap": "Mind Map",
   "@mindMap": {
     "description": "Section header for memory knowledge graph on home page"
-  }
+  },
+  "quickActionAddTask": "Taak toevoegen",
+  "quickActionAskOmiAnything": "Vraag Omi van alles",
+  "quickActionVoiceMode": "Spraakmodus",
+  "quickActionMute": "Dempen",
+  "quickActionUnmute": "Dempen opheffen",
+  "quickActionConnectDevice": "Apparaat verbinden",
+  "quickActionDeviceSettings": "Apparaatinstellingen"
 }

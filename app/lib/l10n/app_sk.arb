@@ -2996,5 +2996,12 @@
   "mindMap": "Mind Map",
   "@mindMap": {
     "description": "Section header for memory knowledge graph on home page"
-  }
+  },
+  "quickActionAddTask": "Pridať úlohu",
+  "quickActionAskOmiAnything": "Opýtajte sa Omi čokoľvek",
+  "quickActionVoiceMode": "Hlasový režim",
+  "quickActionMute": "Stíšiť",
+  "quickActionUnmute": "Zrušiť stíšenie",
+  "quickActionConnectDevice": "Pripojiť zariadenie",
+  "quickActionDeviceSettings": "Nastavenia zariadenia"
 }

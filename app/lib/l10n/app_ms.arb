@@ -2991,5 +2991,12 @@
   "mindMap": "Mind Map",
   "@mindMap": {
     "description": "Section header for memory knowledge graph on home page"
-  }
+  },
+  "quickActionAddTask": "Tambah Tugas",
+  "quickActionAskOmiAnything": "Tanya Omi apa sahaja",
+  "quickActionVoiceMode": "Mod Suara",
+  "quickActionMute": "Redam",
+  "quickActionUnmute": "Nyahredam",
+  "quickActionConnectDevice": "Sambung Peranti",
+  "quickActionDeviceSettings": "Tetapan Peranti"
 }

@@ -10699,5 +10699,12 @@
   "mindMap": "Mind Map",
   "@mindMap": {
     "description": "Section header for memory knowledge graph on home page"
-  }
+  },
+  "quickActionAddTask": "ಕಾರ್ಯ ಸೇರಿಸಿ",
+  "quickActionAskOmiAnything": "Omi ಗೆ ಯಾವುದನ್ನಾದರೂ ಕೇಳಿ",
+  "quickActionVoiceMode": "ಧ್ವನಿ ಮೋಡ್",
+  "quickActionMute": "ಮ್ಯೂಟ್",
+  "quickActionUnmute": "ಅನ್‌ಮ್ಯೂಟ್",
+  "quickActionConnectDevice": "ಸಾಧನ ಸಂಪರ್ಕಿಸಿ",
+  "quickActionDeviceSettings": "ಸಾಧನ ಸೆಟ್ಟಿಂಗ್‌ಗಳು"
 }

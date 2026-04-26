@@ -3033,5 +3033,12 @@
   "mindMap": "Mind Map",
   "@mindMap": {
     "description": "Section header for memory knowledge graph on home page"
-  }
+  },
+  "quickActionAddTask": "Tambah Tugas",
+  "quickActionAskOmiAnything": "Tanyakan apa saja kepada Omi",
+  "quickActionVoiceMode": "Mode Suara",
+  "quickActionMute": "Bisukan",
+  "quickActionUnmute": "Aktifkan Suara",
+  "quickActionConnectDevice": "Hubungkan Perangkat",
+  "quickActionDeviceSettings": "Pengaturan Perangkat"
 }

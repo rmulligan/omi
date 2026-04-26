@@ -10900,5 +10900,12 @@
   "mindMap": "Mind Map",
   "@mindMap": {
     "description": "Section header for memory knowledge graph on home page"
-  }
+  },
+  "quickActionAddTask": "Add Task",
+  "quickActionAskOmiAnything": "Ask Omi Anything",
+  "quickActionVoiceMode": "Voice Mode",
+  "quickActionMute": "Mute",
+  "quickActionUnmute": "Unmute",
+  "quickActionConnectDevice": "Connect Device",
+  "quickActionDeviceSettings": "Device Settings"
 }

@@ -2991,5 +2991,12 @@
   "mindMap": "Mind Map",
   "@mindMap": {
     "description": "Section header for memory knowledge graph on home page"
-  }
+  },
+  "quickActionAddTask": "Lisää tehtävä",
+  "quickActionAskOmiAnything": "Kysy Omilta mitä tahansa",
+  "quickActionVoiceMode": "Äänitila",
+  "quickActionMute": "Mykistä",
+  "quickActionUnmute": "Poista mykistys",
+  "quickActionConnectDevice": "Yhdistä laite",
+  "quickActionDeviceSettings": "Laiteasetukset"
 }

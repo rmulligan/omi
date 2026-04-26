@@ -10699,5 +10699,12 @@
   "mindMap": "Mind Map",
   "@mindMap": {
     "description": "Section header for memory knowledge graph on home page"
-  }
+  },
+  "quickActionAddTask": "Magdagdag ng Gawain",
+  "quickActionAskOmiAnything": "Itanong kay Omi ang kahit ano",
+  "quickActionVoiceMode": "Mode ng Boses",
+  "quickActionMute": "I-mute",
+  "quickActionUnmute": "I-unmute",
+  "quickActionConnectDevice": "I-connect ang Device",
+  "quickActionDeviceSettings": "Mga Setting ng Device"
 }

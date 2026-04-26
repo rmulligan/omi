@@ -3087,5 +3087,12 @@
   "mindMap": "Mind Map",
   "@mindMap": {
     "description": "Section header for memory knowledge graph on home page"
-  }
+  },
+  "quickActionAddTask": "Feladat hozzáadása",
+  "quickActionAskOmiAnything": "Kérdezz bármit Omitól",
+  "quickActionVoiceMode": "Hangmód",
+  "quickActionMute": "Némítás",
+  "quickActionUnmute": "Némítás feloldása",
+  "quickActionConnectDevice": "Eszköz csatlakoztatása",
+  "quickActionDeviceSettings": "Eszközbeállítások"
 }

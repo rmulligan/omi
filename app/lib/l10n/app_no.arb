@@ -2991,5 +2991,12 @@
   "mindMap": "Mind Map",
   "@mindMap": {
     "description": "Section header for memory knowledge graph on home page"
-  }
+  },
+  "quickActionAddTask": "Legg til oppgave",
+  "quickActionAskOmiAnything": "Spør Omi om hva som helst",
+  "quickActionVoiceMode": "Stemmetilstand",
+  "quickActionMute": "Demp",
+  "quickActionUnmute": "Opphev demping",
+  "quickActionConnectDevice": "Koble til enhet",
+  "quickActionDeviceSettings": "Enhetsinnstillinger"
 }

@@ -2992,5 +2992,12 @@
   "mindMap": "Mind Map",
   "@mindMap": {
     "description": "Section header for memory knowledge graph on home page"
-  }
+  },
+  "quickActionAddTask": "कार्य जोड़ें",
+  "quickActionAskOmiAnything": "Omi से कुछ भी पूछें",
+  "quickActionVoiceMode": "वॉयस मोड",
+  "quickActionMute": "म्यूट करें",
+  "quickActionUnmute": "म्यूट हटाएं",
+  "quickActionConnectDevice": "डिवाइस कनेक्ट करें",
+  "quickActionDeviceSettings": "डिवाइस सेटिंग्स"
 }

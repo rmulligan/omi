@@ -3000,5 +3000,12 @@
   "mindMap": "Mind Map",
   "@mindMap": {
     "description": "Section header for memory knowledge graph on home page"
-  }
+  },
+  "quickActionAddTask": "Tilføj opgave",
+  "quickActionAskOmiAnything": "Spørg Omi om hvad som helst",
+  "quickActionVoiceMode": "Stemmétilstand",
+  "quickActionMute": "Slå lyd fra",
+  "quickActionUnmute": "Slå lyd til",
+  "quickActionConnectDevice": "Tilslut enhed",
+  "quickActionDeviceSettings": "Enhedsindstillinger"
 }

@@ -3013,5 +3013,12 @@
   "mindMap": "Mind Map",
   "@mindMap": {
     "description": "Section header for memory knowledge graph on home page"
-  }
+  },
+  "quickActionAddTask": "添加任务",
+  "quickActionAskOmiAnything": "问Omi任何问题",
+  "quickActionVoiceMode": "语音模式",
+  "quickActionMute": "静音",
+  "quickActionUnmute": "取消静音",
+  "quickActionConnectDevice": "连接设备",
+  "quickActionDeviceSettings": "设备设置"
 }

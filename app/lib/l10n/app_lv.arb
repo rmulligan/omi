@@ -2991,5 +2991,12 @@
   "mindMap": "Mind Map",
   "@mindMap": {
     "description": "Section header for memory knowledge graph on home page"
-  }
+  },
+  "quickActionAddTask": "Pievienot uzdevumu",
+  "quickActionAskOmiAnything": "Jautājiet Omi jebko",
+  "quickActionVoiceMode": "Balss režīms",
+  "quickActionMute": "Izslēgt skaņu",
+  "quickActionUnmute": "Ieslēgt skaņu",
+  "quickActionConnectDevice": "Savienot ierīci",
+  "quickActionDeviceSettings": "Ierīces iestatījumi"
 }

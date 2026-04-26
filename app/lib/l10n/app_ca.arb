@@ -2960,5 +2960,12 @@
   "mindMap": "Mind Map",
   "@mindMap": {
     "description": "Section header for memory knowledge graph on home page"
-  }
+  },
+  "quickActionAddTask": "Afegir tasca",
+  "quickActionAskOmiAnything": "Pregunta-li qualsevol cosa a l'Omi",
+  "quickActionVoiceMode": "Mode de veu",
+  "quickActionMute": "Silenciar",
+  "quickActionUnmute": "Activar so",
+  "quickActionConnectDevice": "Connectar dispositiu",
+  "quickActionDeviceSettings": "Configuració del dispositiu"
 }

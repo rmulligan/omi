@@ -10699,5 +10699,12 @@
   "mindMap": "Mind Map",
   "@mindMap": {
     "description": "Section header for memory knowledge graph on home page"
-  }
+  },
+  "quickActionAddTask": "افزودن وظیفه",
+  "quickActionAskOmiAnything": "هر چیزی از اُمی بپرسید",
+  "quickActionVoiceMode": "حالت صوتی",
+  "quickActionMute": "بی‌صدا",
+  "quickActionUnmute": "لغو بی‌صدا",
+  "quickActionConnectDevice": "اتصال دستگاه",
+  "quickActionDeviceSettings": "تنظیمات دستگاه"
 }

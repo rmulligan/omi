@@ -24,8 +24,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get deleteConversationTitle => 'ಸಂವಾದ ಅಳಿಸಿ?';
 
   @override
-  String get deleteConversationMessage =>
-      'ಇದು ಸಂಬಂಧಿತ ಸ್ಮೃತಿಗಳು, ಕಾರ್ಯಗಳು ಮತ್ತು ಆಡಿಯೋ ಫೈಲ್‌ಗಳನ್ನೂ ಅಳಿಸುತ್ತದೆ. ಈ ಕ್ರಿಯೆಯನ್ನು ಹಿಂತೆಗೆದುಕೊಳ್ಳಲಾಗುವುದಿಲ್ಲ.';
+  String get deleteConversationMessage => 'ಇದು ಸಂಬಂಧಿತ ಸ್ಮೃತಿಗಳು, ಕಾರ್ಯಗಳು ಮತ್ತು ಆಡಿಯೋ ಫೈಲ್‌ಗಳನ್ನೂ ಅಳಿಸುತ್ತದೆ. ಈ ಕ್ರಿಯೆಯನ್ನು ಹಿಂತೆಗೆದುಕೊಳ್ಳಲಾಗುವುದಿಲ್ಲ.';
 
   @override
   String get confirm => 'ಖಚಿತಪಡಿಸಿ';
@@ -146,8 +145,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get deleting => 'ಅಳಿಸುತ್ತಿದೆ...';
 
   @override
-  String get pleaseCompleteAuthentication =>
-      'ನಿಮ್ಮ ಬ್ರೌಜರ್‌ನಲ್ಲಿ ಪ್ರಮಾಣೀಕರಣ ಪೂರ್ಣ ಮಾಡಿ. ಪೂರ್ಣವಾದ ನಂತರ, ಅಪ್ಲಿಕೇಶನಿಗೆ ಹಿಂತಿರುಗಿ.';
+  String get pleaseCompleteAuthentication => 'ನಿಮ್ಮ ಬ್ರೌಜರ್‌ನಲ್ಲಿ ಪ್ರಮಾಣೀಕರಣ ಪೂರ್ಣ ಮಾಡಿ. ಪೂರ್ಣವಾದ ನಂತರ, ಅಪ್ಲಿಕೇಶನಿಗೆ ಹಿಂತಿರುಗಿ.';
 
   @override
   String get failedToStartAuthentication => 'ಪ್ರಮಾಣೀಕರಣ ಪ್ರಾರಂಭಿಸಲು ವಿಫಲ';
@@ -228,8 +226,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get noStarredConversations => 'ಯಾವ ನಕ್ಷತ್ರಾಕೃತ ಸಂವಾದ ಇಲ್ಲ';
 
   @override
-  String get starConversationHint =>
-      'ಸಂವಾದಕ್ಕೆ ನಕ್ಷತ್ರ ಮಾಡಲು, ಅದನ್ನು ತೆರೆಯಿರಿ ಮತ್ತು ತಲೆಬರದಲ್ಲಿ ನಕ್ಷತ್ರ ಐಕನ್ ಟ್ಯಾಪ್ ಮಾಡಿ.';
+  String get starConversationHint => 'ಸಂವಾದಕ್ಕೆ ನಕ್ಷತ್ರ ಮಾಡಲು, ಅದನ್ನು ತೆರೆಯಿರಿ ಮತ್ತು ತಲೆಬರದಲ್ಲಿ ನಕ್ಷತ್ರ ಐಕನ್ ಟ್ಯಾಪ್ ಮಾಡಿ.';
 
   @override
   String get searchConversations => 'ಸಂವಾದ ಹುಡುಕಿ...';
@@ -287,8 +284,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get clearChat => 'ಚ್ಯಾಟ್ ತೆರವುಗೊಳಿಸಿ';
 
   @override
-  String get clearChatConfirm =>
-      'ನೀವು ಖಚಿತವಾಗಿ ಚ್ಯಾಟ್ ತೆರವುಗೊಳಿಸಲು ಬಯಸುತ್ತೀರಾ? ಈ ಕ್ರಿಯೆಯನ್ನು ಹಿಂತೆಗೆದುಕೊಳ್ಳಲಾಗುವುದಿಲ್ಲ.';
+  String get clearChatConfirm => 'ನೀವು ಖಚಿತವಾಗಿ ಚ್ಯಾಟ್ ತೆರವುಗೊಳಿಸಲು ಬಯಸುತ್ತೀರಾ? ಈ ಕ್ರಿಯೆಯನ್ನು ಹಿಂತೆಗೆದುಕೊಳ್ಳಲಾಗುವುದಿಲ್ಲ.';
 
   @override
   String get maxFilesLimit => 'ಒಂದು ಸಮಯದಲ್ಲಿ 4 ಫೈಲ್‌ಗಳು ಮಾತ್ರ ಅಪ್‌ಲೋಡ್ ಮಾಡಬಹುದು';
@@ -357,19 +353,16 @@ class AppLocalizationsKn extends AppLocalizations {
   String get appsDisconnected => 'ನಿಮ್ಮ ಅಪ್ಲಿಕೇಶನ ಮತ್ತು ಸಮಾವೇಶವು ತಕ್ಷಣವೇ ಸಂಪರ್ಕ ಛಿನ್ನಗೊಳ್ಳುತ್ತದೆ.';
 
   @override
-  String get exportBeforeDelete =>
-      'ನಿಮ್ಮ ಖಾತೆ ಅಳಿಸುವ ಮೊದಲು ನಿಮ್ಮ ಡೇಟಾ ರಫ್ತಿ ಮಾಡಬಹುದು, ಆದರೆ ಒಮ್ಮೆ ಅಳಿಸಿದ ನಂತರ ಅದನ್ನು ಮರುಸ್ಥಾಪಿತ ಮಾಡಲಾಗುವುದಿಲ್ಲ.';
+  String get exportBeforeDelete => 'ನಿಮ್ಮ ಖಾತೆ ಅಳಿಸುವ ಮೊದಲು ನಿಮ್ಮ ಡೇಟಾ ರಫ್ತಿ ಮಾಡಬಹುದು, ಆದರೆ ಒಮ್ಮೆ ಅಳಿಸಿದ ನಂತರ ಅದನ್ನು ಮರುಸ್ಥಾಪಿತ ಮಾಡಲಾಗುವುದಿಲ್ಲ.';
 
   @override
-  String get deleteAccountCheckbox =>
-      'ನಿಮ್ಮ ಖಾತೆ ಅಳಿಸುವುದು ಶಾಶ್ವತವಾಗಿದೆ ಮತ್ತು ಸ್ಮೃತಿ ಮತ್ತು ಸಂವಾದಗಳು ಸಹ ಸಾಂಸ್ಕೃತಿಕವಾಗಿ ಅಳಿಸಲಾಯುತ್ತದೆ ಮತ್ತು ಮರುಸ್ಥಾಪಿತ ಮಾಡಲಾಗುವುದಿಲ್ಲ ಎಂದು ನಾನು ಅರ್ಥ ಮಾಡಿಕೊಂಡಿದ್ದೇನೆ.';
+  String get deleteAccountCheckbox => 'ನಿಮ್ಮ ಖಾತೆ ಅಳಿಸುವುದು ಶಾಶ್ವತವಾಗಿದೆ ಮತ್ತು ಸ್ಮೃತಿ ಮತ್ತು ಸಂವಾದಗಳು ಸಹ ಸಾಂಸ್ಕೃತಿಕವಾಗಿ ಅಳಿಸಲಾಯುತ್ತದೆ ಮತ್ತು ಮರುಸ್ಥಾಪಿತ ಮಾಡಲಾಗುವುದಿಲ್ಲ ಎಂದು ನಾನು ಅರ್ಥ ಮಾಡಿಕೊಂಡಿದ್ದೇನೆ.';
 
   @override
   String get areYouSure => 'ನೀವು ಖಚಿತವಾಗಿದ್ದೀರಾ?';
 
   @override
-  String get deleteAccountFinal =>
-      'ಈ ಕ್ರಿಯೆಯು ಅಳಿಸುವ ಮಟ್ಟುವಿಲ್ಲ ಮತ್ತು ನಿಮ್ಮ ಖಾತೆ ಮತ್ತು ಎಲ್ಲಾ ಸಂಬಂಧಿತ ಡೇಟಾ ಶಾಶ್ವತವಾಗಿ ಅಳಿಸುತ್ತದೆ. ನೀವು ಖಚಿತವಾಗಿ ಮುಂದುವರಿಸಲು ಬಯಸುತ್ತೀರಾ?';
+  String get deleteAccountFinal => 'ಈ ಕ್ರಿಯೆಯು ಅಳಿಸುವ ಮಟ್ಟುವಿಲ್ಲ ಮತ್ತು ನಿಮ್ಮ ಖಾತೆ ಮತ್ತು ಎಲ್ಲಾ ಸಂಬಂಧಿತ ಡೇಟಾ ಶಾಶ್ವತವಾಗಿ ಅಳಿಸುತ್ತದೆ. ನೀವು ಖಚಿತವಾಗಿ ಮುಂದುವರಿಸಲು ಬಯಸುತ್ತೀರಾ?';
 
   @override
   String get deleteNow => 'ಈಗ ಅಳಿಸಿ';
@@ -378,8 +371,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get goBack => 'ಹಿಂದಕ್ಕೆ ಹೋಗಿ';
 
   @override
-  String get checkBoxToConfirm =>
-      'ನಿಮ್ಮ ಖಾತೆ ಅಳಿಸುವುದು ಶಾಶ್ವತವಾಗಿದೆ ಮತ್ತು ಮರುಸ್ಥಾಪಿತ ಮಾಡಲಾಗುವುದಿಲ್ಲ ಎಂದು ಸ್ಪಷ್ಟವಾಗಿ ಅರ್ಥ ಮಾಡಿಕೊಳ್ಳಲು ಪೆಟ್ಟಿಗೆ ಪರಿಶೀಲಿಸಿ.';
+  String get checkBoxToConfirm => 'ನಿಮ್ಮ ಖಾತೆ ಅಳಿಸುವುದು ಶಾಶ್ವತವಾಗಿದೆ ಮತ್ತು ಮರುಸ್ಥಾಪಿತ ಮಾಡಲಾಗುವುದಿಲ್ಲ ಎಂದು ಸ್ಪಷ್ಟವಾಗಿ ಅರ್ಥ ಮಾಡಿಕೊಳ್ಳಲು ಪೆಟ್ಟಿಗೆ ಪರಿಶೀಲಿಸಿ.';
 
   @override
   String get profile => 'ಪ್ರೊಫೈಲ್';
@@ -457,8 +449,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get yourPrivacyYourControl => 'ನಿಮ್ಮ ಗೌಪ್ಯತೆ, ನಿಮ್ಮ ನಿಯಂತ್ರಣ';
 
   @override
-  String get privacyIntro =>
-      'ಓಮಿಯಲ್ಲಿ, ನಾವು ನಿಮ್ಮ ಗೌಪ್ಯತೆ ರಕ್ಷಿಸಲು ಪ್ರತಿಶ್ರುತರಾಗಿದ್ದೇವೆ. ಈ ಪುಟವು ನಿಮ್ಮ ಡೇಟಾ ಹೇಗೆ ಸಂಗ್ರಹ ಮತ್ತು ಬಳಕೆ ಮಾಡಬೇಕೆ ಎಂಬುದನ್ನು ನಿಯಂತ್ರಿಸಲು ಅನುಮತಿ ನೀಡುತ್ತದೆ.';
+  String get privacyIntro => 'ಓಮಿಯಲ್ಲಿ, ನಾವು ನಿಮ್ಮ ಗೌಪ್ಯತೆ ರಕ್ಷಿಸಲು ಪ್ರತಿಶ್ರುತರಾಗಿದ್ದೇವೆ. ಈ ಪುಟವು ನಿಮ್ಮ ಡೇಟಾ ಹೇಗೆ ಸಂಗ್ರಹ ಮತ್ತು ಬಳಕೆ ಮಾಡಬೇಕೆ ಎಂಬುದನ್ನು ನಿಯಂತ್ರಿಸಲು ಅನುಮತಿ ನೀಡುತ್ತದೆ.';
 
   @override
   String get learnMore => 'ಹೆಚ್ಚಿನ ತಿಳಿ...';
@@ -467,15 +458,13 @@ class AppLocalizationsKn extends AppLocalizations {
   String get dataProtectionLevel => 'ಡೇಟಾ ಸುರಕ್ಷಣೆ ಮಟ್ಟ';
 
   @override
-  String get dataProtectionDesc =>
-      'ನಿಮ್ಮ ಡೇಟಾ ಪ್ರಬಲ ಎನ್‌ಕ್ರಿಪ್ಶನ್‌ನಿಂದ ಮೂಲನಿರ್ಧಾರ ರಕ್ಷಿತ ಆಗಿದೆ. ನಿಮ್ಮ ಸೆಟ್ಟಿಂಗ್‌ಗಳು ಮತ್ತು ಭವಿಷ್ಯತ್ ಗೌಪ್ಯತೆ ಆಯ್ಕೆಗಳನ್ನು ಪರಿಶೀಲಿಸಿ.';
+  String get dataProtectionDesc => 'ನಿಮ್ಮ ಡೇಟಾ ಪ್ರಬಲ ಎನ್‌ಕ್ರಿಪ್ಶನ್‌ನಿಂದ ಮೂಲನಿರ್ಧಾರ ರಕ್ಷಿತ ಆಗಿದೆ. ನಿಮ್ಮ ಸೆಟ್ಟಿಂಗ್‌ಗಳು ಮತ್ತು ಭವಿಷ್ಯತ್ ಗೌಪ್ಯತೆ ಆಯ್ಕೆಗಳನ್ನು ಪರಿಶೀಲಿಸಿ.';
 
   @override
   String get appAccess => 'ಅಪ್ಲಿಕೇಶನ ಪ್ರವೇಶ';
 
   @override
-  String get appAccessDesc =>
-      'ಕೆಳಗಿನ ಅಪ್ಲಿಕೇಶನಗಳು ನಿಮ್ಮ ಡೇಟಾ ಪ್ರವೇಶ ಮಾಡಬಹುದು. ಇದರ ಅನುಮತಿಗಳನ್ನು ನಿರ್ವಹಿಸಲು ಅಪ್ಲಿಕೇಶನ ಟ್ಯಾಪ್ ಮಾಡಿ.';
+  String get appAccessDesc => 'ಕೆಳಗಿನ ಅಪ್ಲಿಕೇಶನಗಳು ನಿಮ್ಮ ಡೇಟಾ ಪ್ರವೇಶ ಮಾಡಬಹುದು. ಇದರ ಅನುಮತಿಗಳನ್ನು ನಿರ್ವಹಿಸಲು ಅಪ್ಲಿಕೇಶನ ಟ್ಯಾಪ್ ಮಾಡಿ.';
 
   @override
   String get noAppsExternalAccess => 'ಯಾವ ಅನುಸ್ಥಾಪಿತ ಅಪ್ಲಿಕೇಶನ ನಿಮ್ಮ ಡೇಟಾಗೆ ಬಾಹ್ಯ ಪ್ರವೇಶನ ಹೊಂದಿಲ್ಲ.';
@@ -532,15 +521,13 @@ class AppLocalizationsKn extends AppLocalizations {
   String get deviceDisconnectedMessage => 'ನಿಮ್ಮ ಓಮಿ ಸಂಪರ್ಕ ಛಿನ್ನಗೊಂಡಿದೆ 😔';
 
   @override
-  String get deviceUnpairedMessage =>
-      'ಸಾಧನ ಜೋಡಿ ರದ್ದುಗೊಳಿಸಲಾಗಿದೆ. ಜೋಡಿ ಪ್ರಕ್ರಿಯೆ ಪೂರ್ಣ ಮಾಡಲು ಸೆಟ್ಟಿಂಗ್ > ಬ್ಲೂಟೂತ್ ಗಿಂತ ಸಾಧನ ಸಾಬೋಟ್‌ಗೆ ಹೋಗಿ.';
+  String get deviceUnpairedMessage => 'ಸಾಧನ ಜೋಡಿ ರದ್ದುಗೊಳಿಸಲಾಗಿದೆ. ಜೋಡಿ ಪ್ರಕ್ರಿಯೆ ಪೂರ್ಣ ಮಾಡಲು ಸೆಟ್ಟಿಂಗ್ > ಬ್ಲೂಟೂತ್ ಗಿಂತ ಸಾಧನ ಸಾಬೋಟ್‌ಗೆ ಹೋಗಿ.';
 
   @override
   String get unpairDialogTitle => 'ಜೋಡಿ ಜೋಡಿ ರದ್ದುಗೊಳಿಸಿ';
 
   @override
-  String get unpairDialogMessage =>
-      'ಇದು ಸಾಧನ ಜೋಡಿ ರದ್ದುಗೊಳಿಸುತ್ತದೆ ಆದ್ದರಿಂದ ಅದು ಬೇರೆ ದೂರವಾಣಿಗೆ ಸಂಪರ್ಕ ಮಾಡಬಹುದು. ನೀವು ಜೋಡಿ ಪ್ರಕ್ರಿಯೆ ಪೂರ್ಣ ಮಾಡಲು ಸೆಟ್ಟಿಂಗ್ > ಬ್ಲೂಟೂತ್ ಗಿಂತ ಸಾಧನ ಸಾಬೋಟ್‌ಗೆ ಹೋಗಿದ್ದರಿಂದ ಅದನ್ನು ನೀವೇ ಸಾಬೋಟ್ ಮಾಡಿ.';
+  String get unpairDialogMessage => 'ಇದು ಸಾಧನ ಜೋಡಿ ರದ್ದುಗೊಳಿಸುತ್ತದೆ ಆದ್ದರಿಂದ ಅದು ಬೇರೆ ದೂರವಾಣಿಗೆ ಸಂಪರ್ಕ ಮಾಡಬಹುದು. ನೀವು ಜೋಡಿ ಪ್ರಕ್ರಿಯೆ ಪೂರ್ಣ ಮಾಡಲು ಸೆಟ್ಟಿಂಗ್ > ಬ್ಲೂಟೂತ್ ಗಿಂತ ಸಾಧನ ಸಾಬೋಟ್‌ಗೆ ಹೋಗಿದ್ದರಿಂದ ಅದನ್ನು ನೀವೇ ಸಾಬೋಟ್ ಮಾಡಿ.';
 
   @override
   String get deviceNotConnected => 'ಸಾಧನ ಸಂಪರ್ಕ ಆಗಿಲ್ಲ';
@@ -561,8 +548,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get v2Undetected => 'V2 ಪತ್ತೆ ಮಾಡಲಾಗಿಲ್ಲ';
 
   @override
-  String get v2UndetectedMessage =>
-      'ನಾವು ನೀವು ಯಾವುದೇ V1 ಸಾಧನ ಹೊಂದಿದ್ದೇನೆ ಅಥವಾ ನಿಮ್ಮ ಸಾಧನ ಸಂಪರ್ಕ ಆಗಿಲ್ಲ. SD ಕಾರ್ಡ ಕಾರ್ಯವು V2 ಸಾಧನಗಳಿಗೆ ಮಾತ್ರ ಲಭ್ಯ.';
+  String get v2UndetectedMessage => 'ನಾವು ನೀವು ಯಾವುದೇ V1 ಸಾಧನ ಹೊಂದಿದ್ದೇನೆ ಅಥವಾ ನಿಮ್ಮ ಸಾಧನ ಸಂಪರ್ಕ ಆಗಿಲ್ಲ. SD ಕಾರ್ಡ ಕಾರ್ಯವು V2 ಸಾಧನಗಳಿಗೆ ಮಾತ್ರ ಲಭ್ಯ.';
 
   @override
   String get endConversation => 'ಸಂವಾದ ಆತೊಡೆತು';
@@ -836,8 +822,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get deleteKnowledgeGraphTitle => 'ತಿಳಿವಳಿ ಗ್ರಾಫ್ ಅಳಿಸಿ?';
 
   @override
-  String get deleteKnowledgeGraphMessage =>
-      'ಇದು ಎಲ್ಲಾ ವ್ಯುತ್ಪನ್ನ ತಿಳಿವಳಿ ಗ್ರಾಫ್ ಡೇಟಾ (ನೋಡ್ ಮತ್ತು ಸಂಪರ್ಕ) ಅಳಿಸುತ್ತದೆ. ನಿಮ್ಮ ಮೂಲ ಸ್ಮೃತಿಗಳು ಸುರಕ್ಷಿತ ಉಳಿಯುತ್ತವೆ. ಗ್ರಾಫ್ ಸಮಯಾಯ ಅಥವಾ ನೆಮ್ಮದಿ ಬಯಸಿದಾಗ ಪುನರ್ನಿರ್ಮಾಣ ಆಗುತ್ತವೆ.';
+  String get deleteKnowledgeGraphMessage => 'ಇದು ಎಲ್ಲಾ ವ್ಯುತ್ಪನ್ನ ತಿಳಿವಳಿ ಗ್ರಾಫ್ ಡೇಟಾ (ನೋಡ್ ಮತ್ತು ಸಂಪರ್ಕ) ಅಳಿಸುತ್ತದೆ. ನಿಮ್ಮ ಮೂಲ ಸ್ಮೃತಿಗಳು ಸುರಕ್ಷಿತ ಉಳಿಯುತ್ತವೆ. ಗ್ರಾಫ್ ಸಮಯಾಯ ಅಥವಾ ನೆಮ್ಮದಿ ಬಯಸಿದಾಗ ಪುನರ್ನಿರ್ಮಾಣ ಆಗುತ್ತವೆ.';
 
   @override
   String get knowledgeGraphDeleted => 'ತಿಳಿವಳಿ ಗ್ರಾಫ್ ಅಳಿಸಿ';
@@ -1020,8 +1005,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get integrationsFooter => 'ಚ್ಯಾಟ್‌ನಲ್ಲಿ ಡೇಟಾ ಮತ್ತು ಅಂಕಿ ನೋಡಲು ನಿಮ್ಮ ಅಪ್ಲಿಕೇಶನ ಸಂಪರ್ಕ ಮಾಡಿ.';
 
   @override
-  String get completeAuthInBrowser =>
-      'ನಿಮ್ಮ ಬ್ರೌಜರ್‌ನಲ್ಲಿ ಪ್ರಮಾಣೀಕರಣ ಪೂರ್ಣ ಮಾಡಿ. ಪೂರ್ಣವಾದ ನಂತರ, ಅಪ್ಲಿಕೇಶನಿಗೆ ಹಿಂತಿರುಗಿ.';
+  String get completeAuthInBrowser => 'ನಿಮ್ಮ ಬ್ರೌಜರ್‌ನಲ್ಲಿ ಪ್ರಮಾಣೀಕರಣ ಪೂರ್ಣ ಮಾಡಿ. ಪೂರ್ಣವಾದ ನಂತರ, ಅಪ್ಲಿಕೇಶನಿಗೆ ಹಿಂತಿರುಗಿ.';
 
   @override
   String failedToStartAuth(String appName) {
@@ -1081,8 +1065,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get needYourPermission => 'ನಾವು ನಿಮ್ಮ ಅನುಮತಿ ಅಗತ್ಯ';
 
   @override
-  String get alreadyGavePermission =>
-      'ನೀವು ನಿಮ್ಮ ರೆಕಾರ್ಡಿಂಗ್ ಸುತ್ತುಚೆವಾಣೆ ಅನುಮತಿ ಕೆಲವು ಪೂರ್ವ ಇತ್ತೀ. ನಾವು ಅದು ಅಗತ್ಯ ಕೆಳಗಿನ ಅನುಸ್ಮಾರಕ:';
+  String get alreadyGavePermission => 'ನೀವು ನಿಮ್ಮ ರೆಕಾರ್ಡಿಂಗ್ ಸುತ್ತುಚೆವಾಣೆ ಅನುಮತಿ ಕೆಲವು ಪೂರ್ವ ಇತ್ತೀ. ನಾವು ಅದು ಅಗತ್ಯ ಕೆಳಗಿನ ಅನುಸ್ಮಾರಕ:';
 
   @override
   String get wouldLikePermission => 'ನಾವು ನಿಮ್ಮ ವಾಯ್ಸ್ ರೆಕಾರ್ಡಿಂಗ್ ಸುತ್ತುಚೆವಾಣೆ ಅನುಮತಿ ಅಪೇಕ್ಷೆ. ಕೆಳಗೆ ಯಾಕೆ:';
@@ -1097,19 +1080,16 @@ class AppLocalizationsKn extends AppLocalizations {
   String get trainFamilyProfiles => 'ಗಿಟ್ಟು ಮತ್ತು ಕುಟುಂಬ ಪ್ರೊಫೈಲ್ ತರಬೇತಿ ಮಾಡಿ';
 
   @override
-  String get trainFamilyProfilesDesc =>
-      'ನಿಮ್ಮ ರೆಕಾರ್ಡಿಂಗ್ ನಾವು ಗುರುತಿಸಿ ಮತ್ತು ನಿಮ್ಮ ಗಿಟ್ಟು ಮತ್ತು ಕುಟುಂಬ ಪ್ರೊಫೈಲ್ ರಚಿತ ಸಹಾಯ.';
+  String get trainFamilyProfilesDesc => 'ನಿಮ್ಮ ರೆಕಾರ್ಡಿಂಗ್ ನಾವು ಗುರುತಿಸಿ ಮತ್ತು ನಿಮ್ಮ ಗಿಟ್ಟು ಮತ್ತು ಕುಟುಂಬ ಪ್ರೊಫೈಲ್ ರಚಿತ ಸಹಾಯ.';
 
   @override
   String get enhanceTranscriptAccuracy => 'ಪ್ರತಿಲಿಪಿ ನಿಖುಂತತೆ ಸುಧಾರಿತ';
 
   @override
-  String get enhanceTranscriptAccuracyDesc =>
-      'ನಾವು ಮಾದರಿ ಸುಧಾರಿತ ಪರಿಧಿಗೆ, ನಾವು ಉತ್ತಮ ಪ್ರತಿಲಿಪಿ ಫಲ ನಿಮ್ಮ ರೆಕಾರ್ಡಿಂಗ್ ಒದಗಿಸಬಹುದು.';
+  String get enhanceTranscriptAccuracyDesc => 'ನಾವು ಮಾದರಿ ಸುಧಾರಿತ ಪರಿಧಿಗೆ, ನಾವು ಉತ್ತಮ ಪ್ರತಿಲಿಪಿ ಫಲ ನಿಮ್ಮ ರೆಕಾರ್ಡಿಂಗ್ ಒದಗಿಸಬಹುದು.';
 
   @override
-  String get legalNotice =>
-      'ಕಾನೂನಿ ಶೆಪೈಲಾ: ರೆಕಾರ್ಡಿಂಗ್ ಮತ್ತು ವಾಯ್ಸ್ ಡೇಟಾ ಸಂಗ್ರಹ ಕಾನುನತೆ ನಿಮ್ಮ ಸ್ಥಳ ಮತ್ತು ನಾನೋ ನೀವು ಈ ವೈಶಿಷ್ಟ್ಯ ಬಳಕೆ ಮಾಡುವುದು ಮೇಲೆ ಸಂಬಂಧಿತ. ನೀವು ದೀರ್ಘ ಪ್ರಚಾರ ಮತ್ತು ಕಾನೂನುಗಳು ಮತ್ತು ಕಾನುನತೆ ಅನುಸರಣ ಸುನಿಶ್ಚಿತ ಜವಾಬದಾರಿ.';
+  String get legalNotice => 'ಕಾನೂನಿ ಶೆಪೈಲಾ: ರೆಕಾರ್ಡಿಂಗ್ ಮತ್ತು ವಾಯ್ಸ್ ಡೇಟಾ ಸಂಗ್ರಹ ಕಾನುನತೆ ನಿಮ್ಮ ಸ್ಥಳ ಮತ್ತು ನಾನೋ ನೀವು ಈ ವೈಶಿಷ್ಟ್ಯ ಬಳಕೆ ಮಾಡುವುದು ಮೇಲೆ ಸಂಬಂಧಿತ. ನೀವು ದೀರ್ಘ ಪ್ರಚಾರ ಮತ್ತು ಕಾನೂನುಗಳು ಮತ್ತು ಕಾನುನತೆ ಅನುಸರಣ ಸುನಿಶ್ಚಿತ ಜವಾಬದಾರಿ.';
 
   @override
   String get alreadyAuthorized => 'ಈಗಾಗಲೇ ಅಧಿಕೃತಕೃತ';
@@ -1187,8 +1167,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get showEventsNoParticipants => 'ಭಾಗವಹಿಸುವವರಿಲ್ಲದೆ ಇವೆಂಟ್‌ಗಳನ್ನು ತೋರಿಸಿ';
 
   @override
-  String get showEventsNoParticipantsDesc =>
-      'ಸಕ್ರಿಯಗೊಳಿಸಿದಾಗ, Coming Up ಭಾಗವಹಿಸುವವರು ಅಥವಾ ವಿಡಿಯೊ ಲಿಂಕ್ ಇಲ್ಲದ ಇವೆಂಟ್‌ಗಳನ್ನು ತೋರಿಸುತ್ತದೆ.';
+  String get showEventsNoParticipantsDesc => 'ಸಕ್ರಿಯಗೊಳಿಸಿದಾಗ, Coming Up ಭಾಗವಹಿಸುವವರು ಅಥವಾ ವಿಡಿಯೊ ಲಿಂಕ್ ಇಲ್ಲದ ಇವೆಂಟ್‌ಗಳನ್ನು ತೋರಿಸುತ್ತದೆ.';
 
   @override
   String get yourMeetings => 'ನಿಮ್ಮ ಸಭೆಗಳು';
@@ -1229,8 +1208,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get noProjectsInWorkspace => 'ಈ ವರ್ಕ್‌ಸ್ಪೇಸ್‌ನಲ್ಲಿ ಯಾವುದೇ ಪ್ರಾಜೆಕ್ಟ್ ಕಂಡುಬಂದಿಲ್ಲ';
 
   @override
-  String get conversationTimeoutDesc =>
-      'ಸಂವಾದವನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಕೊನೆಗೊಳಿಸುವ ಮೊದಲು ಸಂಭಾಷಣೆಯಲ್ಲಿ ಎಷ್ಟು ಸಮಯ ಕಾಯಬೇಕೆಂದು ಆರಿಸಿ:';
+  String get conversationTimeoutDesc => 'ಸಂವಾದವನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಕೊನೆಗೊಳಿಸುವ ಮೊದಲು ಸಂಭಾಷಣೆಯಲ್ಲಿ ಎಷ್ಟು ಸಮಯ ಕಾಯಬೇಕೆಂದು ಆರಿಸಿ:';
 
   @override
   String get timeout2Minutes => '2 ನಿಮಿಷ';
@@ -1277,8 +1255,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get languageForTranscription => 'ಗಾಢ ಟ್ರಾನ್ಸ್ಕ್ರಿಪ್ಷನ್ ಮತ್ತು ವ್ಯಕ್ತಿಗತ ಅನುಭವಕ್ಕಾಗಿ ನಿಮ್ಮ ಭಾಷೆ ಹೊಂದಿಸಿ.';
 
   @override
-  String get singleLanguageModeInfo =>
-      'ಸಿಂಗಲ್ ಲ್ಯಾಂಗ್ವೇಜ್ ಮೋಡ್ ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ. ಹೆಚ್ಚಿನ ನಿಖುರತೆಗಾಗಿ ಅನುವಾದ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ.';
+  String get singleLanguageModeInfo => 'ಸಿಂಗಲ್ ಲ್ಯಾಂಗ್ವೇಜ್ ಮೋಡ್ ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ. ಹೆಚ್ಚಿನ ನಿಖುರತೆಗಾಗಿ ಅನುವಾದ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ.';
 
   @override
   String get searchLanguageHint => 'ಭಾಷೆಯನ್ನು ಹೆಸರು ಅಥವಾ ಕೋಡಿನಿಂದ ಹುಡುಕಿ';
@@ -1358,8 +1335,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get defaultRepository => 'ಡಿಫಾಲ್ಟ ರಿಪಾಜಿಟರಿ';
 
   @override
-  String get selectDefaultRepoDesc =>
-      'ಸಮಸ್ಯೆಗಳನ್ನು ರಚಿಸುವ ಸಮಯ ಡಿಫಾಲ್ಟ ರಿಪಾಜಿಟರಿ ಆರಿಸಿ. ಸಮಸ್ಯೆಗಳನ್ನು ರಚಿಸುವಾಗ ನೀವು ಇನ್ನೂ ವಿಭಿನ್ನ ರಿಪಾಜಿಟರಿ ನಿರ್ದಿಷ್ಟಪಡಿಸಬಹುದು.';
+  String get selectDefaultRepoDesc => 'ಸಮಸ್ಯೆಗಳನ್ನು ರಚಿಸುವ ಸಮಯ ಡಿಫಾಲ್ಟ ರಿಪಾಜಿಟರಿ ಆರಿಸಿ. ಸಮಸ್ಯೆಗಳನ್ನು ರಚಿಸುವಾಗ ನೀವು ಇನ್ನೂ ವಿಭಿನ್ನ ರಿಪಾಜಿಟರಿ ನಿರ್ದಿಷ್ಟಪಡಿಸಬಹುದು.';
 
   @override
   String get noReposFound => 'ಯಾವುದೇ ರಿಪಾಜಿಟರಿ ಕಂಡುಬಂದಿಲ್ಲ';
@@ -1406,8 +1382,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get configureSettings => 'ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಕಾನ್ಫಿಗರ್ ಮಾಡಿ';
 
   @override
-  String get completeAuthBrowser =>
-      'ದಯವಿಟ್ಟು ನಿಮ್ಮ ಬ್ರೌಜರ್‌ನಲ್ಲಿ ಪ್ರಮಾಣೀಕರಣ ಪೂರ್ಣ ಮಾಡಿ. ಪೂರ್ಣವಾದ ನಂತರ, ಅ್ಯಪ್‌ಗೆ ಹಿಂತಿರುಗಿ.';
+  String get completeAuthBrowser => 'ದಯವಿಟ್ಟು ನಿಮ್ಮ ಬ್ರೌಜರ್‌ನಲ್ಲಿ ಪ್ರಮಾಣೀಕರಣ ಪೂರ್ಣ ಮಾಡಿ. ಪೂರ್ಣವಾದ ನಂತರ, ಅ್ಯಪ್‌ಗೆ ಹಿಂತಿರುಗಿ.';
 
   @override
   String failedToStartAppAuth(String appName) {
@@ -1735,8 +1710,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get enableBluetooth => 'Bluetooth ಸಕ್ರಿಯಗೊಳಿಸಿ';
 
   @override
-  String get bluetoothNeeded =>
-      'Omi ನಿಮ್ಮ ವಿಯರೇಬಲ್‌ನೊಂದಿಗೆ ಸಂಪರ್ಕ ಮಾಡಲು Bluetooth ಅಗತ್ಯವಿದೆ. ದಯವಿಟ್ಟು Bluetooth ಸಕ್ರಿಯಗೊಳಿಸಿ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.';
+  String get bluetoothNeeded => 'Omi ನಿಮ್ಮ ವಿಯರೇಬಲ್‌ನೊಂದಿಗೆ ಸಂಪರ್ಕ ಮಾಡಲು Bluetooth ಅಗತ್ಯವಿದೆ. ದಯವಿಟ್ಟು Bluetooth ಸಕ್ರಿಯಗೊಳಿಸಿ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.';
 
   @override
   String get contactSupport => 'ಸಹಾಯಕ ಸಂಪರ್ಕ ಮಾಡಿ?';
@@ -1769,26 +1743,22 @@ class AppLocalizationsKn extends AppLocalizations {
   String get locationServiceDisabled => 'ಸ್ಥಾನ ಸೇವೆ ನಿಷ್ಕ್ರಿಯ';
 
   @override
-  String get locationServiceDisabledDesc =>
-      'ಸ್ಥಾನ ಸೇವೆ ನಿಷ್ಕ್ರಿಯ. ದಯವಿಟ್ಟು ಸೆಟ್ಟಿಂಗ್‌ಗಳು > ಗೌಪ್ಯತೆ ಮತ್ತು ಸುರಕ್ಷೆ > ಸ್ಥಾನ ಸೇವೆಗಳು ಗಿಕೆ ಮತ್ತು ಸಕ್ರಿಯಗೊಳಿಸಿ';
+  String get locationServiceDisabledDesc => 'ಸ್ಥಾನ ಸೇವೆ ನಿಷ್ಕ್ರಿಯ. ದಯವಿಟ್ಟು ಸೆಟ್ಟಿಂಗ್‌ಗಳು > ಗೌಪ್ಯತೆ ಮತ್ತು ಸುರಕ್ಷೆ > ಸ್ಥಾನ ಸೇವೆಗಳು ಗಿಕೆ ಮತ್ತು ಸಕ್ರಿಯಗೊಳಿಸಿ';
 
   @override
   String get backgroundLocationDenied => 'ಹಿನ್ನಿಲೆ ಸ್ಥಾನ ಪ್ರವೇಶ ನಿರಾಕರಿಸಲಾಗಿದೆ';
 
   @override
-  String get backgroundLocationDeniedDesc =>
-      'ದಯವಿಟ್ಟು ಸಾಧನ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ ಮತ್ತು ಸ್ಥಾನ ಅನುಮತಿ \"ಯಾವಾಗಲೂ ಅನುಮತಿ\" ಗೆ ಹೊಂದಿಸಿ';
+  String get backgroundLocationDeniedDesc => 'ದಯವಿಟ್ಟು ಸಾಧನ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ ಮತ್ತು ಸ್ಥಾನ ಅನುಮತಿ \"ಯಾವಾಗಲೂ ಅನುಮತಿ\" ಗೆ ಹೊಂದಿಸಿ';
 
   @override
   String get lovingOmi => 'Omi ಪಸಂದ ಮಾಡುತ್ತಿದ್ದೀರೆ?';
 
   @override
-  String get leaveReviewIos =>
-      'App Store ನಲ್ಲಿ ವಿಮರ್ಶೆ ಬಿಡುವುದರ ಮೂಲಕ ನಮಗೆ ಹೆಚ್ಚಿನ ಜನರ ಬಳಿ ತಲುಪಲು ಸಾಹಾಯ್ಯ ಮಾಡಿ. ನಿಮ್ಮ ಪ್ರತಿಕ್ರಿಯೆ ನಮಗೆ ಬೇಸರ ಬರುತ್ತದೆ!';
+  String get leaveReviewIos => 'App Store ನಲ್ಲಿ ವಿಮರ್ಶೆ ಬಿಡುವುದರ ಮೂಲಕ ನಮಗೆ ಹೆಚ್ಚಿನ ಜನರ ಬಳಿ ತಲುಪಲು ಸಾಹಾಯ್ಯ ಮಾಡಿ. ನಿಮ್ಮ ಪ್ರತಿಕ್ರಿಯೆ ನಮಗೆ ಬೇಸರ ಬರುತ್ತದೆ!';
 
   @override
-  String get leaveReviewAndroid =>
-      'Google Play Store ನಲ್ಲಿ ವಿಮರ್ಶೆ ಬಿಡುವುದರ ಮೂಲಕ ನಮಗೆ ಹೆಚ್ಚಿನ ಜನರ ಬಳಿ ತಲುಪಲು ಸಾಹಾಯ್ಯ ಮಾಡಿ. ನಿಮ್ಮ ಪ್ರತಿಕ್ರಿಯೆ ನಮಗೆ ಬೇಸರ ಬರುತ್ತದೆ!';
+  String get leaveReviewAndroid => 'Google Play Store ನಲ್ಲಿ ವಿಮರ್ಶೆ ಬಿಡುವುದರ ಮೂಲಕ ನಮಗೆ ಹೆಚ್ಚಿನ ಜನರ ಬಳಿ ತಲುಪಲು ಸಾಹಾಯ್ಯ ಮಾಡಿ. ನಿಮ್ಮ ಪ್ರತಿಕ್ರಿಯೆ ನಮಗೆ ಬೇಸರ ಬರುತ್ತದೆ!';
 
   @override
   String get rateOnAppStore => 'App Store ನಲ್ಲಿ ರೇಟ್ ಮಾಡಿ';
@@ -1800,8 +1770,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get maybeLater => 'ಬಹುಶಃ ನಂತರ';
 
   @override
-  String get speechProfileIntro =>
-      'Omi ನಿಮ್ಮ ಗುರಿಗಳು ಮತ್ತು ನಿಮ್ಮ ಧ್ವನಿ ಕಲಿಯಬೇಕು. ನೀವು ಅದನ್ನು ನಂತರ ಮಾರ್ಪಡಿಸಲು ಸಾಧ್ಯ ಆಗುತ್ತದೆ.';
+  String get speechProfileIntro => 'Omi ನಿಮ್ಮ ಗುರಿಗಳು ಮತ್ತು ನಿಮ್ಮ ಧ್ವನಿ ಕಲಿಯಬೇಕು. ನೀವು ಅದನ್ನು ನಂತರ ಮಾರ್ಪಡಿಸಲು ಸಾಧ್ಯ ಆಗುತ್ತದೆ.';
 
   @override
   String get getStarted => 'ಪ್ರಾರಂಭ ಮಾಡಿ';
@@ -1822,29 +1791,25 @@ class AppLocalizationsKn extends AppLocalizations {
   String get connectionError => 'ಸಂಪರ್ಕ ದೋಷ';
 
   @override
-  String get connectionErrorDesc =>
-      'ಸರ್ವರಿಗೆ ಸಂಪರ್ಕ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ. ದಯವಿಟ್ಟು ನಿಮ್ಮ ಇಂಟರನೆಟ್ ಸಂಪರ್ಕ ಪರಿಶೀಲಿಸಿ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.';
+  String get connectionErrorDesc => 'ಸರ್ವರಿಗೆ ಸಂಪರ್ಕ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ. ದಯವಿಟ್ಟು ನಿಮ್ಮ ಇಂಟರನೆಟ್ ಸಂಪರ್ಕ ಪರಿಶೀಲಿಸಿ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.';
 
   @override
   String get invalidRecordingMultipleSpeakers => 'ಅಮಾನ್ಯ ರೆಕಾರ್ಡಿಂಗ್ ಸನ್ನಿವೇಶಿತ';
 
   @override
-  String get multipleSpeakersDesc =>
-      'ರೆಕಾರ್ಡಿಂಗ್‌ನಲ್ಲಿ ಅನೇಕ ಸ್ಪೀಕರ್‌ಗಳಿರುವಂತೆ ತೋರುತ್ತದೆ. ದಯವಿಟ್ಟು ನೀವು ಶಾಂತ ಸ್ಥಳದಲ್ಲಿ ಇರುವಿರಿ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.';
+  String get multipleSpeakersDesc => 'ರೆಕಾರ್ಡಿಂಗ್‌ನಲ್ಲಿ ಅನೇಕ ಸ್ಪೀಕರ್‌ಗಳಿರುವಂತೆ ತೋರುತ್ತದೆ. ದಯವಿಟ್ಟು ನೀವು ಶಾಂತ ಸ್ಥಳದಲ್ಲಿ ಇರುವಿರಿ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.';
 
   @override
   String get tooShortDesc => 'ಸಾಕಷ್ಟು ಭಾಷಣ ಕಂಡುಬಂದಿಲ್ಲ. ದಯವಿಟ್ಟು ಹೆಚ್ಚು ಮಾತನಾಡಿ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.';
 
   @override
-  String get invalidRecordingDesc =>
-      'ದಯವಿಟ್ಟು ನೀವು ಕನಿಷ್ಠ 5 ಸೆಕೆಂಡುಗಳಿಗೆ ಮತ್ತು 90 ಸೆಕೆಂಡುಗಳಿಗಿಂತ ಹೆಚ್ಚೆ ಮಾತನಾಡೆಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.';
+  String get invalidRecordingDesc => 'ದಯವಿಟ್ಟು ನೀವು ಕನಿಷ್ಠ 5 ಸೆಕೆಂಡುಗಳಿಗೆ ಮತ್ತು 90 ಸೆಕೆಂಡುಗಳಿಗಿಂತ ಹೆಚ್ಚೆ ಮಾತನಾಡೆಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.';
 
   @override
   String get areYouThere => 'ನೀವು ಇರುವಿರಾ?';
 
   @override
-  String get noSpeechDesc =>
-      'ನಾವು ಯಾವುದೇ ಭಾಷಣ ಕಂಡುಹಿಡಿಯಲು ಸಾಧ್ಯ ಆಗಲಿಲ್ಲ. ದಯವಿಟ್ಟು ನೀವು ಕನಿಷ್ಠ 10 ಸೆಕೆಂಡುಗಳಿಗೆ ಮತ್ತು 3 ನಿಮಿಷಗಳಿಗಿಂತ ಹೆಚ್ಚೆ ಮಾತನಾಡೆಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.';
+  String get noSpeechDesc => 'ನಾವು ಯಾವುದೇ ಭಾಷಣ ಕಂಡುಹಿಡಿಯಲು ಸಾಧ್ಯ ಆಗಲಿಲ್ಲ. ದಯವಿಟ್ಟು ನೀವು ಕನಿಷ್ಠ 10 ಸೆಕೆಂಡುಗಳಿಗೆ ಮತ್ತು 3 ನಿಮಿಷಗಳಿಗಿಂತ ಹೆಚ್ಚೆ ಮಾತನಾಡೆಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.';
 
   @override
   String get connectionLost => 'ಸಂಪರ್ಕ ಕಳೆದುಹೋಯಿತು';
@@ -1865,8 +1830,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get permissionsRequired => 'ಅನುಮತಿ ಅಗತ್ಯ';
 
   @override
-  String get permissionsRequiredDesc =>
-      'ಈ ಅ್ಯಪ್ ಸರಿಯಾಗಿ ಕೆಲಸ ಮಾಡಲು Bluetooth ಮತ್ತು ಸ್ಥಾನ ಅನುಮತಿಯ ಅಗತ್ಯವಿದೆ. ದಯವಿಟ್ಟು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಅವುಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ.';
+  String get permissionsRequiredDesc => 'ಈ ಅ್ಯಪ್ ಸರಿಯಾಗಿ ಕೆಲಸ ಮಾಡಲು Bluetooth ಮತ್ತು ಸ್ಥಾನ ಅನುಮತಿಯ ಅಗತ್ಯವಿದೆ. ದಯವಿಟ್ಟು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಅವುಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ.';
 
   @override
   String get openSettings => 'ಸೆಟ್ಟಿಂಗ್‌ಗಳು ತೆರೆಯಿರಿ';
@@ -1896,8 +1860,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get omiYourAiCompanion => 'Omi – ನಿಮ್ಮ AI ಸಹಾಯಕ';
 
   @override
-  String get captureEveryMoment =>
-      'ಪ್ರತಿಯೊಂದು ಕ್ಷಣವನ್ನು ಹಿಡಿಯಿರಿ. AI-ನ ಚಾಲಿತ\nಸಾರಾಂಶಗಳನ್ನು ಪಡೆಯಿರಿ. ಪುನಃ ಗಮನಾರ್ಹತೆಗಳನ್ನು ತೆಗೆದುಕೊಳ್ಳಬೇಡಿ.';
+  String get captureEveryMoment => 'ಪ್ರತಿಯೊಂದು ಕ್ಷಣವನ್ನು ಹಿಡಿಯಿರಿ. AI-ನ ಚಾಲಿತ\nಸಾರಾಂಶಗಳನ್ನು ಪಡೆಯಿರಿ. ಪುನಃ ಗಮನಾರ್ಹತೆಗಳನ್ನು ತೆಗೆದುಕೊಳ್ಳಬೇಡಿ.';
 
   @override
   String get appleWatchSetup => 'Apple Watch ಸೆಟಪ್';
@@ -1909,12 +1872,10 @@ class AppLocalizationsKn extends AppLocalizations {
   String get microphonePermission => 'ಮೈಕ್ರೋಫೋನ್ ಅನುಮತಿ';
 
   @override
-  String get permissionGrantedNow =>
-      'ಅನುಮತಿ ನೀಡಲಾಗಿದೆ! ಈಗ:\n\nನಿಮ್ಮ ವಾಚ್‌ನಲ್ಲಿ Omi ಅ್ಯಪ್ ತೆರೆಯಿರಿ ಮತ್ತು ಕೆಳಗೆ \"ಮುಂದುವರಿಸಿ\" ಹೊಡೆಯಿರಿ';
+  String get permissionGrantedNow => 'ಅನುಮತಿ ನೀಡಲಾಗಿದೆ! ಈಗ:\n\nನಿಮ್ಮ ವಾಚ್‌ನಲ್ಲಿ Omi ಅ್ಯಪ್ ತೆರೆಯಿರಿ ಮತ್ತು ಕೆಳಗೆ \"ಮುಂದುವರಿಸಿ\" ಹೊಡೆಯಿರಿ';
 
   @override
-  String get needMicrophonePermission =>
-      'ನಮಗೆ ಮೈಕ್ರೋಫೋನ್ ಅನುಮತಿಯ ಅಗತ್ಯವಿದೆ.\n\n1. \"ಅನುಮತಿ ನೀಡಿ\" ಹೊಡೆಯಿರಿ\n2. ನಿಮ್ಮ iPhone ನಲ್ಲಿ ಅನುಮತಿ ನೀಡಿ\n3. ವಾಚ್ ಅ್ಯಪ್ ಮುಚ್ಚುತ್ತದೆ\n4. ಪುನರಾವರ್ತಿತ ತೆರೆಯಿರಿ ಮತ್ತು \"ಮುಂದುವರಿಸಿ\" ಹೊಡೆಯಿರಿ';
+  String get needMicrophonePermission => 'ನಮಗೆ ಮೈಕ್ರೋಫೋನ್ ಅನುಮತಿಯ ಅಗತ್ಯವಿದೆ.\n\n1. \"ಅನುಮತಿ ನೀಡಿ\" ಹೊಡೆಯಿರಿ\n2. ನಿಮ್ಮ iPhone ನಲ್ಲಿ ಅನುಮತಿ ನೀಡಿ\n3. ವಾಚ್ ಅ್ಯಪ್ ಮುಚ್ಚುತ್ತದೆ\n4. ಪುನರಾವರ್ತಿತ ತೆರೆಯಿರಿ ಮತ್ತು \"ಮುಂದುವರಿಸಿ\" ಹೊಡೆಯಿರಿ';
 
   @override
   String get grantPermissionButton => 'ಅನುಮತಿ ನೀಡಿ';
@@ -1923,15 +1884,13 @@ class AppLocalizationsKn extends AppLocalizations {
   String get needHelp => 'ಸಹಾಯ ಅಗತ್ಯ?';
 
   @override
-  String get troubleshootingSteps =>
-      'ತೊಂದರೆ ನಿವಾರಣೆ:\n\n1. Omi ನಿಮ್ಮ ವಾಚ್‌ನಲ್ಲಿ ಸ್ಥಾಪಿತವಾಗಿದೆ ಖಚಿತ ಮಾಡಿ\n2. ನಿಮ್ಮ ವಾಚ್‌ನಲ್ಲಿ Omi ಅ್ಯಪ್ ತೆರೆಯಿರಿ\n3. ಅನುಮತಿ ಪಾಪ್‌ಅಪ್ ಹುಡುಕಿ\n4. ಪ್ರಸ್ತಾವನೆ ಮಾಡಿದಾಗ \"ಅನುಮತಿ\" ಹೊಡೆಯಿರಿ\n5. ನಿಮ್ಮ ವಾಚ್‌ನಲ್ಲಿ ಅ್ಯಪ್ ಮುಚ್ಚುತ್ತದೆ - ಪುನರಾವರ್ತಿತ ತೆರೆಯಿರಿ\n6. ನಿಮ್ಮ iPhone ನಲ್ಲಿ ಹಿಂತಿರುಗಬಂದು \"ಮುಂದುವರಿಸಿ\" ಹೊಡೆಯಿರಿ';
+  String get troubleshootingSteps => 'ತೊಂದರೆ ನಿವಾರಣೆ:\n\n1. Omi ನಿಮ್ಮ ವಾಚ್‌ನಲ್ಲಿ ಸ್ಥಾಪಿತವಾಗಿದೆ ಖಚಿತ ಮಾಡಿ\n2. ನಿಮ್ಮ ವಾಚ್‌ನಲ್ಲಿ Omi ಅ್ಯಪ್ ತೆರೆಯಿರಿ\n3. ಅನುಮತಿ ಪಾಪ್‌ಅಪ್ ಹುಡುಕಿ\n4. ಪ್ರಸ್ತಾವನೆ ಮಾಡಿದಾಗ \"ಅನುಮತಿ\" ಹೊಡೆಯಿರಿ\n5. ನಿಮ್ಮ ವಾಚ್‌ನಲ್ಲಿ ಅ್ಯಪ್ ಮುಚ್ಚುತ್ತದೆ - ಪುನರಾವರ್ತಿತ ತೆರೆಯಿರಿ\n6. ನಿಮ್ಮ iPhone ನಲ್ಲಿ ಹಿಂತಿರುಗಬಂದು \"ಮುಂದುವರಿಸಿ\" ಹೊಡೆಯಿರಿ';
 
   @override
   String get recordingStartedSuccessfully => 'ರೆಕಾರ್ಡಿಂಗ್ ಯಶಸ್ವಿಯಾಗಿ ಪ್ರಾರಂಭವಾಗಿದೆ!';
 
   @override
-  String get permissionNotGrantedYet =>
-      'ಅನುಮತಿ ಇನ್ನೂ ನೀಡಲಾಗಿಲ್ಲ. ದಯವಿಟ್ಟು ನೀವು ಮೈಕ್ರೋಫೋನ್ ಪ್ರವೇಶ ಅನುಮತಿ ನೀಡಿದ್ದೀರಿ ಮತ್ತು ನಿಮ್ಮ ವಾಚ್‌ನಲ್ಲಿ ಅ್ಯಪ್ ಪುನರಾವರ್ತಿತ ತೆರೆದ್ದೀರಿ ಖಚಿತ ಮಾಡಿ.';
+  String get permissionNotGrantedYet => 'ಅನುಮತಿ ಇನ್ನೂ ನೀಡಲಾಗಿಲ್ಲ. ದಯವಿಟ್ಟು ನೀವು ಮೈಕ್ರೋಫೋನ್ ಪ್ರವೇಶ ಅನುಮತಿ ನೀಡಿದ್ದೀರಿ ಮತ್ತು ನಿಮ್ಮ ವಾಚ್‌ನಲ್ಲಿ ಅ್ಯಪ್ ಪುನರಾವರ್ತಿತ ತೆರೆದ್ದೀರಿ ಖಚಿತ ಮಾಡಿ.';
 
   @override
   String errorRequestingPermission(String error) {
@@ -1956,8 +1915,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get selectYourLanguage => 'ನಿಮ್ಮ ಭಾಷೆ ಆರಿಸಿ';
 
   @override
-  String get personalGrowthJourney =>
-      'ನಿಮ್ಮ ವ್ಯಕ್ತಿಗತ ಬೆಳವಣಿಗೆ AI ಯೊಂದಿಗೆ ಯಾತ್ರೆ ಇದು ನಿಮ್ಮ ಪ್ರತಿಯೊಂದು ಪದವನ್ನು ಕೇಳುತ್ತದೆ.';
+  String get personalGrowthJourney => 'ನಿಮ್ಮ ವ್ಯಕ್ತಿಗತ ಬೆಳವಣಿಗೆ AI ಯೊಂದಿಗೆ ಯಾತ್ರೆ ಇದು ನಿಮ್ಮ ಪ್ರತಿಯೊಂದು ಪದವನ್ನು ಕೇಳುತ್ತದೆ.';
 
   @override
   String get actionItemsTitle => 'To-Do\'s';
@@ -2029,8 +1987,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get welcomeActionItemsTitle => 'ಕ್ರಿಯಾ ಐಟಂಗಳಿಗೆ ಸಿದ್ಧ';
 
   @override
-  String get welcomeActionItemsDescription =>
-      'ನಿಮ್ಮ AI ಸ್ವಯಂಚಾಲಿತವಾಗಿ ನಿಮ್ಮ ಸಂವಾದಗಳಿಂದ ಕಾರ್ಯಗಳು ಮತ್ತು to-do\'s ಹೊರತೆಗೆಯುತ್ತದೆ. ರಚಿಸಲಾದ ಸಮಯ ಇಲ್ಲಿ ಕಾಣಿಸುತ್ತವೆ.';
+  String get welcomeActionItemsDescription => 'ನಿಮ್ಮ AI ಸ್ವಯಂಚಾಲಿತವಾಗಿ ನಿಮ್ಮ ಸಂವಾದಗಳಿಂದ ಕಾರ್ಯಗಳು ಮತ್ತು to-do\'s ಹೊರತೆಗೆಯುತ್ತದೆ. ರಚಿಸಲಾದ ಸಮಯ ಇಲ್ಲಿ ಕಾಣಿಸುತ್ತವೆ.';
 
   @override
   String get autoExtractionFeature => 'ಸಂವಾದಗಳಿಂದ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಹೊರತೆಗೆಯಲಾಗಿದೆ';
@@ -2226,15 +2183,13 @@ class AppLocalizationsKn extends AppLocalizations {
   String get speechTranscriptionSectionTitle => 'ಭಾಷಣ ಮತ್ತು ಟ್ರಾನ್ಸ್ಕ್ರಿಪ್ಷನ್';
 
   @override
-  String get languageSettingsHelperText =>
-      'ಅ್ಯಪ್ ಭಾಷೆ ಮೆನುಗಳು ಮತ್ತು ಬಟನ್‌ಗಳನ್ನು ಬದಲಾಯಿಸುತ್ತದೆ. ಭಾಷಣ ಭಾಷೆ ನಿಮ್ಮ ರೆಕಾರ್ಡಿಂಗ್‌ಗಳನ್ನು ಹೇಗೆ ಟ್ರಾನ್ಸ್ಕ್ರೈಬ್ ಮಾಡಲಾಗುತ್ತದೆ ಪರಿಣಾಮ ಬೀರುತ್ತದೆ.';
+  String get languageSettingsHelperText => 'ಅ್ಯಪ್ ಭಾಷೆ ಮೆನುಗಳು ಮತ್ತು ಬಟನ್‌ಗಳನ್ನು ಬದಲಾಯಿಸುತ್ತದೆ. ಭಾಷಣ ಭಾಷೆ ನಿಮ್ಮ ರೆಕಾರ್ಡಿಂಗ್‌ಗಳನ್ನು ಹೇಗೆ ಟ್ರಾನ್ಸ್ಕ್ರೈಬ್ ಮಾಡಲಾಗುತ್ತದೆ ಪರಿಣಾಮ ಬೀರುತ್ತದೆ.';
 
   @override
   String get translationNotice => 'ಅನುವಾದ ಸೂಚನೆ';
 
   @override
-  String get translationNoticeMessage =>
-      'Omi ನಿಮ್ಮ ಮುಖ್ಯ ಭಾಷೆಗೆ ಸಂವಾದಗಳನ್ನು ಅನುವಾದಿಸುತ್ತದೆ. ಸೆಟ್ಟಿಂಗ್‌ಗಳು → ಪ್ರೊಫೈಲ್‌ಗಳಲ್ಲಿ ಯಾವಾಗಲೂ ನವೀಕರಣ ಮಾಡಿ.';
+  String get translationNoticeMessage => 'Omi ನಿಮ್ಮ ಮುಖ್ಯ ಭಾಷೆಗೆ ಸಂವಾದಗಳನ್ನು ಅನುವಾದಿಸುತ್ತದೆ. ಸೆಟ್ಟಿಂಗ್‌ಗಳು → ಪ್ರೊಫೈಲ್‌ಗಳಲ್ಲಿ ಯಾವಾಗಲೂ ನವೀಕರಣ ಮಾಡಿ.';
 
   @override
   String get pleaseCheckInternetConnection => 'ದಯವಿಟ್ಟು ನಿಮ್ಮ ಇಂಟರನೆಟ್ ಸಂಪರ್ಕ ಪರಿಶೀಲಿಸಿ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ';
@@ -2396,8 +2351,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get unpairDeviceDialogTitle => 'ಯಂತ್ರ ಅನ್ನೋ ಮಾಡಿ';
 
   @override
-  String get unpairDeviceDialogMessage =>
-      'ಇದು ಯಂತ್ರವನ್ನು ಅನ್ನೋ ಮಾಡುತ್ತದೆ ಇದರಿಂದ ಅದನ್ನು ಇತರ ಫೋನ್‌ಗೆ ಸಂಪರ್ಕ ಮಾಡಬಹುದು. ಪ್ರಕ್ರಿಯೆ ಪೂರ್ಣ ಮಾಡಲು ನೀವು ಸೆಟಿಂಗ್‌ಗಳು > ಬ್ಲೂಟೂತ್‌ಗೆ ಹೋಗಿ ಯಂತ್ರವನ್ನು ಮರೆಯಬೇಕು.';
+  String get unpairDeviceDialogMessage => 'ಇದು ಯಂತ್ರವನ್ನು ಅನ್ನೋ ಮಾಡುತ್ತದೆ ಇದರಿಂದ ಅದನ್ನು ಇತರ ಫೋನ್‌ಗೆ ಸಂಪರ್ಕ ಮಾಡಬಹುದು. ಪ್ರಕ್ರಿಯೆ ಪೂರ್ಣ ಮಾಡಲು ನೀವು ಸೆಟಿಂಗ್‌ಗಳು > ಬ್ಲೂಟೂತ್‌ಗೆ ಹೋಗಿ ಯಂತ್ರವನ್ನು ಮರೆಯಬೇಕು.';
 
   @override
   String get unpair => 'ಅನ್ನೋ ಮಾಡಿ';
@@ -2578,8 +2532,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get youreAllSet => 'ನೀವು ಸಿದ್ಧರಿದ್ದೀರಿ!';
 
   @override
-  String get welcomeToOmiDescription =>
-      'Omi ಗೆ ಸ್ವಾಗತ! ನಿಮ್ಮ AI ಸಹಚರ ಸಂವಾದಗಳು, ಕಾರ್ಯಗಳು ಮತ್ತು ಇನ್ನಷ್ಟು ನೆರವೇರಿಸಲು ಸಿದ್ಧವಾಗಿದೆ.';
+  String get welcomeToOmiDescription => 'Omi ಗೆ ಸ್ವಾಗತ! ನಿಮ್ಮ AI ಸಹಚರ ಸಂವಾದಗಳು, ಕಾರ್ಯಗಳು ಮತ್ತು ಇನ್ನಷ್ಟು ನೆರವೇರಿಸಲು ಸಿದ್ಧವಾಗಿದೆ.';
 
   @override
   String get startUsingOmi => 'Omi ಬಳಸಲು ಪ್ರಾರಂಭಿಸಿ';
@@ -2658,8 +2611,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get reviewAndManageConversations => 'ನಿಮ್ಮ ಕ್ಯಾಪ್ಚರ್ ಮಾಡಿದ ಸಂವಾದಗಳನ್ನು ಪರಿಶೀಲಿಸಿ ಮತ್ತು ನಿರ್ವಹಿಸಿ';
 
   @override
-  String get startCapturingConversations =>
-      'ಇಲ್ಲಿ ನೋಡಲು ನಿಮ್ಮ Omi ಯಂತ್ರದೊಂದಿಗೆ ಸಂವಾದಗಳನ್ನು ಕ್ಯಾಪ್ಚರ್ ಮಾಡಲು ಪ್ರಾರಂಭಿಸಿ.';
+  String get startCapturingConversations => 'ಇಲ್ಲಿ ನೋಡಲು ನಿಮ್ಮ Omi ಯಂತ್ರದೊಂದಿಗೆ ಸಂವಾದಗಳನ್ನು ಕ್ಯಾಪ್ಚರ್ ಮಾಡಲು ಪ್ರಾರಂಭಿಸಿ.';
 
   @override
   String get useMobileAppToCapture => 'ಆಡಿಯೋ ಕ್ಯಾಪ್ಚರ್ ಮಾಡಲು ನಿಮ್ಮ ಮೊಬೈಲ್ ಅ್ಯಾಪ್ ಬಳಸಿ';
@@ -2674,8 +2626,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get showAll => 'ಸಮಸ್ತ ತೋರಿಸಿ';
 
   @override
-  String get noTasksForToday =>
-      'ಇಂದು ಯಾವ ಕಾರ್ಯಗಳೂ ಇಲ್ಲ.\nOmi ನನ್ನ ಮತ್ತಷ್ಟು ಕಾರ್ಯಗಳ ಬಗ್ಗೆ ಕೇಳಿ ಅಥವಾ ಹಸ್ತಚಾಲಿತವಾಗಿ ರಚಿಸಿ.';
+  String get noTasksForToday => 'ಇಂದು ಯಾವ ಕಾರ್ಯಗಳೂ ಇಲ್ಲ.\nOmi ನನ್ನ ಮತ್ತಷ್ಟು ಕಾರ್ಯಗಳ ಬಗ್ಗೆ ಕೇಳಿ ಅಥವಾ ಹಸ್ತಚಾಲಿತವಾಗಿ ರಚಿಸಿ.';
 
   @override
   String get dailyScore => 'ದೈನಿಕ ಸ್ಕೋರ್';
@@ -2717,8 +2668,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get noTasksYet => 'ಇನ್ನೂ ಯಾವ ಕಾರ್ಯಗಳೂ ಇಲ್ಲ';
 
   @override
-  String get tasksFromConversationsWillAppear =>
-      'ನಿಮ್ಮ ಸಂವಾದಗಳಿಂದ ಕಾರ್ಯಗಳು ಇಲ್ಲಿ ಕಾಣಿಸಬೇಕು.\nಹಸ್ತಚಾಲಿತವಾಗಿ ಸೇರಿಸಲು ರಚಿಸುವುದನ್ನು ಕ್ಲಿಕ್ ಮಾಡಿ.';
+  String get tasksFromConversationsWillAppear => 'ನಿಮ್ಮ ಸಂವಾದಗಳಿಂದ ಕಾರ್ಯಗಳು ಇಲ್ಲಿ ಕಾಣಿಸಬೇಕು.\nಹಸ್ತಚಾಲಿತವಾಗಿ ಸೇರಿಸಲು ರಚಿಸುವುದನ್ನು ಕ್ಲಿಕ್ ಮಾಡಿ.';
 
   @override
   String get monthJan => 'ಜನ';
@@ -2850,8 +2800,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get chatPrompt => 'ಚ್ಯಾಟ್ ಪ್ರಾಂಪ್ಟ್';
 
   @override
-  String get chatPromptPlaceholder =>
-      'ನೀವು ಅದ್ಭುತ ಅ್ಯಾಪ್, ನಿಮ್ಮ ಕೆಲಸವು ಬಳಕೆದಾರರ ಪ್ರಶ್ನೆಗಳಿಗೆ ಪ್ರತಿಕ್ರಿಯಿಸುವುದು ಮತ್ತು ಅವರನ್ನು ಸಂತೋಷಿಸುವುದು...';
+  String get chatPromptPlaceholder => 'ನೀವು ಅದ್ಭುತ ಅ್ಯಾಪ್, ನಿಮ್ಮ ಕೆಲಸವು ಬಳಕೆದಾರರ ಪ್ರಶ್ನೆಗಳಿಗೆ ಪ್ರತಿಕ್ರಿಯಿಸುವುದು ಮತ್ತು ಅವರನ್ನು ಸಂತೋಷಿಸುವುದು...';
 
   @override
   String get conversationPrompt => 'ಸಂವಾದ ಪ್ರಾಂಪ್ಟ್';
@@ -2869,8 +2818,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get makeMyAppPublic => 'ನನ್ನ ಅ್ಯಾಪ್ ಸಾರ್ವಜನಿಕ ಮಾಡಿ';
 
   @override
-  String get submitAppTermsAgreement =>
-      'ಈ ಅ್ಯಾಪ್ ಸಲ್ಲಿಕೆ ಮಾಡುವ ಮೂಲಕ, ನಾನು Omi AI ಸೇವೆಯ ನಿಯಮಗಳು ಮತ್ತು ಗೌಪ್ಯತೆ ನೀತಿಗೆ ಸಮ್ಮತಿ ಜಾಹೀರು ಮಾಡುತ್ತೇನೆ';
+  String get submitAppTermsAgreement => 'ಈ ಅ್ಯಾಪ್ ಸಲ್ಲಿಕೆ ಮಾಡುವ ಮೂಲಕ, ನಾನು Omi AI ಸೇವೆಯ ನಿಯಮಗಳು ಮತ್ತು ಗೌಪ್ಯತೆ ನೀತಿಗೆ ಸಮ್ಮತಿ ಜಾಹೀರು ಮಾಡುತ್ತೇನೆ';
 
   @override
   String get submitApp => 'ಅ್ಯಾಪ್ ಸಲ್ಲಿಕೆ ಮಾಡಿ';
@@ -2885,12 +2833,10 @@ class AppLocalizationsKn extends AppLocalizations {
   String get submitAppQuestion => 'ಅ್ಯಾಪ್ ಸಲ್ಲಿಕೆ ಮಾಡುವುದೇ?';
 
   @override
-  String get submitAppPublicDescription =>
-      'ನಿಮ್ಮ ಅ್ಯಾಪ್ ಪರಿಶೀಲಿತವಾಗುತ್ತದೆ ಮತ್ತು ಸಾರ್ವಜನಿಕ ಮಾಡಲಾಗುತ್ತದೆ. ಪರಿಶೀಲನೆಯ ಸಮಯದಲ್ಲಿಯೂ ಕೂಡ ನೀವು ಅದನ್ನು ತಕ್ಷಣ ಬಳಸಲು ಪ್ರಾರಂಭಿಸಬಹುದು!';
+  String get submitAppPublicDescription => 'ನಿಮ್ಮ ಅ್ಯಾಪ್ ಪರಿಶೀಲಿತವಾಗುತ್ತದೆ ಮತ್ತು ಸಾರ್ವಜನಿಕ ಮಾಡಲಾಗುತ್ತದೆ. ಪರಿಶೀಲನೆಯ ಸಮಯದಲ್ಲಿಯೂ ಕೂಡ ನೀವು ಅದನ್ನು ತಕ್ಷಣ ಬಳಸಲು ಪ್ರಾರಂಭಿಸಬಹುದು!';
 
   @override
-  String get submitAppPrivateDescription =>
-      'ನಿಮ್ಮ ಅ್ಯಾಪ್ ಪರಿಶೀಲಿತವಾಗುತ್ತದೆ ಮತ್ತು ನಿಮಗೆ ನಿಜಿ ಸಾಧ್ಯತೆ ನೀಡಲಾಗುತ್ತದೆ. ಪರಿಶೀಲನೆಯ ಸಮಯದಲ್ಲಿಯೂ ಕೂಡ ನೀವು ಅದನ್ನು ತಕ್ಷಣ ಬಳಸಲು ಪ್ರಾರಂಭಿಸಬಹುದು!';
+  String get submitAppPrivateDescription => 'ನಿಮ್ಮ ಅ್ಯಾಪ್ ಪರಿಶೀಲಿತವಾಗುತ್ತದೆ ಮತ್ತು ನಿಮಗೆ ನಿಜಿ ಸಾಧ್ಯತೆ ನೀಡಲಾಗುತ್ತದೆ. ಪರಿಶೀಲನೆಯ ಸಮಯದಲ್ಲಿಯೂ ಕೂಡ ನೀವು ಅದನ್ನು ತಕ್ಷಣ ಬಳಸಲು ಪ್ರಾರಂಭಿಸಬಹುದು!';
 
   @override
   String get startEarning => 'ಕಮಾಯಿ ಪ್ರಾರಂಭಿಸಿ! 💰';
@@ -2914,23 +2860,19 @@ class AppLocalizationsKn extends AppLocalizations {
   String get dataAccessNotice => 'ಡೇಟಾ ಪ್ರವೇಶ ಸೂಚನೆ';
 
   @override
-  String get dataAccessWarning =>
-      'ಈ ಅ್ಯಾಪ್ ನಿಮ್ಮ ಡೇಟಾ ಪ್ರವೇಶ ನೀಡುತ್ತದೆ. Omi AI ಈ ಅ್ಯಾಪ್ ನಿಮ್ಮ ಡೇಟಾ ಹೇಗೆ ಬಳಸುತ್ತದೆ, ಮಾರ್ಪಡಿಸುತ್ತದೆ ಅಥವಾ ಅಳಿಸುತ್ತದೆ ಅದರ ಜೊತೆ ಕಾರಣಕ್ತರಣೆ ನೀಡುತ್ತಿಲ್ಲ';
+  String get dataAccessWarning => 'ಈ ಅ್ಯಾಪ್ ನಿಮ್ಮ ಡೇಟಾ ಪ್ರವೇಶ ನೀಡುತ್ತದೆ. Omi AI ಈ ಅ್ಯಾಪ್ ನಿಮ್ಮ ಡೇಟಾ ಹೇಗೆ ಬಳಸುತ್ತದೆ, ಮಾರ್ಪಡಿಸುತ್ತದೆ ಅಥವಾ ಅಳಿಸುತ್ತದೆ ಅದರ ಜೊತೆ ಕಾರಣಕ್ತರಣೆ ನೀಡುತ್ತಿಲ್ಲ';
 
   @override
   String get installApp => 'ಅ್ಯಾಪ್ ಸ್ಥಾಪಿಸಿ';
 
   @override
-  String get betaTesterNotice =>
-      'ನೀವು ಈ ಅ್ಯಾಪ್‌ನ ಬೀಟಾ ಪರೀಕ್ಷಕರು. ಇದು ಇನ್ನೂ ಸಾರ್ವಜನಿಕ ಅಲ್ಲ. ಇದು ಅನುಮೋದನೆ ನಂತರ ಸಾರ್ವಜನಿಕ ಆಗುತ್ತದೆ.';
+  String get betaTesterNotice => 'ನೀವು ಈ ಅ್ಯಾಪ್‌ನ ಬೀಟಾ ಪರೀಕ್ಷಕರು. ಇದು ಇನ್ನೂ ಸಾರ್ವಜನಿಕ ಅಲ್ಲ. ಇದು ಅನುಮೋದನೆ ನಂತರ ಸಾರ್ವಜನಿಕ ಆಗುತ್ತದೆ.';
 
   @override
-  String get appUnderReviewOwner =>
-      'ನಿಮ್ಮ ಅ್ಯಾಪ್ ಪರಿಶೀಲನೆಯ ಅಡಿಯಲ್ಲಿ ಮತ್ತು ಕೇವಲ ನಿಮ್ಮ ಮಾತ್ರ ನೋಡಬಹುದು. ಇದು ಅನುಮೋದನೆ ನಂತರ ಸಾರ್ವಜನಿಕ ಆಗುತ್ತದೆ.';
+  String get appUnderReviewOwner => 'ನಿಮ್ಮ ಅ್ಯಾಪ್ ಪರಿಶೀಲನೆಯ ಅಡಿಯಲ್ಲಿ ಮತ್ತು ಕೇವಲ ನಿಮ್ಮ ಮಾತ್ರ ನೋಡಬಹುದು. ಇದು ಅನುಮೋದನೆ ನಂತರ ಸಾರ್ವಜನಿಕ ಆಗುತ್ತದೆ.';
 
   @override
-  String get appRejectedNotice =>
-      'ನಿಮ್ಮ ಅ್ಯಾಪ್ ನಿರಾಕೃತವಾಗಿದೆ. ದಯವಿಟ್ಟು ಅ್ಯಾಪ್ ವಿವರವಣನೆಗಳನ್ನು ನವೀಕರಿಸಿ ಮತ್ತು ಪರಿಶೀಲನೆಯ ಜೊತೆ ಪುನರ್ಸಲ್ಲಿಕೆ ಮಾಡಿ.';
+  String get appRejectedNotice => 'ನಿಮ್ಮ ಅ್ಯಾಪ್ ನಿರಾಕೃತವಾಗಿದೆ. ದಯವಿಟ್ಟು ಅ್ಯಾಪ್ ವಿವರವಣನೆಗಳನ್ನು ನವೀಕರಿಸಿ ಮತ್ತು ಪರಿಶೀಲನೆಯ ಜೊತೆ ಪುನರ್ಸಲ್ಲಿಕೆ ಮಾಡಿ.';
 
   @override
   String get setupSteps => 'ಸೆಟಿಂಗ್ ಹಂತಗಳು';
@@ -3144,8 +3086,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get microphonePermissionRequired => 'ಕರೆಗಳನ್ನು ಮಾಡಲು ಮೈಕ್ರೋಫೋನ್ ಅನುಮತಿ ಅಗತ್ಯ';
 
   @override
-  String get microphonePermissionDenied =>
-      'ಮೈಕ್ರೋಫೋನ್ ಅನುಮತಿ ನಿರಾಕರಿಸಲಾಯಿತು. ದಯವಿಟ್ಟು ಸಿಸ್ಟಮ್ ಪ್ರೆಫರೆನ್ಸ್ > ಗೌಪ್ಯತೆ ಮತ್ತು ಸುರಕ್ಷೆ > ಮೈಕ್ರೋಫೋನ್‌ನಲ್ಲಿ ಅನುಮತಿ ನೀಡಿ.';
+  String get microphonePermissionDenied => 'ಮೈಕ್ರೋಫೋನ್ ಅನುಮತಿ ನಿರಾಕರಿಸಲಾಯಿತು. ದಯವಿಟ್ಟು ಸಿಸ್ಟಮ್ ಪ್ರೆಫರೆನ್ಸ್ > ಗೌಪ್ಯತೆ ಮತ್ತು ಸುರಕ್ಷೆ > ಮೈಕ್ರೋಫೋನ್‌ನಲ್ಲಿ ಅನುಮತಿ ನೀಡಿ.';
 
   @override
   String failedToCheckMicrophonePermission(String error) {
@@ -3378,8 +3319,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get whatWeCollect => 'ನಾವು ಸಂಗ್ರಹಿಸುವುದು';
 
   @override
-  String get dataCollectionMessage =>
-      'ಮುಂದುವರಿಸುವ ಮೂಲಕ, ನಿಮ್ಮ ಸಂವಾದಗಳು, ರೆಕಾರ್ಡಿಂಗ್‌ಗಳು ಮತ್ತು ವ್ಯಕ್ತಿಗತ ಮಾಹಿತಿ AI-ಚಾಲಿತ ಒಳನೋಟಗಳನ್ನು ಒದಗಿಸಲು ಮತ್ತು ಎಲ್ಲಾ ಅ್ಯಾಪ್ ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು ನಮ್ಮ ಸರ್ವರ್‌ಗಳಲ್ಲಿ ಸುರಕ್ಷಿತವಾಗಿ ಸಂಗ್ರಹಿಸಲಾಗುತ್ತದೆ.';
+  String get dataCollectionMessage => 'ಮುಂದುವರಿಸುವ ಮೂಲಕ, ನಿಮ್ಮ ಸಂವಾದಗಳು, ರೆಕಾರ್ಡಿಂಗ್‌ಗಳು ಮತ್ತು ವ್ಯಕ್ತಿಗತ ಮಾಹಿತಿ AI-ಚಾಲಿತ ಒಳನೋಟಗಳನ್ನು ಒದಗಿಸಲು ಮತ್ತು ಎಲ್ಲಾ ಅ್ಯಾಪ್ ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು ನಮ್ಮ ಸರ್ವರ್‌ಗಳಲ್ಲಿ ಸುರಕ್ಷಿತವಾಗಿ ಸಂಗ್ರಹಿಸಲಾಗುತ್ತದೆ.';
 
   @override
   String get dataProtection => 'ಡೇಟಾ ಸುರಕ್ಷೆ';
@@ -3394,8 +3334,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get chooseYourLanguage => 'ನಿಮ್ಮ ಭಾಷೆಯನ್ನು ಆಯ್ಕೆ ಮಾಡಿ';
 
   @override
-  String get selectPreferredLanguageForBestExperience =>
-      'ಸಿ Omi ಅನುಭವಕ್ಕೆ ಸಾಮಾನ್ಯವಾಗಿ ನಿಮ್ಮ ಆದ್ಯತೆಯ ಭಾಷೆಯನ್ನು ಆಯ್ಕೆ ಮಾಡಿ';
+  String get selectPreferredLanguageForBestExperience => 'ಸಿ Omi ಅನುಭವಕ್ಕೆ ಸಾಮಾನ್ಯವಾಗಿ ನಿಮ್ಮ ಆದ್ಯತೆಯ ಭಾಷೆಯನ್ನು ಆಯ್ಕೆ ಮಾಡಿ';
 
   @override
   String get searchLanguages => 'ಭಾಷೆಗಳನ್ನು ಹುಡುಕಿ...';
@@ -3413,8 +3352,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get nameMustBeAtLeast2Characters => 'ಹೆಸರು ಕನಿಷ್ಠ 2 ಅಕ್ಷರ ಹೊಂದಿರಬೇಕು';
 
   @override
-  String get tellUsHowYouWouldLikeToBeAddressed =>
-      'ನಾವು ನಿಮ್ಮನ್ನು ಹೇಗೆ ಸಂಭೋಧಿಸಲು ಬಯಸುತ್ತೀರಿ ಎಂಬುದನ್ನು ನಮಗೆ ತಿಳಿಸಿ. ಇದು ನಿಮ್ಮ Omi ಅನುಭವವನ್ನು ವ್ಯಕ್ತಿಗತವಾಗಿ ಮಾಡಲು ಸಹಾಯ ಮಾಡುತ್ತದೆ.';
+  String get tellUsHowYouWouldLikeToBeAddressed => 'ನಾವು ನಿಮ್ಮನ್ನು ಹೇಗೆ ಸಂಭೋಧಿಸಲು ಬಯಸುತ್ತೀರಿ ಎಂಬುದನ್ನು ನಮಗೆ ತಿಳಿಸಿ. ಇದು ನಿಮ್ಮ Omi ಅನುಭವವನ್ನು ವ್ಯಕ್ತಿಗತವಾಗಿ ಮಾಡಲು ಸಹಾಯ ಮಾಡುತ್ತದೆ.';
 
   @override
   String charactersCount(int count) {
@@ -3431,8 +3369,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get recordAudioConversations => 'ಆಡಿಯೋ ಸಂವಾದಗಳನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡಿ';
 
   @override
-  String get microphoneAccessDescription =>
-      'ನಿಮ್ಮ ಸಂವಾದಗಳನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡಲು ಮತ್ತು ಪ್ರತಿಲೇಖನಗಳನ್ನು ಒದಗಿಸಲು Omi ಮೈಕ್ರೋಫೋನ್ ಪ್ರವೇಶ ಅಗತ್ಯವಿದೆ.';
+  String get microphoneAccessDescription => 'ನಿಮ್ಮ ಸಂವಾದಗಳನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡಲು ಮತ್ತು ಪ್ರತಿಲೇಖನಗಳನ್ನು ಒದಗಿಸಲು Omi ಮೈಕ್ರೋಫೋನ್ ಪ್ರವೇಶ ಅಗತ್ಯವಿದೆ.';
 
   @override
   String get screenRecording => 'ಸ್ಕ್ರೀನ್ ರೆಕಾರ್ಡಿಂಗ್';
@@ -3441,8 +3378,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get captureSystemAudioFromMeetings => 'ಸಭೆಗಳಿಂದ ಸಿಸ್ಟಮ್ ಆಡಿಯೋ ಹಿಡಿಯಿರಿ';
 
   @override
-  String get screenRecordingDescription =>
-      'ನಿಮ್ಮ ಬ್ರೌಜರ್-ಆಧಾರಿತ ಸಭೆಗಳಿಂದ ಸಿಸ್ಟಮ್ ಆಡಿಯೋ ಹಿಡಿಯಲು Omi ಸ್ಕ್ರೀನ್ ರೆಕಾರ್ಡಿಂಗ್ ಅನುಮತಿ ಅಗತ್ಯವಿದೆ.';
+  String get screenRecordingDescription => 'ನಿಮ್ಮ ಬ್ರೌಜರ್-ಆಧಾರಿತ ಸಭೆಗಳಿಂದ ಸಿಸ್ಟಮ್ ಆಡಿಯೋ ಹಿಡಿಯಲು Omi ಸ್ಕ್ರೀನ್ ರೆಕಾರ್ಡಿಂಗ್ ಅನುಮತಿ ಅಗತ್ಯವಿದೆ.';
 
   @override
   String get accessibility => 'ಪ್ರವೇಶ್ಯತೆ';
@@ -3451,8 +3387,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get detectBrowserBasedMeetings => 'ಬ್ರೌಜರ್-ಆಧಾರಿತ ಸಭೆಗಳನ್ನು ಪತ್ತೆ ಮಾಡಿ';
 
   @override
-  String get accessibilityDescription =>
-      'ನಿಮ್ಮ ಬ್ರೌಜರ್‌ನಲ್ಲಿ Zoom, Meet ಅಥವಾ Teams ಸಭೆಗಳಿಗೆ ಚಾಲನ ಮಾಡುವ ಸಮಯ ಪತ್ತೆ ಮಾಡಲು Omi ಪ್ರವೇಶ್ಯತೆ ಅನುಮತಿ ಅಗತ್ಯವಿದೆ.';
+  String get accessibilityDescription => 'ನಿಮ್ಮ ಬ್ರೌಜರ್‌ನಲ್ಲಿ Zoom, Meet ಅಥವಾ Teams ಸಭೆಗಳಿಗೆ ಚಾಲನ ಮಾಡುವ ಸಮಯ ಪತ್ತೆ ಮಾಡಲು Omi ಪ್ರವೇಶ್ಯತೆ ಅನುಮತಿ ಅಗತ್ಯವಿದೆ.';
 
   @override
   String get pleaseWait => 'ದಯವಿಟ್ಟು ಕಾಯಿರಿ...';
@@ -3521,12 +3456,10 @@ class AppLocalizationsKn extends AppLocalizations {
   String get exportAllConversationsToJson => 'ನಿಮ್ಮ ಎಲ್ಲಾ ಸಂವಾದಗಳನ್ನು JSON ಫೈಲ್‌ಗೆ ರಫ್ತು ಮಾಡಿ.';
 
   @override
-  String get conversationsExportStarted =>
-      'ಸಂವಾದಗಳ ರಫ್ತು ಪ್ರಾರಂಭವಾಯಿತು. ಇದು ಕೆಲವೆ ಸೆಕೆಂಡ್ ತೆಗೆದುಕೊಳ್ಳಬಹುದು, ದಯವಿಟ್ಟು ಕಾಯಿರಿ.';
+  String get conversationsExportStarted => 'ಸಂವಾದಗಳ ರಫ್ತು ಪ್ರಾರಂಭವಾಯಿತು. ಇದು ಕೆಲವೆ ಸೆಕೆಂಡ್ ತೆಗೆದುಕೊಳ್ಳಬಹುದು, ದಯವಿಟ್ಟು ಕಾಯಿರಿ.';
 
   @override
-  String get mcpDescription =>
-      'Omi ಅನ್ನು ಇತರ ಅಪ್ಲಿಕೇಶನ್‌ಗಳೊಂದಿಗೆ ಸಂಪರ್ಕಿಸಲು ನಿಮ್ಮ ಆಲೋಚನೆಗಳು ಮತ್ತು ಸಂವಾದಗಳನ್ನು ಓದಲು, ಹುಡುಕಲು ಮತ್ತು ನಿರ್ವಹಿಸಲು. ಪ್ರಾರಂಭಿಸಲು ಒಂದು ಕೀ ರಚಿಸಿ.';
+  String get mcpDescription => 'Omi ಅನ್ನು ಇತರ ಅಪ್ಲಿಕೇಶನ್‌ಗಳೊಂದಿಗೆ ಸಂಪರ್ಕಿಸಲು ನಿಮ್ಮ ಆಲೋಚನೆಗಳು ಮತ್ತು ಸಂವಾದಗಳನ್ನು ಓದಲು, ಹುಡುಕಲು ಮತ್ತು ನಿರ್ವಹಿಸಲು. ಪ್ರಾರಂಭಿಸಲು ಒಂದು ಕೀ ರಚಿಸಿ.';
 
   @override
   String get apiKeys => 'API ಕೀಲಿಗಳು';
@@ -3573,8 +3506,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get autoCreateAndTagNewSpeakers => 'ಸ್ವಯಂ-ರಚನೆ ಮತ್ತು ಹೊಸ ವಕ್ತಾರನ್ನು ಟ್ಯಾಗ್ ಮಾಡಿ';
 
   @override
-  String get automaticallyCreateNewPerson =>
-      'ಪ್ರತಿಲೇಖನದಲ್ಲಿ ಹೆಸರನ್ನು ಪತ್ತೆ ಮಾಡಿದಾಗ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಹೊಸ ವ್ಯಕ್ತಿಯನ್ನು ರಚಿಸಿ.';
+  String get automaticallyCreateNewPerson => 'ಪ್ರತಿಲೇಖನದಲ್ಲಿ ಹೆಸರನ್ನು ಪತ್ತೆ ಮಾಡಿದಾಗ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಹೊಸ ವ್ಯಕ್ತಿಯನ್ನು ರಚಿಸಿ.';
 
   @override
   String get pilotFeatures => 'ಪೈಲಟ್ ವೈಶಿಷ್ಟ್ಯಗಳು';
@@ -3632,12 +3564,10 @@ class AppLocalizationsKn extends AppLocalizations {
   }
 
   @override
-  String get letOmiChooseAutomatically =>
-      'Omi ಅನ್ನು ಸಿ ಉತ್ತಮ ಅಪ್ಲಿಕೇಶನ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಆಯ್ಕೆ ಮಾಡಲು ನಿರ್ಬಂಧಿತಕ್ಕೆ ಗೊತ್ತಪಡಿಸಿ';
+  String get letOmiChooseAutomatically => 'Omi ಅನ್ನು ಸಿ ಉತ್ತಮ ಅಪ್ಲಿಕೇಶನ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಆಯ್ಕೆ ಮಾಡಲು ನಿರ್ಬಂಧಿತಕ್ಕೆ ಗೊತ್ತಪಡಿಸಿ';
 
   @override
-  String get deleteConversationConfirmation =>
-      'ನೀವು ಖಚಿತವಾಗಿ ಈ ಸಂವಾದವನ್ನು ಅಳಿಸಲು ಬಯಸುವಿರಾ? ಈ ಕ್ರಿಯೆಯನ್ನು ರದ್ದುಗೊಳಿಸಲಾಗುವುದಿಲ್ಲ.';
+  String get deleteConversationConfirmation => 'ನೀವು ಖಚಿತವಾಗಿ ಈ ಸಂವಾದವನ್ನು ಅಳಿಸಲು ಬಯಸುವಿರಾ? ಈ ಕ್ರಿಯೆಯನ್ನು ರದ್ದುಗೊಳಿಸಲಾಗುವುದಿಲ್ಲ.';
 
   @override
   String get conversationDeleted => 'ಸಂವಾದ ಅಳಿಸಲಾಗಿದೆ';
@@ -3685,8 +3615,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get preparingSystemAudioCapture => 'ಸಿಸ್ಟಮ್ ಆಡಿಯೋ ಸೆರೆ ತಯಾರಿ ಮಾಡುತ್ತಿದೆ';
 
   @override
-  String get clickTheButtonToCaptureAudio =>
-      'ಲೈವ್ ಪ್ರತಿಲೇಖನ, AI ಒಳನೋಟಗಳು ಮತ್ತು ಸ್ವಯಂಚಾಲಿತ ಉಳಿತಾಯಿಗಾಗಿ ಆಡಿಯೋ ಹಿಡಿಯಲು ಬಟನ್ ನೀಡಿ.';
+  String get clickTheButtonToCaptureAudio => 'ಲೈವ್ ಪ್ರತಿಲೇಖನ, AI ಒಳನೋಟಗಳು ಮತ್ತು ಸ್ವಯಂಚಾಲಿತ ಉಳಿತಾಯಿಗಾಗಿ ಆಡಿಯೋ ಹಿಡಿಯಲು ಬಟನ್ ನೀಡಿ.';
 
   @override
   String get reconnecting => 'ಮರುಸಂಪರ್ಕ ಸಾಧನೆ...';
@@ -3913,8 +3842,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get deleteKnowledgeGraphQuestion => 'ಜ್ಞಾನ ಗ್ರಾಫ್ ಅಳಿಸಿ?';
 
   @override
-  String get deleteKnowledgeGraphWarning =>
-      'ಇದು ಪಡೆದ ಜ್ಞಾನ ಗ್ರಾಫ್ ಡೇಟಾವನ್ನು ಅಳಿಸುತ್ತದೆ. ನಿಮ್ಮ ಮೂಲ ಆಲೋಚನೆಗಳು ಸುರಕ್ಷಿತವಾಗಿ ಉಳಿಯುತ್ತವೆ.';
+  String get deleteKnowledgeGraphWarning => 'ಇದು ಪಡೆದ ಜ್ಞಾನ ಗ್ರಾಫ್ ಡೇಟಾವನ್ನು ಅಳಿಸುತ್ತದೆ. ನಿಮ್ಮ ಮೂಲ ಆಲೋಚನೆಗಳು ಸುರಕ್ಷಿತವಾಗಿ ಉಳಿಯುತ್ತವೆ.';
 
   @override
   String get connectOmiWithAI => 'Omi ಅನ್ನು AI ಸಹಾಯಕರೊಂದಿಗೆ ಸಂಪರ್ಕಿಸಿ';
@@ -3956,8 +3884,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get termsAndPrivacyPolicy => 'ನಿಯಮಗಳು ಮತ್ತು ಗೌಪ್ಯತೆ ನೀತಿ';
 
   @override
-  String get helpsDiagnoseIssuesAutoDeletes =>
-      'ಸಮಸ್ಯೆಗಳನ್ನು ನಿರ್ಣಯಿಸಲು ಸಹಾಯ ಮಾಡುತ್ತದೆ. 3 ದಿನಗಳ ನಂತರ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಅಳಿಸುತ್ತದೆ.';
+  String get helpsDiagnoseIssuesAutoDeletes => 'ಸಮಸ್ಯೆಗಳನ್ನು ನಿರ್ಣಯಿಸಲು ಸಹಾಯ ಮಾಡುತ್ತದೆ. 3 ದಿನಗಳ ನಂತರ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಅಳಿಸುತ್ತದೆ.';
 
   @override
   String get manageYourApp => 'ನಿಮ್ಮ ಅಪ್ಲಿಕೇಶನನ್ನು ನಿರ್ವಹಿಸಿ';
@@ -3972,8 +3899,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get updateAppQuestion => 'ಅಪ್ಲಿಕೇಶನ ಅಪ್ಡೇಟ್ ಮಾಡುವುದೇ?';
 
   @override
-  String get updateAppConfirmation =>
-      'ನೀವು ಖಚಿತವಾಗಿ ನಿಮ್ಮ ಅಪ್ಲಿಕೇಶನವನ್ನು ಅಪ್ಡೇಟ್ ಮಾಡಲು ಬಯಸುವಿರಾ? ನಮ್ಮ ತಂಡದ ಮೂಲಕ ಪರಿಶೀಲಿಸಿದ ನಂತರ ಬದಲಾವಣೆಗಳು ಪ್ರತಿಬಿಂಬಿಸುತ್ತವೆ.';
+  String get updateAppConfirmation => 'ನೀವು ಖಚಿತವಾಗಿ ನಿಮ್ಮ ಅಪ್ಲಿಕೇಶನವನ್ನು ಅಪ್ಡೇಟ್ ಮಾಡಲು ಬಯಸುವಿರಾ? ನಮ್ಮ ತಂಡದ ಮೂಲಕ ಪರಿಶೀಲಿಸಿದ ನಂತರ ಬದಲಾವಣೆಗಳು ಪ್ರತಿಬಿಂಬಿಸುತ್ತವೆ.';
 
   @override
   String get updateApp => 'ಅಪ್ಲಿಕೇಶನ ಅಪ್ಡೇಟ್ ಮಾಡಿ';
@@ -4003,8 +3929,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get no => 'ಇಲ್ಲ';
 
   @override
-  String get subscriptionCancelledSuccessfully =>
-      'ಸಾಬಸ್ಕ್ರಿಪ್ಷನ್ ಯಶಸ್ವಿಯಾಗಿ ರದ್ದುಗೊಳಿಸಲಾಗಿದೆ. ಇದು ಪ್ರವಾಹಿ ಬಿಲ್ಲಿಂಗ್ ಅವಧಿಯ ಅಂತ್ಯ ತನಕ ಸಕ್ರಿಯವಾಗಿರುತ್ತದೆ.';
+  String get subscriptionCancelledSuccessfully => 'ಸಾಬಸ್ಕ್ರಿಪ್ಷನ್ ಯಶಸ್ವಿಯಾಗಿ ರದ್ದುಗೊಳಿಸಲಾಗಿದೆ. ಇದು ಪ್ರವಾಹಿ ಬಿಲ್ಲಿಂಗ್ ಅವಧಿಯ ಅಂತ್ಯ ತನಕ ಸಕ್ರಿಯವಾಗಿರುತ್ತದೆ.';
 
   @override
   String get failedToCancelSubscription => 'ಸಾಬಸ್ಕ್ರಿಪ್ಷನ್ ರದ್ದುಗೊಳಿಸಲು ವಿಫಲವಾಗಿದೆ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.';
@@ -4040,8 +3965,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get cancelSubscriptionQuestion => 'ಸಾಬಸ್ಕ್ರಿಪ್ಷನ್ ರದ್ದುಗೊಳಿಸುವುದೇ?';
 
   @override
-  String get cancelSubscriptionConfirmation =>
-      'ನೀವು ಖಚಿತವಾಗಿ ನಿಮ್ಮ ಸಾಬಸ್ಕ್ರಿಪ್ಷನ್ ರದ್ದುಗೊಳಿಸಲು ಬಯಸುವಿರಾ? ನೀವು ನಿಮ್ಮ ಪ್ರವಾಹಿ ಬಿಲ್ಲಿಂಗ್ ಅವಧಿಯ ಅಂತ್ಯ ತನಕ ಪ್ರವೇಶ ಹೊಂದಿರುತ್ತೀರಿ.';
+  String get cancelSubscriptionConfirmation => 'ನೀವು ಖಚಿತವಾಗಿ ನಿಮ್ಮ ಸಾಬಸ್ಕ್ರಿಪ್ಷನ್ ರದ್ದುಗೊಳಿಸಲು ಬಯಸುವಿರಾ? ನೀವು ನಿಮ್ಮ ಪ್ರವಾಹಿ ಬಿಲ್ಲಿಂಗ್ ಅವಧಿಯ ಅಂತ್ಯ ತನಕ ಪ್ರವೇಶ ಹೊಂದಿರುತ್ತೀರಿ.';
 
   @override
   String get cancelSubscriptionButton => 'ಸಾಬಸ್ಕ್ರಿಪ್ಷನ್ ರದ್ದುಗೊಳಿಸಿ';
@@ -4050,16 +3974,13 @@ class AppLocalizationsKn extends AppLocalizations {
   String get cancelling => 'ರದ್ದುಗೊಳಿಸುತ್ತಿದೆ...';
 
   @override
-  String get betaTesterMessage =>
-      'ನೀವು ಈ ಅಪ್ಲಿಕೇಶನಿಗೆ ಬೀಟಾ ಪರೀಕ್ಷೆ ನಿರ್ವಾಹಕರು. ಇದು ಇನ್ನೂ ಸಾರ್ವಜನಿಕವಿಲ್ಲ. ಅನುಮೋದಿಸಿದ ನಂತರ ಇದು ಸಾರ್ವಜನಿಕವಾಗುತ್ತದೆ.';
+  String get betaTesterMessage => 'ನೀವು ಈ ಅಪ್ಲಿಕೇಶನಿಗೆ ಬೀಟಾ ಪರೀಕ್ಷೆ ನಿರ್ವಾಹಕರು. ಇದು ಇನ್ನೂ ಸಾರ್ವಜನಿಕವಿಲ್ಲ. ಅನುಮೋದಿಸಿದ ನಂತರ ಇದು ಸಾರ್ವಜನಿಕವಾಗುತ್ತದೆ.';
 
   @override
-  String get appUnderReviewMessage =>
-      'ನಿಮ್ಮ ಅಪ್ಲಿಕೇಶನ ಪರಿಶೀಲನೆಯ ಅಡಿಯಲ್ಲಿ ಮತ್ತು ನಿಮಗೆ ಮಾತ್ರ ಗೋಚರವಾಗಿದೆ. ಅನುಮೋದಿಸಿದ ನಂತರ ಇದು ಸಾರ್ವಜನಿಕವಾಗುತ್ತದೆ.';
+  String get appUnderReviewMessage => 'ನಿಮ್ಮ ಅಪ್ಲಿಕೇಶನ ಪರಿಶೀಲನೆಯ ಅಡಿಯಲ್ಲಿ ಮತ್ತು ನಿಮಗೆ ಮಾತ್ರ ಗೋಚರವಾಗಿದೆ. ಅನುಮೋದಿಸಿದ ನಂತರ ಇದು ಸಾರ್ವಜನಿಕವಾಗುತ್ತದೆ.';
 
   @override
-  String get appRejectedMessage =>
-      'ನಿಮ್ಮ ಅಪ್ಲಿಕೇಶನ ಹಿಂದೆ ಸರಿಬೆರೆಮೆ. ದಯವಿಟ್ಟು ಅಪ್ಲಿಕೇಶನ ವಿವರಗಳನ್ನು ನವೀಕರಿಸಿ ಮತ್ತು ಪರಿಶೀಲನೆಗಾಗಿ ಮರುಸಲ್ಲಿಸಿ.';
+  String get appRejectedMessage => 'ನಿಮ್ಮ ಅಪ್ಲಿಕೇಶನ ಹಿಂದೆ ಸರಿಬೆರೆಮೆ. ದಯವಿಟ್ಟು ಅಪ್ಲಿಕೇಶನ ವಿವರಗಳನ್ನು ನವೀಕರಿಸಿ ಮತ್ತು ಪರಿಶೀಲನೆಗಾಗಿ ಮರುಸಲ್ಲಿಸಿ.';
 
   @override
   String get invalidIntegrationUrl => 'ಅಮಾನ್ಯ ಸಂಯೋಗ URL';
@@ -4113,8 +4034,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get issueActivatingApp => 'ಈ ಅಪ್ಲಿಕೇಶನವನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು ಒಂದು ಸಮಸ್ಯೆ ಇದೆ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.';
 
   @override
-  String get dataAccessNoticeDescription =>
-      'ಈ ಅಪ್ಲಿಕೇಶನ ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಪ್ರವೇಶಿಸುತ್ತದೆ. Omi AI ಈ ಅಪ್ಲಿಕೇಶನದ ಮೂಲಕ ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಹೇಗೆ ಉಪಯೋಗಿಸಲಾಗುತ್ತದೆ, ಪರಿವರ್ತನೆ ಮಾಡಲಾಗುತ್ತದೆ ಅಥವಾ ಅಳಿಸಲಾಗುತ್ತದೆ ಎಂಬುದರ ಮೇಲೆ ಜವಾಬ್ದಾರಿ ಹೊಂದಿಲ್ಲ';
+  String get dataAccessNoticeDescription => 'ಈ ಅಪ್ಲಿಕೇಶನ ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಪ್ರವೇಶಿಸುತ್ತದೆ. Omi AI ಈ ಅಪ್ಲಿಕೇಶನದ ಮೂಲಕ ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಹೇಗೆ ಉಪಯೋಗಿಸಲಾಗುತ್ತದೆ, ಪರಿವರ್ತನೆ ಮಾಡಲಾಗುತ್ತದೆ ಅಥವಾ ಅಳಿಸಲಾಗುತ್ತದೆ ಎಂಬುದರ ಮೇಲೆ ಜವಾಬ್ದಾರಿ ಹೊಂದಿಲ್ಲ';
 
   @override
   String get copyUrl => 'URL ನಕಲಿ ಕರಿ';
@@ -4202,8 +4122,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get omiApiKeys => 'Omi API ಕೀಲಿಗಳು';
 
   @override
-  String get apiKeysDescription =>
-      'API ಕೀಲಿಗಳು ನಿಮ್ಮ ಅಪ್ಲಿಕೇಶನ OMI ಸರ್ವರೊಂದಿಗೆ ಸಂವಹನ ಮಾಡುವಾಗ ಪ್ರಮಾಣೀಕರಣ ಮಾಡಲು ಬಳಸಲಾಗುತ್ತದೆ. ಅವರು ನಿಮ್ಮ ಅಪ್ಲಿಕೇಶನ ಸ್ಮೃತಿಶಾಸ್ತ್ರ ರಚಿಸಲು ಮತ್ತು ಇತರ OMI ಸೇವಾಗಳನ್ನು ಸುರಕ್ಷಿತವಾಗಿ ಪ್ರವೇಶಿಸಲು ನಿರ್ಬಂಧಿತ ಮಾಡುತ್ತದೆ.';
+  String get apiKeysDescription => 'API ಕೀಲಿಗಳು ನಿಮ್ಮ ಅಪ್ಲಿಕೇಶನ OMI ಸರ್ವರೊಂದಿಗೆ ಸಂವಹನ ಮಾಡುವಾಗ ಪ್ರಮಾಣೀಕರಣ ಮಾಡಲು ಬಳಸಲಾಗುತ್ತದೆ. ಅವರು ನಿಮ್ಮ ಅಪ್ಲಿಕೇಶನ ಸ್ಮೃತಿಶಾಸ್ತ್ರ ರಚಿಸಲು ಮತ್ತು ಇತರ OMI ಸೇವಾಗಳನ್ನು ಸುರಕ್ಷಿತವಾಗಿ ಪ್ರವೇಶಿಸಲು ನಿರ್ಬಂಧಿತ ಮಾಡುತ್ತದೆ.';
 
   @override
   String get aboutOmiApiKeys => 'Omi API ಕೀಲಿಗಳ ಬಗ್ಗೆ';
@@ -4227,8 +4146,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get revokeApiKeyQuestion => 'API ಕೀ ರದ್ದುಗೊಳಿಸುವುದೇ?';
 
   @override
-  String get revokeApiKeyWarning =>
-      'ಈ ಕ್ರಿಯೆಯನ್ನು ರದ್ದುಗೊಳಿಸಲಾಗುವುದಿಲ್ಲ. ಈ ಕೀಯನ್ನು ಬಳಸುವ ಯಾವುದೇ ಅಪ್ಲಿಕೇಶನ API ಗೆ ಹೆಚ್ಚುತರ ಪ್ರವೇಶವನ್ನು ಹೊಂದಿರುವುದಿಲ್ಲ.';
+  String get revokeApiKeyWarning => 'ಈ ಕ್ರಿಯೆಯನ್ನು ರದ್ದುಗೊಳಿಸಲಾಗುವುದಿಲ್ಲ. ಈ ಕೀಯನ್ನು ಬಳಸುವ ಯಾವುದೇ ಅಪ್ಲಿಕೇಶನ API ಗೆ ಹೆಚ್ಚುತರ ಪ್ರವೇಶವನ್ನು ಹೊಂದಿರುವುದಿಲ್ಲ.';
 
   @override
   String get revoke => 'ರದ್ದುಗೊಳಿಸಿ';
@@ -4317,8 +4235,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get keyCreated => 'ಕೀ ರಚಿಸಿದೆ';
 
   @override
-  String get keyCreatedMessage =>
-      'ನಿಮ್ಮ ಹೊಸ ಕೀಯನ್ನು ರಚಿಸಲಾಗಿದೆ. ದಯವಿಟ್ಟು ಈಗ ಅದನ್ನು ನಕಲಿ ಮಾಡಿ. ನೀವು ಅದನ್ನು ಮತ್ತೆ ನೋಡಲಾಗುವುದಿಲ್ಲ.';
+  String get keyCreatedMessage => 'ನಿಮ್ಮ ಹೊಸ ಕೀಯನ್ನು ರಚಿಸಲಾಗಿದೆ. ದಯವಿಟ್ಟು ಈಗ ಅದನ್ನು ನಕಲಿ ಮಾಡಿ. ನೀವು ಅದನ್ನು ಮತ್ತೆ ನೋಡಲಾಗುವುದಿಲ್ಲ.';
 
   @override
   String get keyWord => 'ಕೀ';
@@ -4327,8 +4244,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get externalAppAccess => 'ಬಾಹ್ಯ ಅಪ್ಲಿಕೇಶನ ಪ್ರವೇಶ';
 
   @override
-  String get externalAppAccessDescription =>
-      'ಈ ಕೆಳಗೆ ನಮೂದಿಸಲಾದ ಅಪ್ಲಿಕೇಶನಗಳು ಬಾಹ್ಯ ಸಂಯೋಗಗಳನ್ನು ಹೊಂದಿದೆ ಮತ್ತು ನಿಮ್ಮ ಡೇಟಾ, ಅಂದರೆ ಸಂವಾದಗಳು ಮತ್ತು ಆಲೋಚನೆಗಳನ್ನು ಪ್ರವೇಶಿಸಬಹುದು.';
+  String get externalAppAccessDescription => 'ಈ ಕೆಳಗೆ ನಮೂದಿಸಲಾದ ಅಪ್ಲಿಕೇಶನಗಳು ಬಾಹ್ಯ ಸಂಯೋಗಗಳನ್ನು ಹೊಂದಿದೆ ಮತ್ತು ನಿಮ್ಮ ಡೇಟಾ, ಅಂದರೆ ಸಂವಾದಗಳು ಮತ್ತು ಆಲೋಚನೆಗಳನ್ನು ಪ್ರವೇಶಿಸಬಹುದು.';
 
   @override
   String get noExternalAppsHaveAccess => 'ಯಾವುದೇ ಬಾಹ್ಯ ಅಪ್ಲಿಕೇಶನಗಳು ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಪ್ರವೇಶಿಸುವುದಿಲ್ಲ.';
@@ -4337,8 +4253,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get maximumSecurityE2ee => 'ಸಮನ್ವಿತ ಸುರಕ್ಷೆ (E2EE)';
 
   @override
-  String get e2eeDescription =>
-      'ಅಂತ್ಯ-ನಿರ್ದಿಷ್ಟ ಎನ್‌ಕ್ರಿಪ್ಶನ್ ಗೌಪ್ಯತೆಗೆ ಸ್ವರ್ಣ ಮಾನದಂಡವಾಗಿದೆ. ಸಕ್ರಿಯಗೊಳಿಸಿದಾಗ, ನಿಮ್ಮ ಡೇಟಾವನ್ನು ನಮ್ಮ ಸರ್ವರ್‌ಗಳಿಗೆ ಕಳುಹಿಸುವ ಮೊದಲು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗುತ್ತದೆ. ಇದರರ್ಥ ಯಾವುದೇ ವ್ಯಕ್ತಿ, ಸಹ Omi, ನಿಮ್ಮ ವಿಷಯವನ್ನು ಪ್ರವೇಶಿಸಬಹುದು.';
+  String get e2eeDescription => 'ಅಂತ್ಯ-ನಿರ್ದಿಷ್ಟ ಎನ್‌ಕ್ರಿಪ್ಶನ್ ಗೌಪ್ಯತೆಗೆ ಸ್ವರ್ಣ ಮಾನದಂಡವಾಗಿದೆ. ಸಕ್ರಿಯಗೊಳಿಸಿದಾಗ, ನಿಮ್ಮ ಡೇಟಾವನ್ನು ನಮ್ಮ ಸರ್ವರ್‌ಗಳಿಗೆ ಕಳುಹಿಸುವ ಮೊದಲು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗುತ್ತದೆ. ಇದರರ್ಥ ಯಾವುದೇ ವ್ಯಕ್ತಿ, ಸಹ Omi, ನಿಮ್ಮ ವಿಷಯವನ್ನು ಪ್ರವೇಶಿಸಬಹುದು.';
 
   @override
   String get importantTradeoffs => 'ಮುಖ್ಯ ವ್ಯವಹಾರ:';
@@ -4353,8 +4268,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get featureComingSoon => 'ಈ ವೈಶಿಷ್ಟ್ಯವು ಶೀಘ್ರ ಬರುತ್ತಿದೆ!';
 
   @override
-  String get migrationInProgressMessage =>
-      'ರೂಪಾಂತರ ಪ್ರಗತಿಯಲ್ಲಿದೆ. ಅದು ಪೂರ್ಣವಾಗುವವರೆಗೆ ನೀವು ಸುರಕ್ಷೆಯ ಅಂಶ ಬದಲಾಯಿಸಲಾಗುವುದಿಲ್ಲ.';
+  String get migrationInProgressMessage => 'ರೂಪಾಂತರ ಪ್ರಗತಿಯಲ್ಲಿದೆ. ಅದು ಪೂರ್ಣವಾಗುವವರೆಗೆ ನೀವು ಸುರಕ್ಷೆಯ ಅಂಶ ಬದಲಾಯಿಸಲಾಗುವುದಿಲ್ಲ.';
 
   @override
   String get migrationFailed => 'ರೂಪಾಂತರ ವಿಫಲವಾಗಿದೆ';
@@ -4373,19 +4287,16 @@ class AppLocalizationsKn extends AppLocalizations {
   String get secureEncryption => 'ಸುರಕ್ಷಿತ ಎನ್‌ಕ್ರಿಪ್ಶನ್';
 
   @override
-  String get secureEncryptionDescription =>
-      'ನಿಮ್ಮ ಡೇಟಾವನ್ನು Google Cloud ನಲ್ಲಿ ಹೋಸ್ಟ್ ಮಾಡಿ ನಮ್ಮ ಸರ್ವರ್‌ಗಳಲ್ಲಿ ನಿಮಗೆ ಅನನ್ಯ ಕೀ ಧ್ವನಿ ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಿದೆ. ಇದರರ್ಥ ನಿಮ್ಮ ರಾ ವಿಷಯವು ಡೇಟಾಬೇಸ್ ಸೇರಿ ಯಾವುದೇ ವ್ಯಕ್ತಿಗೆ ನೇರವಾಗಿ ಪ್ರವೇಶಯೋಗ್ಯವಿಲ್ಲ.';
+  String get secureEncryptionDescription => 'ನಿಮ್ಮ ಡೇಟಾವನ್ನು Google Cloud ನಲ್ಲಿ ಹೋಸ್ಟ್ ಮಾಡಿ ನಮ್ಮ ಸರ್ವರ್‌ಗಳಲ್ಲಿ ನಿಮಗೆ ಅನನ್ಯ ಕೀ ಧ್ವನಿ ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಿದೆ. ಇದರರ್ಥ ನಿಮ್ಮ ರಾ ವಿಷಯವು ಡೇಟಾಬೇಸ್ ಸೇರಿ ಯಾವುದೇ ವ್ಯಕ್ತಿಗೆ ನೇರವಾಗಿ ಪ್ರವೇಶಯೋಗ್ಯವಿಲ್ಲ.';
 
   @override
   String get endToEndEncryption => 'ಅಂತ್ಯ-ನಿರ್ದಿಷ್ಟ ಎನ್‌ಕ್ರಿಪ್ಶನ್';
 
   @override
-  String get e2eeCardDescription =>
-      'ಸಮನ್ವಿತ ಸುರಕ್ಷೆಯಾಗಿ ಸಕ್ರಿಯಗೊಳಿಸಿ ಅಲ್ಲಿ ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಪ್ರವೇಶಿಸಲು ಮಾತ್ರ ನೀವು ಪಾರ್ಶ್ವಪ್ರದರ್ಶನೀ ಮಾಡಬಹುದು.';
+  String get e2eeCardDescription => 'ಸಮನ್ವಿತ ಸುರಕ್ಷೆಯಾಗಿ ಸಕ್ರಿಯಗೊಳಿಸಿ ಅಲ್ಲಿ ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಪ್ರವೇಶಿಸಲು ಮಾತ್ರ ನೀವು ಪಾರ್ಶ್ವಪ್ರದರ್ಶನೀ ಮಾಡಬಹುದು.';
 
   @override
-  String get dataAlwaysEncrypted =>
-      'ಸ್ಥಿರತಾ ಅಂಶ ಅಸಂಬದ್ಧ, ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಸದಾ ವಿಶ್ರಾಮ ನಿರ್ಮಾಣ ಮತ್ತು ನಿರ್ಮಾಣ ನಿರ್ಮಾಣಕ್ಷಮ ಎನ್ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗುತ್ತದೆ.';
+  String get dataAlwaysEncrypted => 'ಸ್ಥಿರತಾ ಅಂಶ ಅಸಂಬದ್ಧ, ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಸದಾ ವಿಶ್ರಾಮ ನಿರ್ಮಾಣ ಮತ್ತು ನಿರ್ಮಾಣ ನಿರ್ಮಾಣಕ್ಷಮ ಎನ್ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗುತ್ತದೆ.';
 
   @override
   String get readOnlyScope => 'ಓದಿ ಮಾತ್ರ';
@@ -4450,12 +4361,10 @@ class AppLocalizationsKn extends AppLocalizations {
   String get trainingDataProgram => 'ತರಾಜು ಡೇಟಾ ಕಾರ್ಯಕ್ರಮ';
 
   @override
-  String get getOmiUnlimitedFree =>
-      'AI ಮಾದರಿಗಳನ್ನು ತರಾಜು ಮಾಡಲು ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಕಾರ್ಯಕ್ರಮದಿಂದ ಉಚಿತ ಎಂದು Omi Unlimited ಪಡೆಯಿರಿ.';
+  String get getOmiUnlimitedFree => 'AI ಮಾದರಿಗಳನ್ನು ತರಾಜು ಮಾಡಲು ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಕಾರ್ಯಕ್ರಮದಿಂದ ಉಚಿತ ಎಂದು Omi Unlimited ಪಡೆಯಿರಿ.';
 
   @override
-  String get trainingDataBullets =>
-      '• ನಿಮ್ಮ ಡೇಟಾವು AI ಮಾದರಿ ಸುಧಾರಣೆ ಸಹಾಯಿಸುತ್ತದೆ\n• ಅಗತ್ಯವಿಲ್ಲದ ಡೇಟಾವನ್ನು ಮಾತ್ರ ಹಂಚಿಕೆ\n• ಸರ್ವಸಂಸ್ಕೃತ ಪ್ರಕ್ರಿಯೆ';
+  String get trainingDataBullets => '• ನಿಮ್ಮ ಡೇಟಾವು AI ಮಾದರಿ ಸುಧಾರಣೆ ಸಹಾಯಿಸುತ್ತದೆ\n• ಅಗತ್ಯವಿಲ್ಲದ ಡೇಟಾವನ್ನು ಮಾತ್ರ ಹಂಚಿಕೆ\n• ಸರ್ವಸಂಸ್ಕೃತ ಪ್ರಕ್ರಿಯೆ';
 
   @override
   String get learnMoreAtOmiTraining => 'omi.me/training ನಲ್ಲಿ ಹೆಚ್ಚಿನ ಮಾಹಿತಿ ಪಡೆಯಿರಿ';
@@ -4467,8 +4376,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get submitRequest => 'ವಿನಂತಿ ಸಲ್ಲಿಸಿ';
 
   @override
-  String get thankYouRequestUnderReview =>
-      'ಧನ್ಯವಾದ! ನಿಮ್ಮ ವಿನಂತಿ ಪರಿಶೀಲನೆಯ ಅಡಿಯಲ್ಲಿದೆ. ಅನುಮೋದಿಸಿದ ನಂತರ ನಾವು ನಿಮ್ಮನ್ನು ಸೂಚಿತ ಮಾಡುತ್ತೇವೆ.';
+  String get thankYouRequestUnderReview => 'ಧನ್ಯವಾದ! ನಿಮ್ಮ ವಿನಂತಿ ಪರಿಶೀಲನೆಯ ಅಡಿಯಲ್ಲಿದೆ. ಅನುಮೋದಿಸಿದ ನಂತರ ನಾವು ನಿಮ್ಮನ್ನು ಸೂಚಿತ ಮಾಡುತ್ತೇವೆ.';
 
   @override
   String planRemainsActiveUntil(String date) {
@@ -4506,8 +4414,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get monthlyPlanContinues => 'ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಮಾಸಿಕ ಯೋಜನೆ ನಿಮ್ಮ ಬಿಲಿಂಗ್ ಅವಧಿಯ ಅಂತ್ಯ ವರೆಗೆ ಮುಂದುವರಿಯುತ್ತದೆ';
 
   @override
-  String get paymentMethodCharged =>
-      'ನಿಮ್ಮ ಮಾಸಿಕ ಯೋಜನೆ ಕೊನೆಗೊಂಡಾಗ ನಿಮ್ಮ ಅಸ್ತಿತ್ವದ ಪೇಮೆಂಟ್ ವಿಧಾನಕ್ಕೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಶುಲ್ಕ ವಿಧಿಸಲಾಗುವುದು';
+  String get paymentMethodCharged => 'ನಿಮ್ಮ ಮಾಸಿಕ ಯೋಜನೆ ಕೊನೆಗೊಂಡಾಗ ನಿಮ್ಮ ಅಸ್ತಿತ್ವದ ಪೇಮೆಂಟ್ ವಿಧಾನಕ್ಕೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಶುಲ್ಕ ವಿಧಿಸಲಾಗುವುದು';
 
   @override
   String get annualSubscriptionStarts => 'ಶುಲ್ಕದ ನಂತರ ನಿಮ್ಮ 12-ತಿಂಗಳ ವಾರ್ಷಿಕ ಸದಸ್ಯತೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪ್ರಾರಂಭ ಆಗುತ್ತದೆ';
@@ -4550,8 +4457,7 @@ class AppLocalizationsKn extends AppLocalizations {
   }
 
   @override
-  String get annualPlanStartsAutomatically =>
-      'ನಿಮ್ಮ ಮಾಸಿಕ ಯೋಜನೆ ಕೊನೆಗೊಂಡಾಗ ನಿಮ್ಮ ವಾರ್ಷಿಕ ಯೋಜನೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪ್ರಾರಂಭ ಆಗುತ್ತದೆ.';
+  String get annualPlanStartsAutomatically => 'ನಿಮ್ಮ ಮಾಸಿಕ ಯೋಜನೆ ಕೊನೆಗೊಂಡಾಗ ನಿಮ್ಮ ವಾರ್ಷಿಕ ಯೋಜನೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪ್ರಾರಂಭ ಆಗುತ್ತದೆ.';
 
   @override
   String planRenewsOn(String date) {
@@ -4618,8 +4524,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get yourPrivacyMattersToUs => 'ನಿಮ್ಮ ಗೌಪ್ಯತೆ ನಮಗೆ ಮುಖ್ಯ';
 
   @override
-  String get privacyIntroText =>
-      'Omi ನಲ್ಲಿ, ನಾವು ನಿಮ್ಮ ಗೌಪ್ಯತೆಯನ್ನು ತುಂಬಾ ಗಂಭೀರವಾಗಿ ತೆಗೆದುಕೊಳ್ಳುತ್ತೇವೆ. ನಾವು ಸಂಗ್ರಹ ಮಾಡುವ ಮತ್ತು ನಮ್ಮ ಉತ್ಪನ್ನವನ್ನು ನಿಮಗೆ ಸುಧಾರಿಸಲು ಹೇಗೆ ಬಳಸುವ ಡೇಟಾದ ಬಗ್ಗೆ ಸ್ವಚ್ಛವಾಗಿರಲು ನಿರ್ದೇಶಿತವಾಗಿದ್ದೇವೆ. ಇಲ್ಲಿ ನಿಮಗೆ ತಿಳಿದಿರುವ ಮಾಹಿತಿ:';
+  String get privacyIntroText => 'Omi ನಲ್ಲಿ, ನಾವು ನಿಮ್ಮ ಗೌಪ್ಯತೆಯನ್ನು ತುಂಬಾ ಗಂಭೀರವಾಗಿ ತೆಗೆದುಕೊಳ್ಳುತ್ತೇವೆ. ನಾವು ಸಂಗ್ರಹ ಮಾಡುವ ಮತ್ತು ನಮ್ಮ ಉತ್ಪನ್ನವನ್ನು ನಿಮಗೆ ಸುಧಾರಿಸಲು ಹೇಗೆ ಬಳಸುವ ಡೇಟಾದ ಬಗ್ಗೆ ಸ್ವಚ್ಛವಾಗಿರಲು ನಿರ್ದೇಶಿತವಾಗಿದ್ದೇವೆ. ಇಲ್ಲಿ ನಿಮಗೆ ತಿಳಿದಿರುವ ಮಾಹಿತಿ:';
 
   @override
   String get whatWeTrack => 'ನಾವು ಏನು ಟ್ರ್ಯಾಕ್ ಮಾಡುತ್ತೇವೆ';
@@ -4634,12 +4539,10 @@ class AppLocalizationsKn extends AppLocalizations {
   String get ourCommitment => 'ನಮ್ಮ ವಾಗ್ದಾನ';
 
   @override
-  String get commitmentText =>
-      'ನಾವು ನಾವು ಸಂಗ್ರಹ ಮಾಡುವ ಡೇಟಾವನ್ನು ಕೇವಲ Omi ಅನ್ನು ನಿಮಗೆ ಉತ್ತಮ ಉತ್ಪನ್ನ ಮಾಡಲು ಬಳಸುತ್ತೇವೆ ಎಂದು ಪ್ರತಿಶ್ರುತಿಬದ್ಧವಾಗಿದ್ದೇವೆ. ನಿಮ್ಮ ಗೌಪ್ಯತೆ ಮತ್ತು ನಿಮ್ಮ ವಿಶ್ವಾಸ ನಮಗೆ ಮುಖ್ಯತ್ವ.';
+  String get commitmentText => 'ನಾವು ನಾವು ಸಂಗ್ರಹ ಮಾಡುವ ಡೇಟಾವನ್ನು ಕೇವಲ Omi ಅನ್ನು ನಿಮಗೆ ಉತ್ತಮ ಉತ್ಪನ್ನ ಮಾಡಲು ಬಳಸುತ್ತೇವೆ ಎಂದು ಪ್ರತಿಶ್ರುತಿಬದ್ಧವಾಗಿದ್ದೇವೆ. ನಿಮ್ಮ ಗೌಪ್ಯತೆ ಮತ್ತು ನಿಮ್ಮ ವಿಶ್ವಾಸ ನಮಗೆ ಮುಖ್ಯತ್ವ.';
 
   @override
-  String get thankYouText =>
-      'Omi ನ ಮೌಲ್ಯಯುತ ಬಳಕೆದಾರ ಆಗಿರುವುದಕ್ಕಾಗಿ ನಿಮಗೆ ಧನ್ಯವಾದ. ಯಾವುದೇ ಪ್ರಶ್ನೆಗಳು ಅಥವಾ ಆತ್ಮಾಭಿಮಾನಗಳಿದ್ದರೆ, ನಮಗೆ team@basedhardware.com ಕ್ಕೆ ಸಂಪರ್ಕ ಮಾಡಲು ಮುಕ್ತವಾಗಿರಿ.';
+  String get thankYouText => 'Omi ನ ಮೌಲ್ಯಯುತ ಬಳಕೆದಾರ ಆಗಿರುವುದಕ್ಕಾಗಿ ನಿಮಗೆ ಧನ್ಯವಾದ. ಯಾವುದೇ ಪ್ರಶ್ನೆಗಳು ಅಥವಾ ಆತ್ಮಾಭಿಮಾನಗಳಿದ್ದರೆ, ನಮಗೆ team@basedhardware.com ಕ್ಕೆ ಸಂಪರ್ಕ ಮಾಡಲು ಮುಕ್ತವಾಗಿರಿ.';
 
   @override
   String get wifiSyncSettings => 'WiFi ಸಿಂಕ್ ಸಂಯೋಜನೆಗಳು';
@@ -4648,8 +4551,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get enterHotspotCredentials => 'ನಿಮ್ಮ ಫೋನ್‌ನ ಹಾಟ್‌ಸ್ಪಾಟ್ ಪ್ರಮಾಣಪತ್ರ ನಮೂದಿಸಿ';
 
   @override
-  String get wifiSyncUsesHotspot =>
-      'WiFi ಸಿಂಕ್ ನಿಮ್ಮ ಫೋನ್‌ನನ್ನು ಹಾಟ್‌ಸ್ಪಾಟ್ ಆಗಿ ಬಳಸುತ್ತದೆ. ಸೆಟ್ಟಿಂಗ್‌ಗಳು > ಪರ್ಸನಲ್ ಹಾಟ್‌ಸ್ಪಾಟ್‌ನಲ್ಲಿ ನಿಮ್ಮ ಹಾಟ್‌ಸ್ಪಾಟ್ ಹೆಸರು ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್ ಕಂಡುಕೊಳ್ಳಿ.';
+  String get wifiSyncUsesHotspot => 'WiFi ಸಿಂಕ್ ನಿಮ್ಮ ಫೋನ್‌ನನ್ನು ಹಾಟ್‌ಸ್ಪಾಟ್ ಆಗಿ ಬಳಸುತ್ತದೆ. ಸೆಟ್ಟಿಂಗ್‌ಗಳು > ಪರ್ಸನಲ್ ಹಾಟ್‌ಸ್ಪಾಟ್‌ನಲ್ಲಿ ನಿಮ್ಮ ಹಾಟ್‌ಸ್ಪಾಟ್ ಹೆಸರು ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್ ಕಂಡುಕೊಳ್ಳಿ.';
 
   @override
   String get hotspotNameSsid => 'ಹಾಟ್‌ಸ್ಪಾಟ್ ಹೆಸರು (SSID)';
@@ -4684,8 +4586,7 @@ class AppLocalizationsKn extends AppLocalizations {
   }
 
   @override
-  String get failedToGenerateSummaryCheckConversations =>
-      'ಸಾರಾಂಶ ತಯಾರಿ ವಿಫಲ. ಆ ದಿನಕ್ಕಾಗಿ ನಿಮ್ಮಲ್ಲಿ ಸಂಭಾಷಣೆಗಳಿವೆ ಎಂದು ಖಚಿತಪಡಿಸಿ.';
+  String get failedToGenerateSummaryCheckConversations => 'ಸಾರಾಂಶ ತಯಾರಿ ವಿಫಲ. ಆ ದಿನಕ್ಕಾಗಿ ನಿಮ್ಮಲ್ಲಿ ಸಂಭಾಷಣೆಗಳಿವೆ ಎಂದು ಖಚಿತಪಡಿಸಿ.';
 
   @override
   String get summaryNotFound => 'ಸಾರಾಂಶ ಕಂಡುಬಂದಿಲ್ಲ';
@@ -4715,8 +4616,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get exportStartedMayTakeFewSeconds => 'ರಫ್ತೆ ಪ್ರಾರಂಭವಾಗಿದೆ. ಇದು ಕೆಲವು ಸೆಕೆಂಡ ತೆಗೆದುಕೊಳ್ಳಬಹುದು...';
 
   @override
-  String get knowledgeGraphDeleteDescription =>
-      'ಇದು ಎಲ್ಲಾ ವ್ಯುತ್ಪನ್ನ ಜ್ಞಾನ ಗ್ರಾಫ್ ಡೇಟಾ (ನೋಡ್ ಮತ್ತು ಸಂಪರ್ಕಗಳು) ಅಳಿಸುತ್ತದೆ. ನಿಮ್ಮ ಮೂಲ ಸ್ಮೃತಿಗಳು ಸುರಕ್ಷಿತವಾಗಿರುತ್ತದೆ. ಗ್ರಾಫ್ ಸಮಯಾನುಸಾರ ಅಥವಾ ಮುಂದಿನ ವಿನಂತಿಯ ಮೇಲೆ ನಿರ್ಮಿತವಾಗುತ್ತದೆ.';
+  String get knowledgeGraphDeleteDescription => 'ಇದು ಎಲ್ಲಾ ವ್ಯುತ್ಪನ್ನ ಜ್ಞಾನ ಗ್ರಾಫ್ ಡೇಟಾ (ನೋಡ್ ಮತ್ತು ಸಂಪರ್ಕಗಳು) ಅಳಿಸುತ್ತದೆ. ನಿಮ್ಮ ಮೂಲ ಸ್ಮೃತಿಗಳು ಸುರಕ್ಷಿತವಾಗಿರುತ್ತದೆ. ಗ್ರಾಫ್ ಸಮಯಾನುಸಾರ ಅಥವಾ ಮುಂದಿನ ವಿನಂತಿಯ ಮೇಲೆ ನಿರ್ಮಿತವಾಗುತ್ತದೆ.';
 
   @override
   String get configureDailySummaryDigest => 'ನಿಮ್ಮ ದೈನಿಕ ಕಾರ್ಯ ಪಟ್ಟಿ ಸಂಕ್ಷೇಪಣ ಸಂರೂಪಿಸಿ';
@@ -4786,8 +4686,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get deleteAllLimitlessConversations => 'ಎಲ್ಲಾ Limitless ಸಂಭಾಷಣೆಗಳು ಅಳಿಸುವುದೇ?';
 
   @override
-  String get deleteAllLimitlessWarning =>
-      'ಇದು Limitless ನಿಂದ ಆಮದು ಮಾಡಲಾದ ಎಲ್ಲಾ ಸಂಭಾಷಣೆಗಳನ್ನು ಶಾಶ್ವತವಾಗಿ ಅಳಿಸುತ್ತದೆ. ಈ ಕ್ರಿಯೆ ರದ್ದುಗೊಳಿಸಲಾಗುವುದಿಲ್ಲ.';
+  String get deleteAllLimitlessWarning => 'ಇದು Limitless ನಿಂದ ಆಮದು ಮಾಡಲಾದ ಎಲ್ಲಾ ಸಂಭಾಷಣೆಗಳನ್ನು ಶಾಶ್ವತವಾಗಿ ಅಳಿಸುತ್ತದೆ. ಈ ಕ್ರಿಯೆ ರದ್ದುಗೊಳಿಸಲಾಗುವುದಿಲ್ಲ.';
 
   @override
   String deletedLimitlessConversations(int count) {
@@ -4843,8 +4742,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get howItWorksTitle => 'ಇದು ಹೇಗೆ ಕೆಲಸ ಮಾಡುತ್ತದೆ?';
 
   @override
-  String get howPeopleWorks =>
-      'ಒಮ್ಮೆ ಒಬ್ಬ ವ್ಯಕ್ತಿ ಸೃಷ್ಟಿವಾಗಿದ್ದರೆ, ನೀವು ಸಂಭಾಷಣೆ ಪ್ರತಿಲೇಖಕ್ಕೆ ಹೋಗಬಹುದು, ಮತ್ತು ಅವರ ಅನುಗುಣ ವಿಭಾಗಗಳನ್ನು ಅವರಿಗೆ ನಿಯೋಜಿಸಬಹುದು, ಅದರಿಂದ Omi ಅವರ ಭಾಷಣವನ್ನು ಸಹ ಗುರುತಿಸಲು ಸಾಧ್ಯವಾಗುವುದು!';
+  String get howPeopleWorks => 'ಒಮ್ಮೆ ಒಬ್ಬ ವ್ಯಕ್ತಿ ಸೃಷ್ಟಿವಾಗಿದ್ದರೆ, ನೀವು ಸಂಭಾಷಣೆ ಪ್ರತಿಲೇಖಕ್ಕೆ ಹೋಗಬಹುದು, ಮತ್ತು ಅವರ ಅನುಗುಣ ವಿಭಾಗಗಳನ್ನು ಅವರಿಗೆ ನಿಯೋಜಿಸಬಹುದು, ಅದರಿಂದ Omi ಅವರ ಭಾಷಣವನ್ನು ಸಹ ಗುರುತಿಸಲು ಸಾಧ್ಯವಾಗುವುದು!';
 
   @override
   String get tapToDelete => 'ಅಳಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ';
@@ -4870,8 +4768,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get privacyNotice => 'ಗೌಪ್ಯತೆ ಸೂಚನೆ';
 
   @override
-  String get recordingsMayCaptureOthers =>
-      'ರೆಕಾರ್ಡಿಂಗ್‌ಗಳು ಇತರರ ಗಾಮಗಳನ್ನು ಸೆರೆಹಿಡಿಯಬಹುದು. ಸಕ್ರಿಯ ಮಾಡುವ ಮೊದಲು ಎಲ್ಲಾ ಭಾಗವಹಿಸುವವರಿಂದ ಒಪ್ಪಿಕೆ ಬಿಟ್ಟುಕೊಳ್ಳಿ.';
+  String get recordingsMayCaptureOthers => 'ರೆಕಾರ್ಡಿಂಗ್‌ಗಳು ಇತರರ ಗಾಮಗಳನ್ನು ಸೆರೆಹಿಡಿಯಬಹುದು. ಸಕ್ರಿಯ ಮಾಡುವ ಮೊದಲು ಎಲ್ಲಾ ಭಾಗವಹಿಸುವವರಿಂದ ಒಪ್ಪಿಕೆ ಬಿಟ್ಟುಕೊಳ್ಳಿ.';
 
   @override
   String get enable => 'ಸಕ್ರಿಯ ಮಾಡಿ';
@@ -4883,8 +4780,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get on => 'ಸಕ್ರಿಯ';
 
   @override
-  String get storeAudioDescription =>
-      'ಎಲ್ಲಾ ಆಡಿಯೋ ರೆಕಾರ್ಡಿಂಗ್‌ಗಳನ್ನು ನಿಮ್ಮ ಫೋನ್‌ನಲ್ಲಿ ಸ್ಥಳೀಯವಾಗಿ ಸಂಗ್ರಹ ಮಾಡಿ. ನಿಷ್ಕ್ರಿಯ ಮಾಡಿದಾಗ, ಸಂಗ್ರಹ ಸ್ಥಾನ ಸಂರಕ್ಷಣೆಗಾಗಿ ವಿಫಲ ಅಪ್‌ಲೋಡ್‌ಗಳನ್ನು ಮಾತ್ರ ಸಂಗ್ರಹ ಮಾಡುತ್ತೇವೆ.';
+  String get storeAudioDescription => 'ಎಲ್ಲಾ ಆಡಿಯೋ ರೆಕಾರ್ಡಿಂಗ್‌ಗಳನ್ನು ನಿಮ್ಮ ಫೋನ್‌ನಲ್ಲಿ ಸ್ಥಳೀಯವಾಗಿ ಸಂಗ್ರಹ ಮಾಡಿ. ನಿಷ್ಕ್ರಿಯ ಮಾಡಿದಾಗ, ಸಂಗ್ರಹ ಸ್ಥಾನ ಸಂರಕ್ಷಣೆಗಾಗಿ ವಿಫಲ ಅಪ್‌ಲೋಡ್‌ಗಳನ್ನು ಮಾತ್ರ ಸಂಗ್ರಹ ಮಾಡುತ್ತೇವೆ.';
 
   @override
   String get enableLocalStorage => 'ಸ್ಥಳೀಯ ಭಾಂಡಾರ ಸಕ್ರಿಯ ಮಾಡಿ';
@@ -4902,12 +4798,10 @@ class AppLocalizationsKn extends AppLocalizations {
   String get storeAudioOnCloud => 'ಕ್ಲೌಡ್‌ನಲ್ಲಿ ಆಡಿಯೋ ಸಂಗ್ರಹ ಮಾಡಿ';
 
   @override
-  String get cloudStorageDialogMessage =>
-      'ನಿಮ್ಮ ರಿಯಲ್-ಟೈಮ್ ರೆಕಾರ್ಡಿಂಗ್‌ಗಳನ್ನು ನೀವು ಮಾತನಾಡುವಾಗ ಖಾಸಗಿ ಕ್ಲೌಡ್ ಭಾಂಡಾರದಲ್ಲಿ ಸಂಗ್ರಹ ಮಾಡಲಾಗುವುದು.';
+  String get cloudStorageDialogMessage => 'ನಿಮ್ಮ ರಿಯಲ್-ಟೈಮ್ ರೆಕಾರ್ಡಿಂಗ್‌ಗಳನ್ನು ನೀವು ಮಾತನಾಡುವಾಗ ಖಾಸಗಿ ಕ್ಲೌಡ್ ಭಾಂಡಾರದಲ್ಲಿ ಸಂಗ್ರಹ ಮಾಡಲಾಗುವುದು.';
 
   @override
-  String get storeAudioCloudDescription =>
-      'ನಿಮ್ಮ ರಿಯಲ್-ಟೈಮ್ ರೆಕಾರ್ಡಿಂಗ್‌ಗಳನ್ನು ಖಾಸಗಿ ಕ್ಲೌಡ್ ಭಾಂಡಾರದಲ್ಲಿ ನೀವು ಮಾತನಾಡುವಾಗ ಸಂಗ್ರಹ ಮಾಡಿ. ಆಡಿಯೋ ರಿಯಲ್-ಟೈಮ್‌ನಲ್ಲಿ ಸುರಕ್ಷಿತವಾಗಿ ಸೆರೆಹಿಡಿಯಲಾಗುತ್ತದೆ ಮತ್ತು ಸಂಗ್ರಹ ಮಾಡಲಾಗುತ್ತದೆ.';
+  String get storeAudioCloudDescription => 'ನಿಮ್ಮ ರಿಯಲ್-ಟೈಮ್ ರೆಕಾರ್ಡಿಂಗ್‌ಗಳನ್ನು ಖಾಸಗಿ ಕ್ಲೌಡ್ ಭಾಂಡಾರದಲ್ಲಿ ನೀವು ಮಾತನಾಡುವಾಗ ಸಂಗ್ರಹ ಮಾಡಿ. ಆಡಿಯೋ ರಿಯಲ್-ಟೈಮ್‌ನಲ್ಲಿ ಸುರಕ್ಷಿತವಾಗಿ ಸೆರೆಹಿಡಿಯಲಾಗುತ್ತದೆ ಮತ್ತು ಸಂಗ್ರಹ ಮಾಡಲಾಗುತ್ತದೆ.';
 
   @override
   String get downloadingFirmware => 'ಫರ್ಮ್‌ವೇರ್ ಡೌನ್‌ಲೋಡ್ ಮಾಡುತ್ತಿದೆ';
@@ -4916,8 +4810,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get installingFirmware => 'ಫರ್ಮ್‌ವೇರ್ ಸ್ಥಾಪಿಸುತ್ತಿದೆ';
 
   @override
-  String get firmwareUpdateWarning =>
-      'ಅಪ್ಲಿಕೇಶನ ಮುಚ್ಚಬೇಡಿ ಅಥವಾ ಸಾಧನವನ್ನು ಆಘಾತ ಮಾಡಬೇಡಿ. ಇದು ನಿಮ್ಮ ಸಾಧನವನ್ನು ಹಾಳೆ ಮಾಡಬಹುದು.';
+  String get firmwareUpdateWarning => 'ಅಪ್ಲಿಕೇಶನ ಮುಚ್ಚಬೇಡಿ ಅಥವಾ ಸಾಧನವನ್ನು ಆಘಾತ ಮಾಡಬೇಡಿ. ಇದು ನಿಮ್ಮ ಸಾಧನವನ್ನು ಹಾಳೆ ಮಾಡಬಹುದು.';
 
   @override
   String get firmwareUpdated => 'ಫರ್ಮ್‌ವೇರ್ ನವೀಕೃತವಾಗಿದೆ';
@@ -4961,8 +4854,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get payments => 'ಪೇಮೆಂಟ್‌ಗಳು';
 
   @override
-  String get connectPaymentMethodInfo =>
-      'ನಿಮ್ಮ ಅಪ್ಲಿಕೇಶನಗಳಿಗಾಗಿ ಪೇಮೆಂಟ್‌ಗಳನ್ನು ಪಡೆಯಲು ಮುಂದೆ ನೀಡಲಾದ ಪೇಮೆಂಟ್ ವಿಧಾನ ಸಂಯೋಜಿಸಿ.';
+  String get connectPaymentMethodInfo => 'ನಿಮ್ಮ ಅಪ್ಲಿಕೇಶನಗಳಿಗಾಗಿ ಪೇಮೆಂಟ್‌ಗಳನ್ನು ಪಡೆಯಲು ಮುಂದೆ ನೀಡಲಾದ ಪೇಮೆಂಟ್ ವಿಧಾನ ಸಂಯೋಜಿಸಿ.';
 
   @override
   String get selectedPaymentMethod => 'ಆಯ್ದ ಪೇಮೆಂಟ್ ವಿಧಾನ';
@@ -4995,8 +4887,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get secureAndReliable => 'ಸುರಕ್ಷಿತ ಮತ್ತು ವಿಶ್ವಾಸಾರ್ಹ';
 
   @override
-  String get stripeSecureDescription =>
-      'Stripe ನಿಮ್ಮ ಅಪ್ಲಿಕೇಶನ ರಾಜಸ್ವದ ಸುರಕ್ಷಿತ ಮತ್ತು ಸಾಕಾಲೀನ ವರ್ಗಾವಣೆಯನ್ನು ಖಾತ್ರಿ ಮಾಡುತ್ತದೆ';
+  String get stripeSecureDescription => 'Stripe ನಿಮ್ಮ ಅಪ್ಲಿಕೇಶನ ರಾಜಸ್ವದ ಸುರಕ್ಷಿತ ಮತ್ತು ಸಾಕಾಲೀನ ವರ್ಗಾವಣೆಯನ್ನು ಖಾತ್ರಿ ಮಾಡುತ್ತದೆ';
 
   @override
   String get selectYourCountry => 'ನಿಮ್ಮ ದೇಶ ಆಯ್ಕೆ ಮಾಡಿ';
@@ -5017,8 +4908,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get connectingYourStripeAccount => 'ನಿಮ್ಮ Stripe ಖಾತೆ ಸಂಯೋಜಿತ ಮಾಡುತ್ತಿದೆ';
 
   @override
-  String get stripeOnboardingInstructions =>
-      'ದಯವಿಟ್ಟು ನಿಮ್ಮ ವೆಬ್‌ಸೈಟಿನಲ್ಲಿ Stripe ಸ್ವಾಗತ ಪ್ರಕ್ರಿಯೆ ಪೂರ್ಣ ಮಾಡಿ. ಪೂರ್ಣಗೊಂಡ ನಂತರ ಈ ಪುಟವು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ನವೀಕರಣವಾಗುತ್ತದೆ.';
+  String get stripeOnboardingInstructions => 'ದಯವಿಟ್ಟು ನಿಮ್ಮ ವೆಬ್‌ಸೈಟಿನಲ್ಲಿ Stripe ಸ್ವಾಗತ ಪ್ರಕ್ರಿಯೆ ಪೂರ್ಣ ಮಾಡಿ. ಪೂರ್ಣಗೊಂಡ ನಂತರ ಈ ಪುಟವು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ನವೀಕರಣವಾಗುತ್ತದೆ.';
 
   @override
   String get failedTryAgain => 'ವಿಫಲ? ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ';
@@ -5030,8 +4920,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get successfullyConnected => 'ಯಶಸ್ವಿಯಾಗಿ ಸಂಯೋಜಿತ!';
 
   @override
-  String get stripeReadyForPayments =>
-      'ನಿಮ್ಮ Stripe ಖಾತೆ ಈಗ ಪೇಮೆಂಟ್‌ಗಳನ್ನು ಸ್ವೀಕರಿಸಲು ಸಿದ್ಧ. ನಿಮ್ಮ ಅಪ್ಲಿಕೇಶನ ಮಾರಾಟಗಳಿಂದ ತಕ್ಷಣವೇ ಗಳಿಕೆ ಮಾಡಲು ಪ್ರಾರಂಭ ಮಾಡಬಹುದು.';
+  String get stripeReadyForPayments => 'ನಿಮ್ಮ Stripe ಖಾತೆ ಈಗ ಪೇಮೆಂಟ್‌ಗಳನ್ನು ಸ್ವೀಕರಿಸಲು ಸಿದ್ಧ. ನಿಮ್ಮ ಅಪ್ಲಿಕೇಶನ ಮಾರಾಟಗಳಿಂದ ತಕ್ಷಣವೇ ಗಳಿಕೆ ಮಾಡಲು ಪ್ರಾರಂಭ ಮಾಡಬಹುದು.';
 
   @override
   String get updateStripeDetails => 'Stripe ವಿವರಗಳನ್ನು ನವೀಕರಣ ಮಾಡಿ';
@@ -5049,8 +4938,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get updatePayPalAccountDetails => 'ನಿಮ್ಮ PayPal ಖಾತೆ ವಿವರಗಳನ್ನು ನವೀಕರಣ ಮಾಡಿ';
 
   @override
-  String get connectPayPalToReceivePayments =>
-      'ನಿಮ್ಮ ಅಪ್ಲಿಕೇಶನಗಳಿಗಾಗಿ ಪೇಮೆಂಟ್‌ಗಳನ್ನು ಸ್ವೀಕರಿಸಲು ನಿಮ್ಮ PayPal ಖಾತೆ ಸಂಯೋಜಿತ ಮಾಡಿ';
+  String get connectPayPalToReceivePayments => 'ನಿಮ್ಮ ಅಪ್ಲಿಕೇಶನಗಳಿಗಾಗಿ ಪೇಮೆಂಟ್‌ಗಳನ್ನು ಸ್ವೀಕರಿಸಲು ನಿಮ್ಮ PayPal ಖಾತೆ ಸಂಯೋಜಿತ ಮಾಡಿ';
 
   @override
   String get paypalEmail => 'PayPal ಇಮೇಲ್';
@@ -5059,8 +4947,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get paypalMeLink => 'PayPal.me ಸಂಪರ್ಕ';
 
   @override
-  String get stripeRecommendation =>
-      'Stripe ನಿಮ್ಮ ದೇಶದಲ್ಲಿ ಲಭ್ಯವಿದ್ದರೆ, ನಾವು ವೇಗದ ಮತ್ತು ಸುಲಭ ಪೇಮೆಂಟ್‌ಗಳಿಗಾಗಿ ಅದನ್ನು ಬಳಸಲು ಸಶಕ್ತವಾಗಿ ಶಿಫಾರಿಸುತ್ತೇವೆ.';
+  String get stripeRecommendation => 'Stripe ನಿಮ್ಮ ದೇಶದಲ್ಲಿ ಲಭ್ಯವಿದ್ದರೆ, ನಾವು ವೇಗದ ಮತ್ತು ಸುಲಭ ಪೇಮೆಂಟ್‌ಗಳಿಗಾಗಿ ಅದನ್ನು ಬಳಸಲು ಸಶಕ್ತವಾಗಿ ಶಿಫಾರಿಸುತ್ತೇವೆ.';
 
   @override
   String get updatePayPalDetails => 'PayPal ವಿವರಗಳನ್ನು ನವೀಕರಣ ಮಾಡಿ';
@@ -5112,12 +4999,10 @@ class AppLocalizationsKn extends AppLocalizations {
   String get additionalSpeechSampleRemoved => 'ಹೆಚ್ಚುವರಿ ಭಾಷಣ ಮಾದರಿ ತೆಗೆದುಹಾಕಲಾಗಿದೆ';
 
   @override
-  String get consentDataMessage =>
-      'ಮುಂದುವರಿಯುವ ಮೂಲಕ, ನಿಮ್ಮ ಸಂಭಾಷಣೆಗಳು, ರೆಕಾರ್ಡಿಂಗ್‌ಗಳು ಮತ್ತು ವೈಯಕ್ತಿಕ ಮಾಹಿತಿಯನ್ನು ನಮ್ಮ ಸರ್ವರ್‌ಗಳಲ್ಲಿ ಸುರಕ್ಷಿತವಾಗಿ ಸಂಗ್ರಹಿಸಲಾಗುತ್ತದೆ. ನಿಮ್ಮ ಆಡಿಯೋ ರೆಕಾರ್ಡಿಂಗ್‌ಗಳು ಮತ್ತು ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಟ್‌ಗಳನ್ನು ಮೂರನೇ ವ್ಯಕ್ತಿಯ AI ಸೇವೆಗಳಿಂದ ಸಂಸ್ಕರಿಸಲಾಗುತ್ತದೆ (ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಷನ್‌ಗಾಗಿ Deepgram ಮತ್ತು ವಿಶ್ಲೇಷಣೆಗಾಗಿ OpenAI ಸೇರಿದಂತೆ) AI-ಚಾಲಿತ ಒಳನೋಟಗಳನ್ನು ಒದಗಿಸಲು ಮತ್ತು ಎಲ್ಲಾ ಅಪ್ಲಿಕೇಶನ್ ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು.';
+  String get consentDataMessage => 'ಮುಂದುವರಿಯುವ ಮೂಲಕ, ನಿಮ್ಮ ಸಂಭಾಷಣೆಗಳು, ರೆಕಾರ್ಡಿಂಗ್‌ಗಳು ಮತ್ತು ವೈಯಕ್ತಿಕ ಮಾಹಿತಿಯನ್ನು ನಮ್ಮ ಸರ್ವರ್‌ಗಳಲ್ಲಿ ಸುರಕ್ಷಿತವಾಗಿ ಸಂಗ್ರಹಿಸಲಾಗುತ್ತದೆ. ನಿಮ್ಮ ಆಡಿಯೋ ರೆಕಾರ್ಡಿಂಗ್‌ಗಳು ಮತ್ತು ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಟ್‌ಗಳನ್ನು ಮೂರನೇ ವ್ಯಕ್ತಿಯ AI ಸೇವೆಗಳಿಂದ ಸಂಸ್ಕರಿಸಲಾಗುತ್ತದೆ (ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಷನ್‌ಗಾಗಿ Deepgram ಮತ್ತು ವಿಶ್ಲೇಷಣೆಗಾಗಿ OpenAI ಸೇರಿದಂತೆ) AI-ಚಾಲಿತ ಒಳನೋಟಗಳನ್ನು ಒದಗಿಸಲು ಮತ್ತು ಎಲ್ಲಾ ಅಪ್ಲಿಕೇಶನ್ ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು.';
 
   @override
-  String get tasksEmptyStateMessage =>
-      'ನಿಮ್ಮ ಸಂಭಾಷಣೆಗಳಿಂದ ಕಾರ್ಯಗಳು ಇಲ್ಲಿ ಕಾಣಿಸಿಕೊಳ್ಳುತ್ತವೆ.\\nಒಂದು ಹಸ್ತಚಾಲಿತವಾಗಿ ರಚಿಸಲು + ಟ್ಯಾಪ್ ಮಾಡಿ.';
+  String get tasksEmptyStateMessage => 'ನಿಮ್ಮ ಸಂಭಾಷಣೆಗಳಿಂದ ಕಾರ್ಯಗಳು ಇಲ್ಲಿ ಕಾಣಿಸಿಕೊಳ್ಳುತ್ತವೆ.\\nಒಂದು ಹಸ್ತಚಾಲಿತವಾಗಿ ರಚಿಸಲು + ಟ್ಯಾಪ್ ಮಾಡಿ.';
 
   @override
   String get clearChatAction => 'ಚ್ಯಾಟ್ ತೀಕ್ಷ್ಣ ಮಾಡಿ';
@@ -5153,15 +5038,13 @@ class AppLocalizationsKn extends AppLocalizations {
   String get installOmiOnAppleWatch => 'Omi ಅನ್ನು ನಿಮ್ಮ\\nApple Watch ನಲ್ಲಿ ಸ್ಥಾಪಿಸಿ';
 
   @override
-  String get installOmiOnAppleWatchDescription =>
-      'Omi ನೊಂದಿಗೆ ಆಪಲ್ ಗಡಿಯಾರವನ್ನು ಬಳಸಲು, ನೀವು ಮೊದಲು ನಿಮ್ಮ ಗಡಿಯಾರದಲ್ಲಿ Omi ಅಪ್ಲಿಕೇಶನ ಸ್ಥಾಪಿಸಬೇಕು.';
+  String get installOmiOnAppleWatchDescription => 'Omi ನೊಂದಿಗೆ ಆಪಲ್ ಗಡಿಯಾರವನ್ನು ಬಳಸಲು, ನೀವು ಮೊದಲು ನಿಮ್ಮ ಗಡಿಯಾರದಲ್ಲಿ Omi ಅಪ್ಲಿಕೇಶನ ಸ್ಥಾಪಿಸಬೇಕು.';
 
   @override
   String get openOmiOnAppleWatch => 'Omi ಅನ್ನು ನಿಮ್ಮ\\nApple Watch ನಲ್ಲಿ ತೆರೆಯಿರಿ';
 
   @override
-  String get openOmiOnAppleWatchDescription =>
-      'Omi ಅಪ್ಲಿಕೇಶನ ನಿಮ್ಮ Apple Watch ನಲ್ಲಿ ಸ್ಥಾಪಿತವಾಗಿದೆ. ಅದನ್ನು ತೆರೆಯಿರಿ ಮತ್ತು ಪ್ರಾರಂಭ ಮಾಡಲು ಟ್ಯಾಪ್ ಮಾಡಿ.';
+  String get openOmiOnAppleWatchDescription => 'Omi ಅಪ್ಲಿಕೇಶನ ನಿಮ್ಮ Apple Watch ನಲ್ಲಿ ಸ್ಥಾಪಿತವಾಗಿದೆ. ಅದನ್ನು ತೆರೆಯಿರಿ ಮತ್ತು ಪ್ರಾರಂಭ ಮಾಡಲು ಟ್ಯಾಪ್ ಮಾಡಿ.';
 
   @override
   String get openWatchApp => 'ಗಡಿಯಾರ ಅಪ್ಲಿಕೇಶನ ತೆರೆಯಿರಿ';
@@ -5170,15 +5053,13 @@ class AppLocalizationsKn extends AppLocalizations {
   String get iveInstalledAndOpenedTheApp => 'ನಾನು ಅಪ್ಲಿಕೇಶನ ಸ್ಥಾಪಿಸಿ ಮತ್ತು ತೆರೆದಿದ್ದೇನೆ';
 
   @override
-  String get unableToOpenWatchApp =>
-      'Apple Watch ಅಪ್ಲಿಕೇಶನ ತೆರೆಯಲು ಸಾಧ್ಯವಿಲ್ಲ. ದಯವಿಟ್ಟು ನಿಮ್ಮ Apple Watch ನಲ್ಲಿ ಗಡಿಯಾರ ಅಪ್ಲಿಕೇಶನವನ್ನು ಹೆಚ್ಚುತ್ತೆ ತೆರೆಯಿರಿ ಮತ್ತು \"ಲಭ್ಯವಿರುವ ಅಪ್ಲಿಕೇಶನಗಳು\" ವಿಭಾಗದಿಂದ Omi ಸ್ಥಾಪಿಸಿ.';
+  String get unableToOpenWatchApp => 'Apple Watch ಅಪ್ಲಿಕೇಶನ ತೆರೆಯಲು ಸಾಧ್ಯವಿಲ್ಲ. ದಯವಿಟ್ಟು ನಿಮ್ಮ Apple Watch ನಲ್ಲಿ ಗಡಿಯಾರ ಅಪ್ಲಿಕೇಶನವನ್ನು ಹೆಚ್ಚುತ್ತೆ ತೆರೆಯಿರಿ ಮತ್ತು \"ಲಭ್ಯವಿರುವ ಅಪ್ಲಿಕೇಶನಗಳು\" ವಿಭಾಗದಿಂದ Omi ಸ್ಥಾಪಿಸಿ.';
 
   @override
   String get appleWatchConnectedSuccessfully => 'Apple Watch ಯಶಸ್ವಿಯಾಗಿ ಸಂಯೋಜಿತವಾಗಿದೆ!';
 
   @override
-  String get appleWatchNotReachable =>
-      'Apple Watch ಇನ್ನೂ ಪಡೆಯಾಗುವುದಿಲ್ಲ. ದಯವಿಟ್ಟು ಖಚಿತಪಡಿಸಿ Omi ಅಪ್ಲಿಕೇಶನ ನಿಮ್ಮ ಗಡಿಯಾರದಲ್ಲಿ ತೆರೆದಿದೆ.';
+  String get appleWatchNotReachable => 'Apple Watch ಇನ್ನೂ ಪಡೆಯಾಗುವುದಿಲ್ಲ. ದಯವಿಟ್ಟು ಖಚಿತಪಡಿಸಿ Omi ಅಪ್ಲಿಕೇಶನ ನಿಮ್ಮ ಗಡಿಯಾರದಲ್ಲಿ ತೆರೆದಿದೆ.';
 
   @override
   String errorCheckingConnection(String error) {
@@ -5606,30 +5487,25 @@ class AppLocalizationsKn extends AppLocalizations {
   String get multipleSpeakersDetected => 'ಮಾರುಕಟ್ಟೆ ವಕ್ತಾರಗಳು ಕಂಡುಬಂದಿದೆ';
 
   @override
-  String get multipleSpeakersDescription =>
-      'ರೆಕಾರ್ಡಿಂಗ್‌ನಲ್ಲಿ ಏನೋ ಮಾರುಕಟ್ಟೆ ವಕ್ತಾರಗಳನ್ನು ತೋರುತ್ತಿದೆ. ಸುಮಧುರ ಸ್ಥಳದಲ್ಲಿ ಇದ್ದೀರಾ ಎಂದು ಖಾತ್ರಿ ಮಾಡಿ ಮತ್ತು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.';
+  String get multipleSpeakersDescription => 'ರೆಕಾರ್ಡಿಂಗ್‌ನಲ್ಲಿ ಏನೋ ಮಾರುಕಟ್ಟೆ ವಕ್ತಾರಗಳನ್ನು ತೋರುತ್ತಿದೆ. ಸುಮಧುರ ಸ್ಥಳದಲ್ಲಿ ಇದ್ದೀರಾ ಎಂದು ಖಾತ್ರಿ ಮಾಡಿ ಮತ್ತು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.';
 
   @override
   String get invalidRecordingDetected => 'ಅಸಿದ್ಧ ರೆಕಾರ್ಡಿಂಗ್ ಕಂಡುಬಂದಿದೆ';
 
   @override
-  String get notEnoughSpeechDescription =>
-      'ಕಾಫಿ ಭಾಷಣವನ್ನು ಕಂಡುಬಂದಿಲ್ಲ. ದಯವಿಟ್ಟು ಹೆಚ್ಚಾಗಿ ಮಾತನಾಡಿ ಮತ್ತು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.';
+  String get notEnoughSpeechDescription => 'ಕಾಫಿ ಭಾಷಣವನ್ನು ಕಂಡುಬಂದಿಲ್ಲ. ದಯವಿಟ್ಟು ಹೆಚ್ಚಾಗಿ ಮಾತನಾಡಿ ಮತ್ತು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.';
 
   @override
-  String get speechDurationDescription =>
-      'ದಯವಿಟ್ಟು ಅತಿ ಕಡಿಮೆ 5 ಸೆಕೆಂಡ್‌ಗಳು ಮತ್ತು 90 ಕ್ಕಿಂತ ಹೆಚ್ಚಿಲ್ಲ ಎಂದು ಮಾತನಾಡುವುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.';
+  String get speechDurationDescription => 'ದಯವಿಟ್ಟು ಅತಿ ಕಡಿಮೆ 5 ಸೆಕೆಂಡ್‌ಗಳು ಮತ್ತು 90 ಕ್ಕಿಂತ ಹೆಚ್ಚಿಲ್ಲ ಎಂದು ಮಾತನಾಡುವುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.';
 
   @override
-  String get connectionLostDescription =>
-      'ಸಂಪರ್ಕ ಅಡ್ಡಿ಄ಟ್ಟಿತು. ದಯವಿಟ್ಟು ನಿಮ್ಮ ಇಂಟರ್‌ನೆಟ್ ಸಂಪರ್ಕವನ್ನು ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.';
+  String get connectionLostDescription => 'ಸಂಪರ್ಕ ಅಡ್ಡಿ಄ಟ್ಟಿತು. ದಯವಿಟ್ಟು ನಿಮ್ಮ ಇಂಟರ್‌ನೆಟ್ ಸಂಪರ್ಕವನ್ನು ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.';
 
   @override
   String get howToTakeGoodSample => 'ಉತ್ತಮ ಮಾದರಿ ಹೇಗೆ ತೆಗೆದುಕೊಳ್ಳುವುದು?';
 
   @override
-  String get goodSampleInstructions =>
-      '1. ನೀವು ಸುಮಾರು ಸ್ಥಳದಲ್ಲಿ ಇದ್ದೀರಿ ಎಂದು ಖಾತ್ರಿ ಮಾಡಿ.\n2. ಸ್ಪಷ್ಟವಾಗಿ ಮತ್ತು ನೈಸರ್ಗಿಕವಾಗಿ ಮಾತನಾಡಿ.\n3. ನಿಮ್ಮ ಸಾಧನವು ಅದರ ನೈಸರ್ಗಿಕ ಸ್ಥಿತಿಯಲ್ಲಿ, ನಿಮ್ಮ ಕುತ್ತಿಗೆಯಲ್ಲಿ ಇದೆ ಎಂದು ಖಾತ್ರಿ ಮಾಡಿ.\n\nಅದನ್ನು ರಚಿಸಿದ ನಂತರ, ನೀವು ಯಾವಾಗಲೂ ಅದನ್ನು ಸುಧಾರಿಸಬಹುದು ಅಥವಾ ಮತ್ತೆ ಮಾಡಬಹುದು.';
+  String get goodSampleInstructions => '1. ನೀವು ಸುಮಾರು ಸ್ಥಳದಲ್ಲಿ ಇದ್ದೀರಿ ಎಂದು ಖಾತ್ರಿ ಮಾಡಿ.\n2. ಸ್ಪಷ್ಟವಾಗಿ ಮತ್ತು ನೈಸರ್ಗಿಕವಾಗಿ ಮಾತನಾಡಿ.\n3. ನಿಮ್ಮ ಸಾಧನವು ಅದರ ನೈಸರ್ಗಿಕ ಸ್ಥಿತಿಯಲ್ಲಿ, ನಿಮ್ಮ ಕುತ್ತಿಗೆಯಲ್ಲಿ ಇದೆ ಎಂದು ಖಾತ್ರಿ ಮಾಡಿ.\n\nಅದನ್ನು ರಚಿಸಿದ ನಂತರ, ನೀವು ಯಾವಾಗಲೂ ಅದನ್ನು ಸುಧಾರಿಸಬಹುದು ಅಥವಾ ಮತ್ತೆ ಮಾಡಬಹುದು.';
 
   @override
   String get noDeviceConnectedUseMic => 'ಯಾವುದೇ ಸಾಧನ ಸಂಪರ್ಕಿತವಾಗಿಲ್ಲ. ಫೋನ್ ಮೈಕ್ರೋಫೋನ್ ಬಳಸಲಾಗುವುದು.';
@@ -5692,12 +5568,10 @@ class AppLocalizationsKn extends AppLocalizations {
   String get howItWorks => 'ಇದು ಹೇಗೆ ಕೆಲಸ ಮಾಡುತ್ತದೆ';
 
   @override
-  String get dailyScoreExplanation =>
-      'ನಿಮ್ಮ ದೈನಂದಿನ ಸ್ಕೋರ್ ಕರ್ತವ್ಯ ಪೂರ್ಣತೆಯ ಮೇಲೆ ಆಧಾರಿತವಾಗಿದೆ. ನಿಮ್ಮ ಸ್ಕೋರ್ ಸುಧಾರಿಸಲು ನಿಮ್ಮ ಕರ್ತವ್ಯಗಳನ್ನು ಪೂರ್ಣಗೊಳಿಸಿ!';
+  String get dailyScoreExplanation => 'ನಿಮ್ಮ ದೈನಂದಿನ ಸ್ಕೋರ್ ಕರ್ತವ್ಯ ಪೂರ್ಣತೆಯ ಮೇಲೆ ಆಧಾರಿತವಾಗಿದೆ. ನಿಮ್ಮ ಸ್ಕೋರ್ ಸುಧಾರಿಸಲು ನಿಮ್ಮ ಕರ್ತವ್ಯಗಳನ್ನು ಪೂರ್ಣಗೊಳಿಸಿ!';
 
   @override
-  String get notificationFrequencyDescription =>
-      'Omi ನಿಮಗೆ ಕಳುಹಿಸುವ ಪ್ರೋಯಾಕ್ಟಿವ್ ಅಧಿಸೂಚನೆಗಳು ಮತ್ತು ಜ್ಞಾಪನೆಗಳ ಆವೃತ್ತಿಯನ್ನು ನಿಯಂತ್ರಿಸಿ.';
+  String get notificationFrequencyDescription => 'Omi ನಿಮಗೆ ಕಳುಹಿಸುವ ಪ್ರೋಯಾಕ್ಟಿವ್ ಅಧಿಸೂಚನೆಗಳು ಮತ್ತು ಜ್ಞಾಪನೆಗಳ ಆವೃತ್ತಿಯನ್ನು ನಿಯಂತ್ರಿಸಿ.';
 
   @override
   String get sliderOff => 'ಆಫ್';
@@ -5790,8 +5664,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get selectApp => 'ಅಪ್ಲಿಕೇಶನ್ ಆರಿಸಿ';
 
   @override
-  String get noChatAppsEnabled =>
-      'ಯಾವುದೇ ಚ್ಯಾಟ್ ಅಪ್ಲಿಕೇಶನ್ ಸಕ್ರಿಯವಾಗಿಲ್ಲ.\n\"ಅಪ್ಲಿಕೇಶನ್ ಸಕ್ರಿಯ ಮಾಡಿ\"ಗೆ ತಾಪಿಸಿ ಕೆಲವುವನ್ನು ಸೇರಿಸಲು.';
+  String get noChatAppsEnabled => 'ಯಾವುದೇ ಚ್ಯಾಟ್ ಅಪ್ಲಿಕೇಶನ್ ಸಕ್ರಿಯವಾಗಿಲ್ಲ.\n\"ಅಪ್ಲಿಕೇಶನ್ ಸಕ್ರಿಯ ಮಾಡಿ\"ಗೆ ತಾಪಿಸಿ ಕೆಲವುವನ್ನು ಸೇರಿಸಲು.';
 
   @override
   String get disable => 'ಅಕ್ರಿಯ ಮಾಡಿ';
@@ -6072,15 +5945,13 @@ class AppLocalizationsKn extends AppLocalizations {
   String get cloudProvider => 'Cloud ಪೂರೈತೆ';
 
   @override
-  String get premiumMinutesInfo =>
-      'ಪ್ರತಿ ತಿಂಗಳು 1,200 ಪ್ರೀಮಿಯಂ ನಿಮಿಷಗಳು. On-Device ಟ್ಯಾಬ್ ಅಸೀಮಿತ ಉಚ್ಛ ಲಿಪ್ಯಂತರ ನೀಡುತ್ತದೆ.';
+  String get premiumMinutesInfo => 'ಪ್ರತಿ ತಿಂಗಳು 1,200 ಪ್ರೀಮಿಯಂ ನಿಮಿಷಗಳು. On-Device ಟ್ಯಾಬ್ ಅಸೀಮಿತ ಉಚ್ಛ ಲಿಪ್ಯಂತರ ನೀಡುತ್ತದೆ.';
 
   @override
   String get viewUsage => 'ಬಳಕೆ ವಿವರಿಸಿ';
 
   @override
-  String get localProcessingInfo =>
-      'ಆಡಿಯೋ ಸ್ಥಳೀಯವಾಗಿ ಪ್ರಕ್ರಿಯೆಗೊಳ್ಳುತ್ತದೆ. ಮೊಬೈಲ್ ಇಂಟರ್‌ನೆಟ್ ಇಲ್ಲದೇ ಕೆಲಸ ಮಾಡುತ್ತದೆ, ಹೆಚ್ಚು ಖಾಸಗಿ, ಆದರೆ ಹೆಚ್ಚು ಬ್ಯಾಟರಿ ಬಳಕೆ ಮಾಡುತ್ತದೆ.';
+  String get localProcessingInfo => 'ಆಡಿಯೋ ಸ್ಥಳೀಯವಾಗಿ ಪ್ರಕ್ರಿಯೆಗೊಳ್ಳುತ್ತದೆ. ಮೊಬೈಲ್ ಇಂಟರ್‌ನೆಟ್ ಇಲ್ಲದೇ ಕೆಲಸ ಮಾಡುತ್ತದೆ, ಹೆಚ್ಚು ಖಾಸಗಿ, ಆದರೆ ಹೆಚ್ಚು ಬ್ಯಾಟರಿ ಬಳಕೆ ಮಾಡುತ್ತದೆ.';
 
   @override
   String get model => 'ಮಾದರಿ';
@@ -6089,15 +5960,13 @@ class AppLocalizationsKn extends AppLocalizations {
   String get performanceWarning => 'ಕಾರ್ಯಕ್ಷಮತೆ ಎಚ್ಚರಿಕೆ';
 
   @override
-  String get largeModelWarning =>
-      'ಈ ಮಾದರಿ ಗುರುತ್ವವಾಗಿದೆ ಮತ್ತು ಸಂಭವವಾಗಿ ಅಪ್ಲಿಕೇಶನ್ ಅದೃಶ್ಯ ಮಾಡುವುದು ಅಥವಾ ಮೊಬೈಲ್ ಸಾಧನಗಳಲ್ಲಿ ಬಹಳ ನಿಧಾನವಾಗಿ ಚಲಾಯಿಸುವುದು.\n\n\"small\" ಅಥವಾ \"base\" ಶಿಫಾರಸುಮಾಡಲಾಗುತ್ತದೆ.';
+  String get largeModelWarning => 'ಈ ಮಾದರಿ ಗುರುತ್ವವಾಗಿದೆ ಮತ್ತು ಸಂಭವವಾಗಿ ಅಪ್ಲಿಕೇಶನ್ ಅದೃಶ್ಯ ಮಾಡುವುದು ಅಥವಾ ಮೊಬೈಲ್ ಸಾಧನಗಳಲ್ಲಿ ಬಹಳ ನಿಧಾನವಾಗಿ ಚಲಾಯಿಸುವುದು.\n\n\"small\" ಅಥವಾ \"base\" ಶಿಫಾರಸುಮಾಡಲಾಗುತ್ತದೆ.';
 
   @override
   String get usingNativeIosSpeech => 'ಸ್ಥಳೀಯ iOS ಭಾಷಣ ಗುರುತನೆ ಬಳಸುವುದು';
 
   @override
-  String get noModelDownloadRequired =>
-      'ನಿಮ್ಮ ಸಾಧನದ ಸ್ಥಳೀಯ ಭಾಷಣ ಇಂಜಿನ್ ಬಳಸಲಾಗುವುದು. ಯಾವುದೇ ಮಾದರಿ ಡೌನ್‌ಲೋಡ್ ಅಗತ್ಯವಿಲ್ಲ.';
+  String get noModelDownloadRequired => 'ನಿಮ್ಮ ಸಾಧನದ ಸ್ಥಳೀಯ ಭಾಷಣ ಇಂಜಿನ್ ಬಳಸಲಾಗುವುದು. ಯಾವುದೇ ಮಾದರಿ ಡೌನ್‌ಲೋಡ್ ಅಗತ್ಯವಿಲ್ಲ.';
 
   @override
   String get modelReady => 'ಮಾದರಿ ತಯಾರ';
@@ -6154,12 +6023,10 @@ class AppLocalizationsKn extends AppLocalizations {
   String get batteryDrainSignificantly => 'ಬ್ಯಾಟರಿ ಕ್ಷರಣವು ಗಮನಾರ್ಹವಾಗಿ ಹೆಚ್ಚುತ್ತದೆ.';
 
   @override
-  String get premiumMinutesMonth =>
-      'ಪ್ರತಿ ತಿಂಗಳು 1,200 ಪ್ರೀಮಿಯಂ ನಿಮಿಷಗಳು. On-Device ಟ್ಯಾಬ್ ಅಸೀಮಿತ ಉಚ್ಛ ಲಿಪ್ಯಂತರ ನೀಡುತ್ತದೆ.';
+  String get premiumMinutesMonth => 'ಪ್ರತಿ ತಿಂಗಳು 1,200 ಪ್ರೀಮಿಯಂ ನಿಮಿಷಗಳು. On-Device ಟ್ಯಾಬ್ ಅಸೀಮಿತ ಉಚ್ಛ ಲಿಪ್ಯಂತರ ನೀಡುತ್ತದೆ.';
 
   @override
-  String get audioProcessedLocally =>
-      'ಆಡಿಯೋ ಸ್ಥಳೀಯವಾಗಿ ಪ್ರಕ್ರಿಯೆಗೊಳ್ಳುತ್ತದೆ. ಮೊಬೈಲ್ ಇಂಟರ್‌ನೆಟ್ ಇಲ್ಲದೇ ಕೆಲಸ ಮಾಡುತ್ತದೆ, ಹೆಚ್ಚು ಖಾಸಗಿ, ಆದರೆ ಹೆಚ್ಚು ಬ್ಯಾಟರಿ ಬಳಕೆ ಮಾಡುತ್ತದೆ.';
+  String get audioProcessedLocally => 'ಆಡಿಯೋ ಸ್ಥಳೀಯವಾಗಿ ಪ್ರಕ್ರಿಯೆಗೊಳ್ಳುತ್ತದೆ. ಮೊಬೈಲ್ ಇಂಟರ್‌ನೆಟ್ ಇಲ್ಲದೇ ಕೆಲಸ ಮಾಡುತ್ತದೆ, ಹೆಚ್ಚು ಖಾಸಗಿ, ಆದರೆ ಹೆಚ್ಚು ಬ್ಯಾಟರಿ ಬಳಕೆ ಮಾಡುತ್ತದೆ.';
 
   @override
   String get languageLabel => 'ಭಾಷೆ';
@@ -6168,8 +6035,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get modelLabel => 'ಮಾದರಿ';
 
   @override
-  String get modelTooLargeWarning =>
-      'ಈ ಮಾದರಿ ಗುರುತ್ವವಾಗಿದೆ ಮತ್ತು ಸಂಭವವಾಗಿ ಅಪ್ಲಿಕೇಶನ್ ಅದೃಶ್ಯ ಮಾಡುವುದು ಅಥವಾ ಮೊಬೈಲ್ ಸಾಧನಗಳಲ್ಲಿ ಬಹಳ ನಿಧಾನವಾಗಿ ಚಲಾಯಿಸುವುದು.\n\n\"small\" ಅಥವಾ \"base\" ಶಿಫಾರಸುಮಾಡಲಾಗುತ್ತದೆ.';
+  String get modelTooLargeWarning => 'ಈ ಮಾದರಿ ಗುರುತ್ವವಾಗಿದೆ ಮತ್ತು ಸಂಭವವಾಗಿ ಅಪ್ಲಿಕೇಶನ್ ಅದೃಶ್ಯ ಮಾಡುವುದು ಅಥವಾ ಮೊಬೈಲ್ ಸಾಧನಗಳಲ್ಲಿ ಬಹಳ ನಿಧಾನವಾಗಿ ಚಲಾಯಿಸುವುದು.\n\n\"small\" ಅಥವಾ \"base\" ಶಿಫಾರಸುಮಾಡಲಾಗುತ್ತದೆ.';
 
   @override
   String get nativeEngineNoDownload => 'ನಿಮ್ಮ ಸಾಧನದ ಸ್ಥಳೀಯ ಭಾಷಣ ಇಂಜಿನ್ ಬಳಸಲಾಗುವುದು. ಯಾವುದೇ ಮಾದರಿ ಡೌನ್‌ಲೋಡ್ ಅಗತ್ಯವಿಲ್ಲ.';
@@ -6208,8 +6074,7 @@ class AppLocalizationsKn extends AppLocalizations {
   }
 
   @override
-  String get omiTranscriptionOptimized =>
-      'Omi ನ ನಿರ್ಮಿತ ಲೈವ್ ಲಿಪ್ಯಂತರವು ಸ್ವಯಂಚಾಲಿತ ವಕ್ತೃ ಪತ್ತೆ ಮತ್ತು diarization ನೊಂದಿಗೆ ನೈಜ-ಸಮಯ ಸಂಭಾಷಣೆಗಳಿಗೆ ಆಪ್ಟಿಮೈಜ್ ಮಾಡಲಾಗಿದೆ.';
+  String get omiTranscriptionOptimized => 'Omi ನ ನಿರ್ಮಿತ ಲೈವ್ ಲಿಪ್ಯಂತರವು ಸ್ವಯಂಚಾಲಿತ ವಕ್ತೃ ಪತ್ತೆ ಮತ್ತು diarization ನೊಂದಿಗೆ ನೈಜ-ಸಮಯ ಸಂಭಾಷಣೆಗಳಿಗೆ ಆಪ್ಟಿಮೈಜ್ ಮಾಡಲಾಗಿದೆ.';
 
   @override
   String get reset => 'ಮರುಹೊಂದಿಸಿ';
@@ -6429,8 +6294,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get buildingKnowledgeGraphFromMemories => 'ಸ್ಮೃತಿಗಳಿಂದ ನಿಮ್ಮ ಜ್ಞಾನ ಗ್ರಾಫ್ ನಿರ್ಮಾಣ ಮಾಡುತ್ತಿದೆ...';
 
   @override
-  String get knowledgeGraphWillBuildAutomatically =>
-      'ನೀವು ನವೀನ ಸ್ಮೃತಿಗಳನ್ನು ರಚಿಸುವಾಗ ನಿಮ್ಮ ಜ್ಞಾನ ಗ್ರಾಫ್ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ನಿರ್ಮಾಣ ಮಾಡುತ್ತದೆ.';
+  String get knowledgeGraphWillBuildAutomatically => 'ನೀವು ನವೀನ ಸ್ಮೃತಿಗಳನ್ನು ರಚಿಸುವಾಗ ನಿಮ್ಮ ಜ್ಞಾನ ಗ್ರಾಫ್ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ನಿರ್ಮಾಣ ಮಾಡುತ್ತದೆ.';
 
   @override
   String get buildGraphButton => 'ಗ್ರಾಫ್ ನಿರ್ಮಿಸಿ';
@@ -6666,8 +6530,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get failedToLoadContacts => 'ಸಂಪರ್ಕಗಳನ್ನು ಲೋಡ್ ಮಾಡಲು ವಿಫಲ';
 
   @override
-  String get failedToPrepareConversationForSharing =>
-      'ಹಂಚಿಕೊಳ್ಳಲು ಸಂಭಾಷಣೆ ಸಿದ್ಧಪಡಿಸಲು ವಿಫಲ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.';
+  String get failedToPrepareConversationForSharing => 'ಹಂಚಿಕೊಳ್ಳಲು ಸಂಭಾಷಣೆ ಸಿದ್ಧಪಡಿಸಲು ವಿಫಲ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.';
 
   @override
   String get couldNotOpenSmsApp => 'SMS ಅಪ್ಲಿಕೇಶನ್ ತೆರೆಯಲಾಗಲಿಲ್ಲ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.';
@@ -6733,8 +6596,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get downloadingAudioFromSdCard => 'ನಿಮ್ಮ ಸಾಧನದ SD ಕಾರ್ಡ್‌ನಿಂದ ಆಡಿಯೋ ಡೌನ್‌ಲೋಡ್ ಮಾಡುತ್ತಿದೆ';
 
   @override
-  String get transferRequiredDescription =>
-      'ಈ ರೆಕಾರ್ಡಿಂಗ್ ನಿಮ್ಮ ಸಾಧನದ SD ಕಾರ್ಡ್‌ನಲ್ಲಿ ಸೂಕ್ತಿಸಲಾಗಿದೆ. ಸ್ವಯಂಚಾಲಿತ ಮತ್ತು ಹಂಚಿಕೊಳ್ಳಲು ಅದನ್ನು ನಿಮ್ಮ ಫೋನ್‌ನೆ ವರ್ಗಾವಣೆ ಮಾಡಿ.';
+  String get transferRequiredDescription => 'ಈ ರೆಕಾರ್ಡಿಂಗ್ ನಿಮ್ಮ ಸಾಧನದ SD ಕಾರ್ಡ್‌ನಲ್ಲಿ ಸೂಕ್ತಿಸಲಾಗಿದೆ. ಸ್ವಯಂಚಾಲಿತ ಮತ್ತು ಹಂಚಿಕೊಳ್ಳಲು ಅದನ್ನು ನಿಮ್ಮ ಫೋನ್‌ನೆ ವರ್ಗಾವಣೆ ಮಾಡಿ.';
 
   @override
   String get cancelTransfer => 'ವರ್ಗಾವಣೆ ರದ್ದು ಮಾಡಿ';
@@ -6755,8 +6617,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get shareRecording => 'ರೆಕಾರ್ಡಿಂಗ್ ಹಂಚಿಕೊಳ್ಳಿ';
 
   @override
-  String get deleteRecordingConfirmation =>
-      'ನೀವು ಈ ರೆಕಾರ್ಡಿಂಗ್ ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಲು ನಿಶ್ಚಿತವಾಗಿ ಬಯಸಿದ್ದೀರಾ? ಇದನ್ನು ರದ್ದುಗೊಳಿಸಲಾಗುವುದಿಲ್ಲ.';
+  String get deleteRecordingConfirmation => 'ನೀವು ಈ ರೆಕಾರ್ಡಿಂಗ್ ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಲು ನಿಶ್ಚಿತವಾಗಿ ಬಯಸಿದ್ದೀರಾ? ಇದನ್ನು ರದ್ದುಗೊಳಿಸಲಾಗುವುದಿಲ್ಲ.';
 
   @override
   String get recordingIdLabel => 'ರೆಕಾರ್ಡಿಂಗ್ ID';
@@ -6815,15 +6676,13 @@ class AppLocalizationsKn extends AppLocalizations {
   String get enableFastTransfer => 'ವೇಗದ ವರ್ಗಾವಣೆ ಸಕ್ರಿಯಗೊಳಿಸಿ';
 
   @override
-  String get fastTransferDescription =>
-      'ವೇಗದ ವರ್ಗಾವಣೆ WiFi ಬಳಸಿ ಸುಮಾರು 5 ಪಟ್ಟು ವೇಗವಾನ ಗತಿಯನ್ನು ಬಳಸುತ್ತದೆ. ವರ್ಗಾವಣೆಯ ಸಮಯದಲ್ಲಿ ನಿಮ್ಮ ಫೋನ್ ಠಾಯಿ Omi ಸಾಧನದ WiFi ನೆಟ್ವರ್ಕ್ಗೆ ಠಾಯಿಗೆ ಸಂಪರ್ಕ ಸ್ಥಾಪಿಸುತ್ತದೆ.';
+  String get fastTransferDescription => 'ವೇಗದ ವರ್ಗಾವಣೆ WiFi ಬಳಸಿ ಸುಮಾರು 5 ಪಟ್ಟು ವೇಗವಾನ ಗತಿಯನ್ನು ಬಳಸುತ್ತದೆ. ವರ್ಗಾವಣೆಯ ಸಮಯದಲ್ಲಿ ನಿಮ್ಮ ಫೋನ್ ಠಾಯಿ Omi ಸಾಧನದ WiFi ನೆಟ್ವರ್ಕ್ಗೆ ಠಾಯಿಗೆ ಸಂಪರ್ಕ ಸ್ಥಾಪಿಸುತ್ತದೆ.';
 
   @override
   String get internetAccessPausedDuringTransfer => 'ವರ್ಗಾವಣೆಯ ಸಮಯದಲ್ಲಿ ಇಂಟರ್ನೆಟ್ ಪ್ರವೇಶ ಸ್ಥಗಿತಗೊಂಡಿದೆ';
 
   @override
-  String get chooseTransferMethodDescription =>
-      'ರೆಕಾರ್ಡಿಂಗ್ಗಳನ್ನು ನಿಮ್ಮ Omi ಸಾಧನದಿಂದ ಫೋನ್ಗೆ ವರ್ಗಾವಣೆ ಮಾಡುವ ವಿಧಾನವನ್ನು ಆಯ್ಕೆ ಮಾಡಿ.';
+  String get chooseTransferMethodDescription => 'ರೆಕಾರ್ಡಿಂಗ್ಗಳನ್ನು ನಿಮ್ಮ Omi ಸಾಧನದಿಂದ ಫೋನ್ಗೆ ವರ್ಗಾವಣೆ ಮಾಡುವ ವಿಧಾನವನ್ನು ಆಯ್ಕೆ ಮಾಡಿ.';
 
   @override
   String get wifiSpeed => 'WiFi ಮೂಲಕ ~150 KB/s';
@@ -6832,8 +6691,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get fiveTimesFaster => '5X ವೇಗವಾಯಿತು';
 
   @override
-  String get fastTransferMethodDescription =>
-      'ನಿಮ್ಮ Omi ಸಾಧನಕ್ಕೆ ನೇರ WiFi ಸಂಪರ್ಕವನ್ನು ರಚಿಸುತ್ತದೆ. ನಿಮ್ಮ ಫೋನ್ ವರ್ಗಾವಣೆಯ ಸಮಯದಲ್ಲಿ ಠಾಯಿಗೆ ಸಾಮಾನ್ಯ WiFi ನಿಂದ ಸಂಪರ್ಕವಿಚ್ಛಿನ್ನ ಆಗುತ್ತದೆ.';
+  String get fastTransferMethodDescription => 'ನಿಮ್ಮ Omi ಸಾಧನಕ್ಕೆ ನೇರ WiFi ಸಂಪರ್ಕವನ್ನು ರಚಿಸುತ್ತದೆ. ನಿಮ್ಮ ಫೋನ್ ವರ್ಗಾವಣೆಯ ಸಮಯದಲ್ಲಿ ಠಾಯಿಗೆ ಸಾಮಾನ್ಯ WiFi ನಿಂದ ಸಂಪರ್ಕವಿಚ್ಛಿನ್ನ ಆಗುತ್ತದೆ.';
 
   @override
   String get bluetooth => 'ಬ್ಲೂಟೂತ್';
@@ -6842,8 +6700,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get bleSpeed => 'BLE ಮೂಲಕ ~30 KB/s';
 
   @override
-  String get bluetoothMethodDescription =>
-      'ಪ್ರಮಾಣಿತ ಬ್ಲೂಟೂತ್ ಲೋ ಎನರ್ಜಿ ಸಂಪರ್ಕವನ್ನು ಬಳಸುತ್ತದೆ. ನಿಧಾನ ಆದರೆ ನಿಮ್ಮ WiFi ಸಂಪರ್ಕದ ಮೇಲೆ ಪ್ರಭಾವ ಬೀರುವುದಿಲ್ಲ.';
+  String get bluetoothMethodDescription => 'ಪ್ರಮಾಣಿತ ಬ್ಲೂಟೂತ್ ಲೋ ಎನರ್ಜಿ ಸಂಪರ್ಕವನ್ನು ಬಳಸುತ್ತದೆ. ನಿಧಾನ ಆದರೆ ನಿಮ್ಮ WiFi ಸಂಪರ್ಕದ ಮೇಲೆ ಪ್ರಭಾವ ಬೀರುವುದಿಲ್ಲ.';
 
   @override
   String get selected => 'ಆಯ್ಕೆಗೊಂಡ';
@@ -6881,12 +6738,10 @@ class AppLocalizationsKn extends AppLocalizations {
   String get appDeleteFailed => 'ಅ್ಯಪ್ ಅಳಿಸಲು ವಿಫಲವಾಗಿದೆ. ದಯವಿಟ್ಟು ನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.';
 
   @override
-  String get appVisibilityChangedSuccessfully =>
-      'ಅ್ಯಪ್ ದೃಶ್ಯಮಾನತೆ ಯಶಸ್ವಿಯಾಗಿ ಬದಲಾಯಿತು. ಇದನ್ನು ಪ್ರತಿಫಲಿತ ಮಾಡಲು ಕೆಲವು ನಿಮಿಷಗಳನ್ನು ತೆಗೆದುಕೊಂಡು ಬಹುದು.';
+  String get appVisibilityChangedSuccessfully => 'ಅ್ಯಪ್ ದೃಶ್ಯಮಾನತೆ ಯಶಸ್ವಿಯಾಗಿ ಬದಲಾಯಿತು. ಇದನ್ನು ಪ್ರತಿಫಲಿತ ಮಾಡಲು ಕೆಲವು ನಿಮಿಷಗಳನ್ನು ತೆಗೆದುಕೊಂಡು ಬಹುದು.';
 
   @override
-  String get errorActivatingAppIntegration =>
-      'ಅ್ಯಪ್ ಸಕ್ರಿಯಗೊಳಿಸುವಲ್ಲಿ ದೋಷ. ಇದು ಇಂಟಿಗ್ರೇಶನ್ ಅ್ಯಪ್ ಆಗಿದ್ದರೆ, ಸೆಟಪ್ ಪೂರ್ಣಾಗಿದೆ ಎಂದು ಖಚಿತಪಡಿಸಿ.';
+  String get errorActivatingAppIntegration => 'ಅ್ಯಪ್ ಸಕ್ರಿಯಗೊಳಿಸುವಲ್ಲಿ ದೋಷ. ಇದು ಇಂಟಿಗ್ರೇಶನ್ ಅ್ಯಪ್ ಆಗಿದ್ದರೆ, ಸೆಟಪ್ ಪೂರ್ಣಾಗಿದೆ ಎಂದು ಖಚಿತಪಡಿಸಿ.';
 
   @override
   String get errorUpdatingAppStatus => 'ಅ್ಯಪ್ ಸ್ಥಿತಿ ನವೀಕರಣ ಮಾಡುವಲ್ಲಿ ದೋಷ ಸಂಭವಿಸಿದೆ.';
@@ -6954,8 +6809,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get importantConversationTitle => 'ಮುಖ್ಯ ಸಂಭಾಷಣೆ';
 
   @override
-  String get importantConversationBody =>
-      'ನೀವು ಒಂದು ಪ್ರಮುಖ ಸಂಭಾಷಣೆ ಹೊಂದಿದ್ದೀರಿ. ಇತರರೊಂದಿಗೆ ಸಾರಾಂಶ ಹಂಚಿಕೊಳ್ಳಲು ಟ್ಯಾಪ್ ಮಾಡಿ.';
+  String get importantConversationBody => 'ನೀವು ಒಂದು ಪ್ರಮುಖ ಸಂಭಾಷಣೆ ಹೊಂದಿದ್ದೀರಿ. ಇತರರೊಂದಿಗೆ ಸಾರಾಂಶ ಹಂಚಿಕೊಳ್ಳಲು ಟ್ಯಾಪ್ ಮಾಡಿ.';
 
   @override
   String get templateName => 'ಟೆಂಪ್ಲೇಟ್ ಹೆಸರು';
@@ -6967,8 +6821,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get nameMustBeAtLeast3Characters => 'ಹೆಸರು ಕನಿಷ್ಠ 3 ಅಕ್ಷರ ಆಗಿರಬೇಕು';
 
   @override
-  String get conversationPromptHint =>
-      'ಉದಾಹರಣೆ, ಕ್ರಿಯಾ ಐಟಮ್ಗಳು, ನೆರವೆತರಿಸಿದ ನಿರ್ಣಯಗಳು ಮತ್ತು ಸಾಲಿಸಿದ ಪ್ರದಾನಗಳನ್ನು ಪಡೆಯಿರಿ.';
+  String get conversationPromptHint => 'ಉದಾಹರಣೆ, ಕ್ರಿಯಾ ಐಟಮ್ಗಳು, ನೆರವೆತರಿಸಿದ ನಿರ್ಣಯಗಳು ಮತ್ತು ಸಾಲಿಸಿದ ಪ್ರದಾನಗಳನ್ನು ಪಡೆಯಿರಿ.';
 
   @override
   String get pleaseEnterAppPrompt => 'ದಯವಿಟ್ಟು ನಿಮ್ಮ ಅ್ಯಪ್ಗೆ ಸೂಚನೆ ನಮೂದಿಸಿ';
@@ -7050,8 +6903,7 @@ class AppLocalizationsKn extends AppLocalizations {
   }
 
   @override
-  String get addAppPhotosPermissionDenied =>
-      'ಚಿತ್ರಗಳ ಅನುಮತಿ ನಿರಾಕರಿಸಲಾಗಿದೆ. ಚಿತ್ರ ಆಯ್ಕೆ ಮಾಡಲು ಚಿತ್ರಗಳನ್ನು ಪ್ರವೇಶಾಧಿಕಾರ ಕಲ್ಪನೆ';
+  String get addAppPhotosPermissionDenied => 'ಚಿತ್ರಗಳ ಅನುಮತಿ ನಿರಾಕರಿಸಲಾಗಿದೆ. ಚಿತ್ರ ಆಯ್ಕೆ ಮಾಡಲು ಚಿತ್ರಗಳನ್ನು ಪ್ರವೇಶಾಧಿಕಾರ ಕಲ್ಪನೆ';
 
   @override
   String get addAppErrorSelectingImageRetry => 'ಚಿತ್ರ ಆಯ್ಕೆ ಮಾಡುವಲ್ಲಿ ದೋಷ. ದಯವಿಟ್ಟು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.';
@@ -7156,15 +7008,13 @@ class AppLocalizationsKn extends AppLocalizations {
   }
 
   @override
-  String get planUpgradeScheduledMessage =>
-      'ಅಪ್‌ಗ್ರೇಡ್ ನಿಗದಿತಗೊಂಡಿದೆ! ನಿಮ್ಮ ಮಾಸಿಕ ಯೋಜನೆ ನಿಮ್ಮ ಬಿಲಿಂಗ್ ಅವಧಿಯ ಅಂತ್ಯ ವರೆಗೆ ಮುಂದುವರಿಯುತ್ತದೆ, ನಂತರ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ವಾರ್ಷಿಕಕ್ಕೆ ಬದಲಾಗುತ್ತದೆ.';
+  String get planUpgradeScheduledMessage => 'ಅಪ್‌ಗ್ರೇಡ್ ನಿಗದಿತಗೊಂಡಿದೆ! ನಿಮ್ಮ ಮಾಸಿಕ ಯೋಜನೆ ನಿಮ್ಮ ಬಿಲಿಂಗ್ ಅವಧಿಯ ಅಂತ್ಯ ವರೆಗೆ ಮುಂದುವರಿಯುತ್ತದೆ, ನಂತರ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ವಾರ್ಷಿಕಕ್ಕೆ ಬದಲಾಗುತ್ತದೆ.';
 
   @override
   String get couldNotSchedulePlanChange => 'ಯೋಜನೆ ಬದಲಾವಣೆ ನಿಗದಿತ ಮಾಡಲಾಗುವುದಿಲ್ಲ. ದಯವಿಟ್ಟು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.';
 
   @override
-  String get subscriptionReactivatedDefault =>
-      'ನಿಮ್ಮ ಅನುಕ್ರಮಣ ಪುನರ್ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ! ಈಗ ಯಾವುದೇ ಶುಲ್ಕ ಇಲ್ಲ - ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಅವಧಿಯ ಅಂತ್ಯದಲ್ಲಿ ನೀವು ಬಿಲ್ ಮಾಡಲಾಗುತ್ತದೆ.';
+  String get subscriptionReactivatedDefault => 'ನಿಮ್ಮ ಅನುಕ್ರಮಣ ಪುನರ್ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ! ಈಗ ಯಾವುದೇ ಶುಲ್ಕ ಇಲ್ಲ - ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಅವಧಿಯ ಅಂತ್ಯದಲ್ಲಿ ನೀವು ಬಿಲ್ ಮಾಡಲಾಗುತ್ತದೆ.';
 
   @override
   String get subscriptionSuccessfulCharged => 'ಅನುಕ್ರಮಣ ಯಶಸ್ವಿ! ನೀವು ಹೊಸ ಬಿಲಿಂಗ್ ಅವಧಿಗೆ ಚಾರ್ಜ್ ಆಯಿತು.';
@@ -7347,8 +7197,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get onboardingBluetoothRequired => 'ಸಾಧನಕ್ಕೆ ಸಂಪರ್ಕಿಸಲು ಬ್ಲೂಟೂತ್ ಅನುಮತಿ ಅಗತ್ಯ.';
 
   @override
-  String get onboardingBluetoothDeniedSystemPrefs =>
-      'ಬ್ಲೂಟೂತ್ ಅನುಮತಿ ನಿರಾಕರಿಸಲಾಗಿದೆ. ದಯವಿಟ್ಟು ಸಿಸ್ಟಮ್ ಪ್ರೇಫರೆನ್ಸಿಂಗ್ಗಲ್ಲಿ ಅನುಮತಿ ನೀಡಿ.';
+  String get onboardingBluetoothDeniedSystemPrefs => 'ಬ್ಲೂಟೂತ್ ಅನುಮತಿ ನಿರಾಕರಿಸಲಾಗಿದೆ. ದಯವಿಟ್ಟು ಸಿಸ್ಟಮ್ ಪ್ರೇಫರೆನ್ಸಿಂಗ್ಗಲ್ಲಿ ಅನುಮತಿ ನೀಡಿ.';
 
   @override
   String onboardingBluetoothStatusCheckPrefs(String status) {
@@ -7361,12 +7210,10 @@ class AppLocalizationsKn extends AppLocalizations {
   }
 
   @override
-  String get onboardingNotificationDeniedSystemPrefs =>
-      'ಅಧಿಸೂಚನೆ ಅನುಮತಿ ನಿರಾಕರಿಸಲಾಗಿದೆ. ದಯವಿಟ್ಟು ಸಿಸ್ಟಮ್ ಪ್ರೇಫರೆನ್ಸಿಂಗ್ಗಲ್ಲಿ ಅನುಮತಿ ನೀಡಿ.';
+  String get onboardingNotificationDeniedSystemPrefs => 'ಅಧಿಸೂಚನೆ ಅನುಮತಿ ನಿರಾಕರಿಸಲಾಗಿದೆ. ದಯವಿಟ್ಟು ಸಿಸ್ಟಮ್ ಪ್ರೇಫರೆನ್ಸಿಂಗ್ಗಲ್ಲಿ ಅನುಮತಿ ನೀಡಿ.';
 
   @override
-  String get onboardingNotificationDeniedNotifications =>
-      'ಅಧಿಸೂಚನೆ ಅನುಮತಿ ನಿರಾಕರಿಸಲಾಗಿದೆ. ದಯವಿಟ್ಟು ಸಿಸ್ಟಮ್ ಪ್ರೇಫರೆನ್ಸಿಂಗ್ > ಅಧಿಸೂಚನೆಗಳಿಂದ ಅನುಮತಿ ನೀಡಿ.';
+  String get onboardingNotificationDeniedNotifications => 'ಅಧಿಸೂಚನೆ ಅನುಮತಿ ನಿರಾಕರಿಸಲಾಗಿದೆ. ದಯವಿಟ್ಟು ಸಿಸ್ಟಮ್ ಪ್ರೇಫರೆನ್ಸಿಂಗ್ > ಅಧಿಸೂಚನೆಗಳಿಂದ ಅನುಮತಿ ನೀಡಿ.';
 
   @override
   String onboardingNotificationStatusCheckPrefs(String status) {
@@ -7379,15 +7226,13 @@ class AppLocalizationsKn extends AppLocalizations {
   }
 
   @override
-  String get onboardingLocationGrantInSettings =>
-      'ದಯವಿಟ್ಟು ಸೆಟ್ಟಿಂಗ್ > ಗೋಪನೀಯತೆ ಮತ್ತು ಸುರಕ್ಷೆ > ಸ್ಥಳ ಸೇವೆಗಳಿಂದ ಸ್ಥಾನ ಅನುಮತಿ ನೀಡಿ';
+  String get onboardingLocationGrantInSettings => 'ದಯವಿಟ್ಟು ಸೆಟ್ಟಿಂಗ್ > ಗೋಪನೀಯತೆ ಮತ್ತು ಸುರಕ್ಷೆ > ಸ್ಥಳ ಸೇವೆಗಳಿಂದ ಸ್ಥಾನ ಅನುಮತಿ ನೀಡಿ';
 
   @override
   String get onboardingMicrophoneRequired => 'ರೆಕಾರ್ಡಿಂಗ್ಗೆ ಮೈಕ್ರೋಫೋನ್ ಅನುಮತಿ ಅಗತ್ಯ.';
 
   @override
-  String get onboardingMicrophoneDenied =>
-      'ಮೈಕ್ರೋಫೋನ್ ಅನುಮತಿ ನಿರಾಕರಿಸಲಾಗಿದೆ. ದಯವಿಟ್ಟು ಸಿಸ್ಟಮ್ ಪ್ರೇಫರೆನ್ಸಿಂಗ್ > ಗೋಪನೀಯತೆ ಮತ್ತು ಸುರಕ್ಷೆ > ಮೈಕ್ರೋಫೋನ್ ಅನುಮತಿ ನೀಡಿ.';
+  String get onboardingMicrophoneDenied => 'ಮೈಕ್ರೋಫೋನ್ ಅನುಮತಿ ನಿರಾಕರಿಸಲಾಗಿದೆ. ದಯವಿಟ್ಟು ಸಿಸ್ಟಮ್ ಪ್ರೇಫರೆನ್ಸಿಂಗ್ > ಗೋಪನೀಯತೆ ಮತ್ತು ಸುರಕ್ಷೆ > ಮೈಕ್ರೋಫೋನ್ ಅನುಮತಿ ನೀಡಿ.';
 
   @override
   String onboardingMicrophoneStatusCheckPrefs(String status) {
@@ -7403,8 +7248,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get onboardingScreenCaptureRequired => 'ಸಿಸ್ಟಮ್ ಆಡಿಯೋ ರೆಕಾರ್ಡಿಂಗ್ಗೆ ಪರದೆ ಸೆರೆತೆಗೆ ಅನುಮತಿ ಅಗತ್ಯ.';
 
   @override
-  String get onboardingScreenCaptureDenied =>
-      'ಪರದೆ ಸೆರೆತೆಗೆ ಅನುಮತಿ ನಿರಾಕರಿಸಲಾಗಿದೆ. ದಯವಿಟ್ಟು ಸಿಸ್ಟಮ್ ಪ್ರೇಫರೆನ್ಸಿಂಗ್ > ಗೋಪನೀಯತೆ ಮತ್ತು ಸುರಕ್ಷೆ > ಸ್ಕ್ರೀನ್ ರೆಕಾರ್ಡಿಂಗ್ ಅನುಮತಿ ನೀಡಿ.';
+  String get onboardingScreenCaptureDenied => 'ಪರದೆ ಸೆರೆತೆಗೆ ಅನುಮತಿ ನಿರಾಕರಿಸಲಾಗಿದೆ. ದಯವಿಟ್ಟು ಸಿಸ್ಟಮ್ ಪ್ರೇಫರೆನ್ಸಿಂಗ್ > ಗೋಪನೀಯತೆ ಮತ್ತು ಸುರಕ್ಷೆ > ಸ್ಕ್ರೀನ್ ರೆಕಾರ್ಡಿಂಗ್ ಅನುಮತಿ ನೀಡಿ.';
 
   @override
   String onboardingScreenCaptureStatusCheckPrefs(String status) {
@@ -7433,8 +7277,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get msgCameraNotAvailable => 'ಕ್ಯಾಮೆರಾ ಸೆರೆತೆ ಈ ವೇದಿಕೆಯಲ್ಲಿ ಲಭ್ಯವಿಲ್ಲ';
 
   @override
-  String get msgCameraPermissionDenied =>
-      'ಕ್ಯಾಮೆರಾ ಅನುಮತಿ ನಿರಾಕರಿಸಲಾಗಿದೆ. ದಯವಿಟ್ಟು ಕ್ಯಾಮೆರಾಗೆ ಪ್ರವೇಶಾಧಿಕಾರ ಅನುಮತಿ ನೀಡಿ';
+  String get msgCameraPermissionDenied => 'ಕ್ಯಾಮೆರಾ ಅನುಮತಿ ನಿರಾಕರಿಸಲಾಗಿದೆ. ದಯವಿಟ್ಟು ಕ್ಯಾಮೆರಾಗೆ ಪ್ರವೇಶಾಧಿಕಾರ ಅನುಮತಿ ನೀಡಿ';
 
   @override
   String msgCameraAccessError(String error) {
@@ -7458,8 +7301,7 @@ class AppLocalizationsKn extends AppLocalizations {
   }
 
   @override
-  String get msgPhotosPermissionDenied =>
-      'ಚಿತ್ರಗಳ ಅನುಮತಿ ನಿರಾಕರಿಸಲಾಗಿದೆ. ದಯವಿಟ್ಟು ಚಿತ್ರಗಳನ್ನು ಆಯ್ಕೆ ಮಾಡಲು ಚಿತ್ರಗಳನ್ನು ಪ್ರವೇಶಾಧಿಕಾರ ಅನುಮತಿ ನೀಡಿ';
+  String get msgPhotosPermissionDenied => 'ಚಿತ್ರಗಳ ಅನುಮತಿ ನಿರಾಕರಿಸಲಾಗಿದೆ. ದಯವಿಟ್ಟು ಚಿತ್ರಗಳನ್ನು ಆಯ್ಕೆ ಮಾಡಲು ಚಿತ್ರಗಳನ್ನು ಪ್ರವೇಶಾಧಿಕಾರ ಅನುಮತಿ ನೀಡಿ';
 
   @override
   String get msgSelectImagesGenericError => 'ಚಿತ್ರಗಳನ್ನು ಆಯ್ಕೆ ಮಾಡುವಲ್ಲಿ ದೋಷ. ದಯವಿಟ್ಟು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.';
@@ -7531,8 +7373,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get locationPermissionRequired => 'ಸ್ಥಳ ಅನುಮತಿ ಅಗತ್ಯ';
 
   @override
-  String get locationPermissionContent =>
-      'ವೇಗದ ವರ್ಗಾವಣೆ WiFi ಸಂಪರ್ಕ ಪರಿಶೀಲಿಸಲು ಸ್ಥಳ ಅನುಮತಿ ಅಗತ್ಯ. ದಯವಿಟ್ಟು ಸ್ಥಳ ಅನುಮತಿ ನೀಡಿ ಮುಂದುವರೆಯಲು.';
+  String get locationPermissionContent => 'ವೇಗದ ವರ್ಗಾವಣೆ WiFi ಸಂಪರ್ಕ ಪರಿಶೀಲಿಸಲು ಸ್ಥಳ ಅನುಮತಿ ಅಗತ್ಯ. ದಯವಿಟ್ಟು ಸ್ಥಳ ಅನುಮತಿ ನೀಡಿ ಮುಂದುವರೆಯಲು.';
 
   @override
   String get pdfTranscriptExport => 'ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಟ್ ರಕಷ್ಯ';
@@ -7695,8 +7536,7 @@ class AppLocalizationsKn extends AppLocalizations {
   }
 
   @override
-  String get deviceDoesNotSupportWifiSwitchingToBle =>
-      'ಸಾಧನವು WiFi ಸಿಂಕ್ ಬೆಂಬಲಿಸುವುದಿಲ್ಲ, ಬ್ಲೂಟೂತ್ಗೆ ಬದಲಾಯಿಸಿಕೊಳ್ಳುತ್ತಿದೆ';
+  String get deviceDoesNotSupportWifiSwitchingToBle => 'ಸಾಧನವು WiFi ಸಿಂಕ್ ಬೆಂಬಲಿಸುವುದಿಲ್ಲ, ಬ್ಲೂಟೂತ್ಗೆ ಬದಲಾಯಿಸಿಕೊಳ್ಳುತ್ತಿದೆ';
 
   @override
   String get appleHealthNotAvailable => 'Apple Health ಈ ಸಾಧನದಲ್ಲಿ ಲಭ್ಯವಿಲ್ಲ';
@@ -7992,8 +7832,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get pairingTitleOmiDevkit => 'Omi DevKit ಅನ್ನು ಜೋಡಣೆ ಮೋಡ್‌ಗಿಂದ ಹೊಂದಿಸಿ';
 
   @override
-  String get pairingDescOmiDevkit =>
-      'ಚಾಲು ಮಾಡಲು ಬಟನ್ ಒಮ್ಮೆ ಒತ್ತಿ. ಜೋಡಣೆ ಮೋಡ್ ತಯಾರಿಸುವಾಗ LED ನೇರಳೆ ಬಣ್ಣದಲ್ಲಿ ಮಿನುಗುತ್ತದೆ.';
+  String get pairingDescOmiDevkit => 'ಚಾಲು ಮಾಡಲು ಬಟನ್ ಒಮ್ಮೆ ಒತ್ತಿ. ಜೋಡಣೆ ಮೋಡ್ ತಯಾರಿಸುವಾಗ LED ನೇರಳೆ ಬಣ್ಣದಲ್ಲಿ ಮಿನುಗುತ್ತದೆ.';
 
   @override
   String get pairingTitleOmiGlass => 'Omi Glass ಅನ್ನು ಚಾಲು ಮಾಡಿ';
@@ -8005,8 +7844,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get pairingTitlePlaudNote => 'Plaud Note ಅನ್ನು ಜೋಡಣೆ ಮೋಡ್‌ಗಿಂದ ಹೊಂದಿಸಿ';
 
   @override
-  String get pairingDescPlaudNote =>
-      'ಪಕ್ಷದ ಬಟನ್ ಅನ್ನು 2 ಸೆಕೆಂಡುಗಳ ಕಾಲ ಒತ್ತಿ. ಕೆಂಪು LED ಜೋಡಣೆಗೆ ಸಿದ್ಧವಾದಾಗ ಮಿನುಗುತ್ತದೆ.';
+  String get pairingDescPlaudNote => 'ಪಕ್ಷದ ಬಟನ್ ಅನ್ನು 2 ಸೆಕೆಂಡುಗಳ ಕಾಲ ಒತ್ತಿ. ಕೆಂಪು LED ಜೋಡಣೆಗೆ ಸಿದ್ಧವಾದಾಗ ಮಿನುಗುತ್ತದೆ.';
 
   @override
   String get pairingTitleBee => 'Bee ಅನ್ನು ಜೋಡಣೆ ಮೋಡ್‌ಗಿಂದ ಹೊಂದಿಸಿ';
@@ -8018,15 +7856,13 @@ class AppLocalizationsKn extends AppLocalizations {
   String get pairingTitleLimitless => 'Limitless ಅನ್ನು ಜೋಡಣೆ ಮೋಡ್‌ಗಿಂದ ಹೊಂದಿಸಿ';
 
   @override
-  String get pairingDescLimitless =>
-      'ಯಾವುದೇ ಬೆಳಕು ಕಾಣಿಸುತ್ತಿದ್ದರೆ, ಒಮ್ಮೆ ಒತ್ತಿ ತದನಂತರ ಸಾಧನ ಗುಲಾಬಿ ಬೆಳಕನ್ನು ತೋರುವವರೆಗೆ ಧರಿಸಿ ಅನಂತರ ಬಿಡಿ.';
+  String get pairingDescLimitless => 'ಯಾವುದೇ ಬೆಳಕು ಕಾಣಿಸುತ್ತಿದ್ದರೆ, ಒಮ್ಮೆ ಒತ್ತಿ ತದನಂತರ ಸಾಧನ ಗುಲಾಬಿ ಬೆಳಕನ್ನು ತೋರುವವರೆಗೆ ಧರಿಸಿ ಅನಂತರ ಬಿಡಿ.';
 
   @override
   String get pairingTitleFriendPendant => 'Friend Pendant ಅನ್ನು ಜೋಡಣೆ ಮೋಡ್‌ಗಿಂದ ಹೊಂದಿಸಿ';
 
   @override
-  String get pairingDescFriendPendant =>
-      'ಪೆಂಡೆಂಟ್ ಪರ ಬಟನ್ ಅನ್ನು ಒತ್ತಿ ಅದನ್ನು ಚಾಲು ಮಾಡಿ. ಇದು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಜೋಡಣೆ ಮೋಡ್‌ಗೆ ಸೇರುತ್ತದೆ.';
+  String get pairingDescFriendPendant => 'ಪೆಂಡೆಂಟ್ ಪರ ಬಟನ್ ಅನ್ನು ಒತ್ತಿ ಅದನ್ನು ಚಾಲು ಮಾಡಿ. ಇದು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಜೋಡಣೆ ಮೋಡ್‌ಗೆ ಸೇರುತ್ತದೆ.';
 
   @override
   String get pairingTitleFieldy => 'Fieldy ಅನ್ನು ಜೋಡಣೆ ಮೋಡ್‌ಗಿಂದ ಹೊಂದಿಸಿ';
@@ -8038,8 +7874,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get pairingTitleAppleWatch => 'Apple Watch ಸಂಪರ್ಕ ಮಾಡಿ';
 
   @override
-  String get pairingDescAppleWatch =>
-      'ನಿಮ್ಮ Apple Watch ಪರ Omi ಅಪ್ಲಿಕೇಶನ ಅನ್ನು ಸ್ಥಾಪನ ಮಾಡಿ ಮತ್ತು ತೆರೆಯಿರಿ, ತದನಂತರ ಅಪ್ಲಿಕೇಶನ ತಲುಪ ಮಾಡಲು ಸಂಪರ್ಕಿಸಿ.';
+  String get pairingDescAppleWatch => 'ನಿಮ್ಮ Apple Watch ಪರ Omi ಅಪ್ಲಿಕೇಶನ ಅನ್ನು ಸ್ಥಾಪನ ಮಾಡಿ ಮತ್ತು ತೆರೆಯಿರಿ, ತದನಂತರ ಅಪ್ಲಿಕೇಶನ ತಲುಪ ಮಾಡಲು ಸಂಪರ್ಕಿಸಿ.';
 
   @override
   String get pairingTitleNeoOne => 'Neo One ಅನ್ನು ಜೋಡಣೆ ಮೋಡ್‌ಗಿಂದ ಹೊಂದಿಸಿ';
@@ -8133,8 +7968,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get onboardingWhatIKnowAboutYouTitle => 'ನಾನು ನಿಮ್ಮ ಬಗ್ಗೆ ತಿಳಿದುಕೊಂಡಿರುವುದು ಇಲ್ಲಿ';
 
   @override
-  String get onboardingWhatIKnowAboutYouDescription =>
-      'ಈ ನಕ್ಷೆ Omi ನಿಮ್ಮ ಸಂವಾದದಿಂದ ಕಲಿಯುತ್ತಿದ್ದುದಾಗಿ ನವೀಕರಿತ ಮಾಡಲಾಗುತ್ತದೆ.';
+  String get onboardingWhatIKnowAboutYouDescription => 'ಈ ನಕ್ಷೆ Omi ನಿಮ್ಮ ಸಂವಾದದಿಂದ ಕಲಿಯುತ್ತಿದ್ದುದಾಗಿ ನವೀಕರಿತ ಮಾಡಲಾಗುತ್ತದೆ.';
 
   @override
   String get apiEnvironment => 'API ಪರಿವೇಶ';
@@ -8163,8 +7997,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get switchAndRestart => 'ಪರಿವರ್ತನೆ';
 
   @override
-  String get stagingDisclaimer =>
-      'ಕ್ರಮಾವಳಿ ದೋಷೀಯ, ನೈರ್ಮಾಲ್ಯ ಕಾರ್ಯಕ್ಷಮತೆ ಮತ್ತು ವಿಷಯಗಳು ಅಗತ್ಯ ಪ್ರದರ್ಶನ ಬೇಕು. ಪರೀಕ್ಷೆಯ ಜನ್ಯವಾಗಿ ಉಪಯೋಗಿಸಿ.';
+  String get stagingDisclaimer => 'ಕ್ರಮಾವಳಿ ದೋಷೀಯ, ನೈರ್ಮಾಲ್ಯ ಕಾರ್ಯಕ್ಷಮತೆ ಮತ್ತು ವಿಷಯಗಳು ಅಗತ್ಯ ಪ್ರದರ್ಶನ ಬೇಕು. ಪರೀಕ್ಷೆಯ ಜನ್ಯವಾಗಿ ಉಪಯೋಗಿಸಿ.';
 
   @override
   String get apiEnvSavedRestartRequired => 'ಸಂಸ್ಕರಣಾ ಮಾಡಲಾಗಿದೆ. ಅನ್ವಯಿಸಲು ಅಪ್ಲಿಕೇಶನ ಮುಚ್ಚಿ ಮರುತೆರೆಯಿರಿ.';
@@ -8215,8 +8048,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get phoneGetStarted => 'ಪ್ರಾರಂಭ ಮಾಡಿ';
 
   @override
-  String get callRecordingConsentDisclaimer =>
-      'ಕರೆ ರೆಕಾರ್ಡಿಂಗ್ ನಿಮ್ಮ ನ್ಯಾಯವ್ಯವಸ್ಥೆಗಳಲ್ಲಿ ಮತ್ತಿಸುವುದು ಅಗತ್ಯ ಭಾವಿಸುತ್ತವೆ';
+  String get callRecordingConsentDisclaimer => 'ಕರೆ ರೆಕಾರ್ಡಿಂಗ್ ನಿಮ್ಮ ನ್ಯಾಯವ್ಯವಸ್ಥೆಗಳಲ್ಲಿ ಮತ್ತಿಸುವುದು ಅಗತ್ಯ ಭಾವಿಸುತ್ತವೆ';
 
   @override
   String get enterYourNumber => 'ನಿಮ್ಮ ಸಂಖ್ಯೆ ನಿರ್ಬಂಧಿಸಿ';
@@ -8394,8 +8226,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get phoneCallsUnlimitedOnly => 'Omi ನೊಂದಿಗೆ ಫೋನ್ ಕರೆ';
 
   @override
-  String get phoneCallsUpsellSubtitle =>
-      'Omi ನೊಂದಿಗೆ ಕರೆ ಮಾಡಿ ಮತ್ತು ನೈಜ ಸಮಯದ ಪ್ರತಿಲೇಖನ, ಸ್ವಯಂಚಾಲಿತ ಸಾರಾಂಶಗಳು ಮತ್ತು ಬೆಂಬಲ ಪಡೆ. Unlimited ಯೋಜನೆ ಸಂರಕ್ಷಣೆಗಳ ಲಿಆ ನಿರ್ಧಾರಿತ.';
+  String get phoneCallsUpsellSubtitle => 'Omi ನೊಂದಿಗೆ ಕರೆ ಮಾಡಿ ಮತ್ತು ನೈಜ ಸಮಯದ ಪ್ರತಿಲೇಖನ, ಸ್ವಯಂಚಾಲಿತ ಸಾರಾಂಶಗಳು ಮತ್ತು ಬೆಂಬಲ ಪಡೆ. Unlimited ಯೋಜನೆ ಸಂರಕ್ಷಣೆಗಳ ಲಿಆ ನಿರ್ಧಾರಿತ.';
 
   @override
   String get phoneCallsUpsellFeature1 => 'ಪ್ರತಿಲೇಖನ ನೈಜ ಸಮಯದ ಪ್ರತಿಲೇಖನ';
@@ -8422,8 +8253,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get deleteSyncedFiles => 'ಸಮನ್ವಯಿತ ರೆಕಾರ್ಡಿಂಗ್‌ಗಳನ್ನು ಅಳಿಸಿ';
 
   @override
-  String get deleteSyncedFilesMessage =>
-      'ಈ ರೆಕಾರ್ಡಿಂಗ್‌ಗಳನ್ನು ಈಗಾಗಲೇ ನಿಮ್ಮ ಫೋನಕ್ಕೆ ಸಮನ್ವಯ ಮಾಡಲಾಗಿದೆ. ಇದನ್ನು ರದ್ದುಗೊಳಿಸಲು ಸಾಧ್ಯ.';
+  String get deleteSyncedFilesMessage => 'ಈ ರೆಕಾರ್ಡಿಂಗ್‌ಗಳನ್ನು ಈಗಾಗಲೇ ನಿಮ್ಮ ಫೋನಕ್ಕೆ ಸಮನ್ವಯ ಮಾಡಲಾಗಿದೆ. ಇದನ್ನು ರದ್ದುಗೊಳಿಸಲು ಸಾಧ್ಯ.';
 
   @override
   String get syncedFilesDeleted => 'ಸಮನ್ವಯಿತ ರೆಕಾರ್ಡಿಂಗ್‌ಗಳನ್ನು ಅಳಿಸಿದೆ';
@@ -8435,8 +8265,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get deletePendingFiles => 'ಪಕ್ಷಾನುಮತಿ ರೆಕಾರ್ಡಿಂಗ್‌ಗಳನ್ನು ಅಳಿಸಿ';
 
   @override
-  String get deletePendingFilesWarning =>
-      'ಈ ರೆಕಾರ್ಡಿಂಗ್‌ಗಳನ್ನು ನಿಮ್ಮ ಫೋನಕ್ಕೆ ಸಮನ್ವಯ ಮಾಡಿಲ್ಲ ಮತ್ತು ಶಾಶ್ವತವಾಗಿ ಸೋಲಾಗುತ್ತವೆ. ಇದನ್ನು ರದ್ದುಗೊಳಿಸಲು ಸಾಧ್ಯ.';
+  String get deletePendingFilesWarning => 'ಈ ರೆಕಾರ್ಡಿಂಗ್‌ಗಳನ್ನು ನಿಮ್ಮ ಫೋನಕ್ಕೆ ಸಮನ್ವಯ ಮಾಡಿಲ್ಲ ಮತ್ತು ಶಾಶ್ವತವಾಗಿ ಸೋಲಾಗುತ್ತವೆ. ಇದನ್ನು ರದ್ದುಗೊಳಿಸಲು ಸಾಧ್ಯ.';
 
   @override
   String get pendingFilesDeleted => 'ಪಕ್ಷಾನುಮತಿ ರೆಕಾರ್ಡಿಂಗ್‌ಗಳನ್ನು ಅಳಿಸಿದೆ';
@@ -8448,8 +8277,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get deleteAll => 'ಎಲ್ಲವನ್ನೂ ಅಳಿಸಿ';
 
   @override
-  String get deleteAllFilesWarning =>
-      'ಇದು ಸಮನ್ವಯಿತ ಮತ್ತು ಪಕ್ಷಾನುಮತಿ ರೆಕಾರ್ಡಿಂಗ್‌ಗಳನ್ನು ಅಳಿಸಿ. ಪಕ್ಷಾನುಮತಿ ರೆಕಾರ್ಡಿಂಗ್‌ಗಳನ್ನು ಸಮನ್ವಯ ಮಾಡಿಲ್ಲ ಮತ್ತು ಶಾಶ್ವತವಾಗಿ ಸೋಲಾಗುತ್ತವೆ. ಇದನ್ನು ರದ್ದುಗೊಳಿಸಲು ಸಾಧ್ಯ.';
+  String get deleteAllFilesWarning => 'ಇದು ಸಮನ್ವಯಿತ ಮತ್ತು ಪಕ್ಷಾನುಮತಿ ರೆಕಾರ್ಡಿಂಗ್‌ಗಳನ್ನು ಅಳಿಸಿ. ಪಕ್ಷಾನುಮತಿ ರೆಕಾರ್ಡಿಂಗ್‌ಗಳನ್ನು ಸಮನ್ವಯ ಮಾಡಿಲ್ಲ ಮತ್ತು ಶಾಶ್ವತವಾಗಿ ಸೋಲಾಗುತ್ತವೆ. ಇದನ್ನು ರದ್ದುಗೊಳಿಸಲು ಸಾಧ್ಯ.';
 
   @override
   String get allFilesDeleted => 'ಎಲ್ಲ ರೆಕಾರ್ಡಿಂಗ್‌ಗಳನ್ನು ಅಳಿಸಿದೆ';
@@ -8514,8 +8342,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get fairUseAboutTitle => 'ನ್ಯಾಯಯುಕ್ತ ಬಳಕೆ ಬಗ್ಗೆ';
 
   @override
-  String get fairUseAboutBody =>
-      'Omi ವ್ಯಕ್ತಿಗತ ಸಂವಾದಗಳು, ಸಭೆಗಳು ಮತ್ತು ನೈಜ ಸಂವಾದಾಭಿವ್ಯಕ್ತಿಗಳಿಗೆ ತರುವನೆ. ಬಳಕೆ ನೈಜ ಭಾಷಣ ಸಮಯ ಗುರುತಿಸಿಣ ಮಾಪಿಸಿ, ಪ್ರಕರಣ ಸಮಯ ನಹೀಂ. ಬಳಕೆ ವ್ಯಕ್ತಿಗತ ನೀಗೆ ವಿಷಯವಿಲ್ಲ ಪಠ್ಯಾಂಶಗಳಿಂದ ಮಾದ ಮಾಡಿದ ಸರ್ವೃತ ಸ್ಫುಟವಾಗಿ ಪಎ, ಅನ್ವಯಗಳನ್ನು ಅನ್ವಯಿಸಬಹುದು.';
+  String get fairUseAboutBody => 'Omi ವ್ಯಕ್ತಿಗತ ಸಂವಾದಗಳು, ಸಭೆಗಳು ಮತ್ತು ನೈಜ ಸಂವಾದಾಭಿವ್ಯಕ್ತಿಗಳಿಗೆ ತರುವನೆ. ಬಳಕೆ ನೈಜ ಭಾಷಣ ಸಮಯ ಗುರುತಿಸಿಣ ಮಾಪಿಸಿ, ಪ್ರಕರಣ ಸಮಯ ನಹೀಂ. ಬಳಕೆ ವ್ಯಕ್ತಿಗತ ನೀಗೆ ವಿಷಯವಿಲ್ಲ ಪಠ್ಯಾಂಶಗಳಿಂದ ಮಾದ ಮಾಡಿದ ಸರ್ವೃತ ಸ್ಫುಟವಾಗಿ ಪಎ, ಅನ್ವಯಗಳನ್ನು ಅನ್ವಯಿಸಬಹುದು.';
 
   @override
   String fairUseCaseRefCopied(String caseRef) {
@@ -8553,8 +8380,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get improveConnectionTitle => 'ಸಂಪರ್ಕ ಉಂಚುತ್ತಿರಿ';
 
   @override
-  String get improveConnectionContent =>
-      'ನಾವು Omi ನಿಮ್ಮ ಸಾಧನಗೆ ಸಂಪರ್ಕಿತ ಬಾಕಿ ಕಿ ನೀಪಿಸಿದೆ. ಇದನ್ನು ಸಕ್ರಿಯ ಮಾಡಲು, ದಯವಿಟ್ಟು ಸಾಧನ ಮಾಹಿತಿ ಪುಟಕ್ಕೆ ಹೋಗಿ, \"ವಿಚ್ಛೇದನ ಸಾಧನ\" ತಲುಪ ಮಾಡಿ, ನಂತರ ನಿಮ್ಮ ಸಾಧನವನ್ನು ಮತ್ತೆ ಜೋಡಿಸಿ.';
+  String get improveConnectionContent => 'ನಾವು Omi ನಿಮ್ಮ ಸಾಧನಗೆ ಸಂಪರ್ಕಿತ ಬಾಕಿ ಕಿ ನೀಪಿಸಿದೆ. ಇದನ್ನು ಸಕ್ರಿಯ ಮಾಡಲು, ದಯವಿಟ್ಟು ಸಾಧನ ಮಾಹಿತಿ ಪುಟಕ್ಕೆ ಹೋಗಿ, \"ವಿಚ್ಛೇದನ ಸಾಧನ\" ತಲುಪ ಮಾಡಿ, ನಂತರ ನಿಮ್ಮ ಸಾಧನವನ್ನು ಮತ್ತೆ ಜೋಡಿಸಿ.';
 
   @override
   String get improveConnectionAction => 'ಯೋಚಿಸಿದೆ';
@@ -8609,16 +8435,13 @@ class AppLocalizationsKn extends AppLocalizations {
   String get cancelSyncQuestion => 'ಸಮನ್ವಯ ರದ್ದುಗೊಳಿಸುವುದೇ?';
 
   @override
-  String get omisStorageDesc =>
-      'ನಿಮ್ಮ Omi ನಿಮ್ಮ ಫೋನಕ್ಕೆ ಸಂಪರ್ಕಿತವಾಗಿಲ್ಲದಿದ್ದರೆ, ಇದು ಆಡಿಯೋ ಸ್ಥಳೀಯವಾಗಿ ತನ್ನ ಪಟ್ಟೆ ಪಟ್ಟೆಯ ಮೆಮೊರಿ ಸಂಗ್ರಹಣೆಗೆ ಪ್ರಕಿರ್ಣ ಪುರಿಸುತ್ತಾನೆ. ನೀವು ಎಂದೂ ಸ್ಥಾನ ಅಪಜಿಲ್ಲ.';
+  String get omisStorageDesc => 'ನಿಮ್ಮ Omi ನಿಮ್ಮ ಫೋನಕ್ಕೆ ಸಂಪರ್ಕಿತವಾಗಿಲ್ಲದಿದ್ದರೆ, ಇದು ಆಡಿಯೋ ಸ್ಥಳೀಯವಾಗಿ ತನ್ನ ಪಟ್ಟೆ ಪಟ್ಟೆಯ ಮೆಮೊರಿ ಸಂಗ್ರಹಣೆಗೆ ಪ್ರಕಿರ್ಣ ಪುರಿಸುತ್ತಾನೆ. ನೀವು ಎಂದೂ ಸ್ಥಾನ ಅಪಜಿಲ್ಲ.';
 
   @override
-  String get phoneStorageDesc =>
-      'Omi ಮರುಸಂಪರ್ಕಿತವಾದಾಗ, ರೆಕಾರ್ಡಿಂಗ್‌ಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ನಿಮ್ಮ ಫೋನಕ್ಕೆ ಅಪ್‌ಲೋಡ್ ಆಗಿ ಚೌಕಟ್ಟಿನ ಗೋಪನೀಯತೆ ಶುರುಕೊಲ್ಪಿಸಿ ಮೊದಲು ತೇವೆ.';
+  String get phoneStorageDesc => 'Omi ಮರುಸಂಪರ್ಕಿತವಾದಾಗ, ರೆಕಾರ್ಡಿಂಗ್‌ಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ನಿಮ್ಮ ಫೋನಕ್ಕೆ ಅಪ್‌ಲೋಡ್ ಆಗಿ ಚೌಕಟ್ಟಿನ ಗೋಪನೀಯತೆ ಶುರುಕೊಲ್ಪಿಸಿ ಮೊದಲು ತೇವೆ.';
 
   @override
-  String get cloudStorageDesc =>
-      'ಅಪ್‌ಲೋಡ್ ಮಾಡಿದ ನಂತರ, ನಿಮ್ಮ ರೆಕಾರ್ಡಿಂಗ್‌ಗಳನ್ನು ಪ್ರಕ್ರಿಯೆ ಮಾಡಲಾಗುತ್ತದೆ ಮತ್ತು ಪ್ರತಿಲೇಖನ ಮಾಡಲಾಗುತ್ತದೆ. ಸಂವಾದಗಳನ್ನು ಮಾಧಿತಿಮೊದ ಒಂದು ಮಿನಿಟ್ ಲಾಗುತ್ತವೆ.';
+  String get cloudStorageDesc => 'ಅಪ್‌ಲೋಡ್ ಮಾಡಿದ ನಂತರ, ನಿಮ್ಮ ರೆಕಾರ್ಡಿಂಗ್‌ಗಳನ್ನು ಪ್ರಕ್ರಿಯೆ ಮಾಡಲಾಗುತ್ತದೆ ಮತ್ತು ಪ್ರತಿಲೇಖನ ಮಾಡಲಾಗುತ್ತದೆ. ಸಂವಾದಗಳನ್ನು ಮಾಧಿತಿಮೊದ ಒಂದು ಮಿನಿಟ್ ಲಾಗುತ್ತವೆ.';
 
   @override
   String get tipKeepPhoneNearby => 'ವೇಗ ಸಮನ್ವಯಾಗಿ ನಿಮ್ಮ ಫೋನ್ ಹತುತ್ಕೇ ಇಕೆ';
@@ -8642,12 +8465,10 @@ class AppLocalizationsKn extends AppLocalizations {
   String get permissionEnable => 'ಸಕ್ರಿಯ ಮಾಡಿ';
 
   @override
-  String get permissionsPageDescription =>
-      'ಈ ಪ್ರದೇಶಗಳು Omi ಹೋಕ್ಕೆ ಅನುಕೂಲತಮವಾಗಿದೆ. ಅವು ಸೂಚನೆಗಳು, ನಿಲುವು-ಆಧಾರಿತ ಅನುಭವಗಳು, ಮತ್ತು ಆಡಿಯೋ ಕ್ಯಾಪ್ಚರ್ ನಂತಹ ಮುಖ್ಯ ವೈಶಿಷ್ಟ್ಯ ಪರಿಸಮನ್ವಯ.';
+  String get permissionsPageDescription => 'ಈ ಪ್ರದೇಶಗಳು Omi ಹೋಕ್ಕೆ ಅನುಕೂಲತಮವಾಗಿದೆ. ಅವು ಸೂಚನೆಗಳು, ನಿಲುವು-ಆಧಾರಿತ ಅನುಭವಗಳು, ಮತ್ತು ಆಡಿಯೋ ಕ್ಯಾಪ್ಚರ್ ನಂತಹ ಮುಖ್ಯ ವೈಶಿಷ್ಟ್ಯ ಪರಿಸಮನ್ವಯ.';
 
   @override
-  String get permissionsRequiredDescription =>
-      'Omi ಸರಿಯಾಗಿ ಕಾರ್ಯ ಮಾಡಲು ಕೆಲವು ಪ್ರದೇಶ ಅಗತ್ಯ. ಮುಂದುವರಿಸಲು ದಯವಿಟ್ಟು ನೀಯತೆಗಳನ್ನು ಅನುದಾನ.';
+  String get permissionsRequiredDescription => 'Omi ಸರಿಯಾಗಿ ಕಾರ್ಯ ಮಾಡಲು ಕೆಲವು ಪ್ರದೇಶ ಅಗತ್ಯ. ಮುಂದುವರಿಸಲು ದಯವಿಟ್ಟು ನೀಯತೆಗಳನ್ನು ಅನುದಾನ.';
 
   @override
   String get permissionsSetupTitle => 'ಉತ್ತಮ ಅನುಭವ ಪಡೆ';
@@ -8924,8 +8745,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get firmwareWarningTitle => 'ಮುಖ್ಯ: ನವೀಕರಿಸುವ ಮೊದಲು ಓದಿ';
 
   @override
-  String get firmwareFormatWarning =>
-      'ಈ ಫರ್ಮ್‌ವೇರ್ SD ಕಾರ್ಡ್ ಅನ್ನು ಫಾರ್ಮ್ಯಾಟ್ ಮಾಡುತ್ತದೆ. ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡುವ ಮೊದಲು ಎಲ್ಲಾ ಆಫ್‌ಲೈನ್ ಡೇಟಾ ಸಿಂಕ್ ಆಗಿದೆ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.\n\nಈ ಆವೃತ್ತಿಯನ್ನು ಸ್ಥಾಪಿಸಿದ ನಂತರ ಕೆಂಪು ಬೆಳಕು ಮಿನುಗುತ್ತಿದ್ದರೆ ಚಿಂತಿಸಬೇಡಿ. ಸಾಧನವನ್ನು ಅಪ್ಲಿಕೇಶನ್‌ಗೆ ಸಂಪರ್ಕಿಸಿ ಮತ್ತು ಅದು ನೀಲಿ ಬಣ್ಣಕ್ಕೆ ಬದಲಾಗಬೇಕು.';
+  String get firmwareFormatWarning => 'ಈ ಫರ್ಮ್‌ವೇರ್ SD ಕಾರ್ಡ್ ಅನ್ನು ಫಾರ್ಮ್ಯಾಟ್ ಮಾಡುತ್ತದೆ. ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡುವ ಮೊದಲು ಎಲ್ಲಾ ಆಫ್‌ಲೈನ್ ಡೇಟಾ ಸಿಂಕ್ ಆಗಿದೆ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.\n\nಈ ಆವೃತ್ತಿಯನ್ನು ಸ್ಥಾಪಿಸಿದ ನಂತರ ಕೆಂಪು ಬೆಳಕು ಮಿನುಗುತ್ತಿದ್ದರೆ ಚಿಂತಿಸಬೇಡಿ. ಸಾಧನವನ್ನು ಅಪ್ಲಿಕೇಶನ್‌ಗೆ ಸಂಪರ್ಕಿಸಿ ಮತ್ತು ಅದು ನೀಲಿ ಬಣ್ಣಕ್ಕೆ ಬದಲಾಗಬೇಕು.';
 
   @override
   String get continueAnyway => 'ಮುಂದುವರಿಸಿ';
@@ -8945,8 +8765,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get tasksMarkComplete => 'ಪೂರ್ಣಗೊಂಡಿದೆ ಎಂದು ಗುರುತಿಸಲಾಗಿದೆ';
 
   @override
-  String get appleHealthManageNote =>
-      'Omi Apple ನ HealthKit ಫ್ರೇಮ್‌ವರ್ಕ್ ಮೂಲಕ Apple Health ಅನ್ನು ಪ್ರವೇಶಿಸುತ್ತದೆ. ನೀವು iOS ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಯಾವುದೇ ಸಮಯದಲ್ಲಿ ಪ್ರವೇಶವನ್ನು ಹಿಂಪಡೆಯಬಹುದು.';
+  String get appleHealthManageNote => 'Omi Apple ನ HealthKit ಫ್ರೇಮ್‌ವರ್ಕ್ ಮೂಲಕ Apple Health ಅನ್ನು ಪ್ರವೇಶಿಸುತ್ತದೆ. ನೀವು iOS ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಯಾವುದೇ ಸಮಯದಲ್ಲಿ ಪ್ರವೇಶವನ್ನು ಹಿಂಪಡೆಯಬಹುದು.';
 
   @override
   String get appleHealthConnectCta => 'Apple Health ಗೆ ಸಂಪರ್ಕಿಸಿ';
@@ -8967,8 +8786,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get appleHealthFeatureReadOnlyTitle => 'ಕೇವಲ ಓದುವ ಪ್ರವೇಶ';
 
   @override
-  String get appleHealthFeatureReadOnlyDesc =>
-      'Omi ಎಂದಿಗೂ Apple Health ಗೆ ಬರೆಯುವುದಿಲ್ಲ ಅಥವಾ ಡೇಟಾವನ್ನು ಬದಲಾಯಿಸುವುದಿಲ್ಲ.';
+  String get appleHealthFeatureReadOnlyDesc => 'Omi ಎಂದಿಗೂ Apple Health ಗೆ ಬರೆಯುವುದಿಲ್ಲ ಅಥವಾ ಡೇಟಾವನ್ನು ಬದಲಾಯಿಸುವುದಿಲ್ಲ.';
 
   @override
   String get appleHealthFeatureSecureTitle => 'ಸುರಕ್ಷಿತ ಸಿಂಕ್';
@@ -8980,8 +8798,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get appleHealthDeniedTitle => 'Apple Health ಪ್ರವೇಶ ನಿರಾಕರಿಸಲಾಗಿದೆ';
 
   @override
-  String get appleHealthDeniedBody =>
-      'Omi ಗೆ ನಿಮ್ಮ Apple Health ಡೇಟಾವನ್ನು ಓದುವ ಅನುಮತಿ ಇಲ್ಲ. iOS ಸೆಟ್ಟಿಂಗ್‌ಗಳು → ಗೌಪ್ಯತೆ ಮತ್ತು ಭದ್ರತೆ → Health → Omi ನಲ್ಲಿ ಇದನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ.';
+  String get appleHealthDeniedBody => 'Omi ಗೆ ನಿಮ್ಮ Apple Health ಡೇಟಾವನ್ನು ಓದುವ ಅನುಮತಿ ಇಲ್ಲ. iOS ಸೆಟ್ಟಿಂಗ್‌ಗಳು → ಗೌಪ್ಯತೆ ಮತ್ತು ಭದ್ರತೆ → Health → Omi ನಲ್ಲಿ ಇದನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ.';
 
   @override
   String get deleteFlowReasonTitle => 'ನೀವೇಕೆ ಹೋಗುತ್ತಿದ್ದೀರಿ?';
@@ -9050,8 +8867,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get planUpdate => 'ಯೋಜನೆ ನವೀಕರಣ';
 
   @override
-  String get planDeprecationMessage =>
-      'ನಿಮ್ಮ Unlimited ಯೋಜನೆಯನ್ನು ನಿಲ್ಲಿಸಲಾಗುತ್ತಿದೆ. Operator ಯೋಜನೆಗೆ ಬದಲಾಯಿಸಿ — ಅದೇ ಅದ್ಭುತ ವೈಶಿಷ್ಟ್ಯಗಳು \$49/ತಿಂಗಳಿಗೆ. ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಯೋಜನೆ ಈ ಮಧ್ಯೆ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತಲೇ ಇರುತ್ತದೆ.';
+  String get planDeprecationMessage => 'ನಿಮ್ಮ Unlimited ಯೋಜನೆಯನ್ನು ನಿಲ್ಲಿಸಲಾಗುತ್ತಿದೆ. Operator ಯೋಜನೆಗೆ ಬದಲಾಯಿಸಿ — ಅದೇ ಅದ್ಭುತ ವೈಶಿಷ್ಟ್ಯಗಳು \$49/ತಿಂಗಳಿಗೆ. ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಯೋಜನೆ ಈ ಮಧ್ಯೆ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತಲೇ ಇರುತ್ತದೆ.';
 
   @override
   String get upgradeYourPlan => 'ನಿಮ್ಮ ಯೋಜನೆಯನ್ನು ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡಿ';
@@ -9162,8 +8978,7 @@ class AppLocalizationsKn extends AppLocalizations {
   String get chatQuotaSubtitle => 'AI chat messages used with Omi this month.';
 
   @override
-  String get chatQuotaExceededReply =>
-      'ನೀವು ನಿಮ್ಮ ಮಾಸಿಕ ಮಿತಿಯನ್ನು ತಲುಪಿದ್ದೀರಿ. ನಿರ್ಬಂಧಗಳಿಲ್ಲದೆ Omi ಜೊತೆ ಚಾಟ್ ಮುಂದುವರಿಸಲು ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡಿ.';
+  String get chatQuotaExceededReply => 'ನೀವು ನಿಮ್ಮ ಮಾಸಿಕ ಮಿತಿಯನ್ನು ತಲುಪಿದ್ದೀರಿ. ನಿರ್ಬಂಧಗಳಿಲ್ಲದೆ Omi ಜೊತೆ ಚಾಟ್ ಮುಂದುವರಿಸಲು ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡಿ.';
 
   @override
   String get voiceResponseAudio => 'Omi ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ಜೋರಾಗಿ ಓದಿ';
@@ -9194,4 +9009,25 @@ class AppLocalizationsKn extends AppLocalizations {
 
   @override
   String get mindMap => 'Mind Map';
+
+  @override
+  String get quickActionAddTask => 'ಕಾರ್ಯ ಸೇರಿಸಿ';
+
+  @override
+  String get quickActionAskOmiAnything => 'Omi ಗೆ ಯಾವುದನ್ನಾದರೂ ಕೇಳಿ';
+
+  @override
+  String get quickActionVoiceMode => 'ಧ್ವನಿ ಮೋಡ್';
+
+  @override
+  String get quickActionMute => 'ಮ್ಯೂಟ್';
+
+  @override
+  String get quickActionUnmute => 'ಅನ್‌ಮ್ಯೂಟ್';
+
+  @override
+  String get quickActionConnectDevice => 'ಸಾಧನ ಸಂಪರ್ಕಿಸಿ';
+
+  @override
+  String get quickActionDeviceSettings => 'ಸಾಧನ ಸೆಟ್ಟಿಂಗ್‌ಗಳು';
 }

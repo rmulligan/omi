@@ -3026,5 +3026,12 @@
   "mindMap": "Mind Map",
   "@mindMap": {
     "description": "Section header for memory knowledge graph on home page"
-  }
+  },
+  "quickActionAddTask": "Dodaj zadanie",
+  "quickActionAskOmiAnything": "Zapytaj Omi o cokolwiek",
+  "quickActionVoiceMode": "Tryb głosowy",
+  "quickActionMute": "Wycisz",
+  "quickActionUnmute": "Wyłącz wyciszenie",
+  "quickActionConnectDevice": "Podłącz urządzenie",
+  "quickActionDeviceSettings": "Ustawienia urządzenia"
 }

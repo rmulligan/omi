@@ -10699,5 +10699,12 @@
   "mindMap": "Mind Map",
   "@mindMap": {
     "description": "Section header for memory knowledge graph on home page"
-  }
+  },
+  "quickActionAddTask": "Додај задача",
+  "quickActionAskOmiAnything": "Прашај го Omi за нешто",
+  "quickActionVoiceMode": "Гласовен режим",
+  "quickActionMute": "Исклучи звук",
+  "quickActionUnmute": "Вклучи звук",
+  "quickActionConnectDevice": "Поврзи уред",
+  "quickActionDeviceSettings": "Поставки на уред"
 }

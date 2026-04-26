@@ -2991,5 +2991,12 @@
   "mindMap": "Mind Map",
   "@mindMap": {
     "description": "Section header for memory knowledge graph on home page"
-  }
+  },
+  "quickActionAddTask": "작업 추가",
+  "quickActionAskOmiAnything": "Omi에게 무엇이든 물어보세요",
+  "quickActionVoiceMode": "음성 모드",
+  "quickActionMute": "음소거",
+  "quickActionUnmute": "음소거 해제",
+  "quickActionConnectDevice": "기기 연결",
+  "quickActionDeviceSettings": "기기 설정"
 }

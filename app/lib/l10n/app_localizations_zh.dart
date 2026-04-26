@@ -4274,8 +4274,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get secureEncryption => '安全加密';
 
   @override
-  String get secureEncryptionDescription =>
-      '您的数据使用您独有的密钥在我们托管于Google Cloud的服务器上加密。这意味着包括Omi员工或Google在内的任何人都无法直接从数据库访问您的原始内容。';
+  String get secureEncryptionDescription => '您的数据使用您独有的密钥在我们托管于Google Cloud的服务器上加密。这意味着包括Omi员工或Google在内的任何人都无法直接从数据库访问您的原始内容。';
 
   @override
   String get endToEndEncryption => '端到端加密';
@@ -4987,8 +4986,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get additionalSpeechSampleRemoved => '已删除附加语音样本';
 
   @override
-  String get consentDataMessage =>
-      '继续即表示您的对话、录音和个人信息将安全存储在我们的服务器上。您的音频录音和转录由第三方AI服务处理（包括用于转录的Deepgram和用于分析的OpenAI），以为您提供AI驱动的洞察并启用所有应用功能。';
+  String get consentDataMessage => '继续即表示您的对话、录音和个人信息将安全存储在我们的服务器上。您的音频录音和转录由第三方AI服务处理（包括用于转录的Deepgram和用于分析的OpenAI），以为您提供AI驱动的洞察并启用所有应用功能。';
 
   @override
   String get tasksEmptyStateMessage => '来自您对话的任务将显示在这里。\n点击 + 手动创建。';
@@ -8734,8 +8732,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get firmwareWarningTitle => '重要：更新前请阅读';
 
   @override
-  String get firmwareFormatWarning =>
-      '此固件将格式化SD卡。请确保在升级前同步所有离线数据。\n\n如果安装此版本后看到红灯闪烁，请不要担心。只需将设备连接到应用程序，它应该会变成蓝色。红灯表示设备的时钟尚未同步。';
+  String get firmwareFormatWarning => '此固件将格式化SD卡。请确保在升级前同步所有离线数据。\n\n如果安装此版本后看到红灯闪烁，请不要担心。只需将设备连接到应用程序，它应该会变成蓝色。红灯表示设备的时钟尚未同步。';
 
   @override
   String get continueAnyway => '继续';
@@ -8999,4 +8996,25 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get mindMap => 'Mind Map';
+
+  @override
+  String get quickActionAddTask => '添加任务';
+
+  @override
+  String get quickActionAskOmiAnything => '问Omi任何问题';
+
+  @override
+  String get quickActionVoiceMode => '语音模式';
+
+  @override
+  String get quickActionMute => '静音';
+
+  @override
+  String get quickActionUnmute => '取消静音';
+
+  @override
+  String get quickActionConnectDevice => '连接设备';
+
+  @override
+  String get quickActionDeviceSettings => '设备设置';
 }

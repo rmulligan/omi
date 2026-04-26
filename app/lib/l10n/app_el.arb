@@ -2991,5 +2991,12 @@
   "mindMap": "Mind Map",
   "@mindMap": {
     "description": "Section header for memory knowledge graph on home page"
-  }
+  },
+  "quickActionAddTask": "Προσθήκη εργασίας",
+  "quickActionAskOmiAnything": "Ρωτήστε τον Omi οτιδήποτε",
+  "quickActionVoiceMode": "Λειτουργία φωνής",
+  "quickActionMute": "Σίγαση",
+  "quickActionUnmute": "Αναίρεση σίγασης",
+  "quickActionConnectDevice": "Σύνδεση συσκευής",
+  "quickActionDeviceSettings": "Ρυθμίσεις συσκευής"
 }

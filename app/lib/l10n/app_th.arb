@@ -2991,5 +2991,12 @@
   "mindMap": "Mind Map",
   "@mindMap": {
     "description": "Section header for memory knowledge graph on home page"
-  }
+  },
+  "quickActionAddTask": "เพิ่มงาน",
+  "quickActionAskOmiAnything": "ถาม Omi ได้ทุกอย่าง",
+  "quickActionVoiceMode": "โหมดเสียง",
+  "quickActionMute": "ปิดเสียง",
+  "quickActionUnmute": "เปิดเสียง",
+  "quickActionConnectDevice": "เชื่อมต่ออุปกรณ์",
+  "quickActionDeviceSettings": "การตั้งค่าอุปกรณ์"
 }

@@ -2960,5 +2960,12 @@
   "mindMap": "Mind Map",
   "@mindMap": {
     "description": "Section header for memory knowledge graph on home page"
-  }
+  },
+  "quickActionAddTask": "Přidat úkol",
+  "quickActionAskOmiAnything": "Zeptejte se Omi na cokoli",
+  "quickActionVoiceMode": "Hlasový režim",
+  "quickActionMute": "Ztlumit",
+  "quickActionUnmute": "Zapnout zvuk",
+  "quickActionConnectDevice": "Připojit zařízení",
+  "quickActionDeviceSettings": "Nastavení zařízení"
 }

@@ -2991,5 +2991,12 @@
   "mindMap": "Mind Map",
   "@mindMap": {
     "description": "Section header for memory knowledge graph on home page"
-  }
+  },
+  "quickActionAddTask": "Adaugă sarcină",
+  "quickActionAskOmiAnything": "Întreabă Omi orice",
+  "quickActionVoiceMode": "Mod voce",
+  "quickActionMute": "Dezactivare sunet",
+  "quickActionUnmute": "Activare sunet",
+  "quickActionConnectDevice": "Conectează dispozitiv",
+  "quickActionDeviceSettings": "Setări dispozitiv"
 }

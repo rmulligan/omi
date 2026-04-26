@@ -2991,5 +2991,12 @@
   "mindMap": "Mind Map",
   "@mindMap": {
     "description": "Section header for memory knowledge graph on home page"
-  }
+  },
+  "quickActionAddTask": "Додати завдання",
+  "quickActionAskOmiAnything": "Запитайте Omi про будь-що",
+  "quickActionVoiceMode": "Голосовий режим",
+  "quickActionMute": "Вимкнути звук",
+  "quickActionUnmute": "Увімкнути звук",
+  "quickActionConnectDevice": "Підключити пристрій",
+  "quickActionDeviceSettings": "Налаштування пристрою"
 }

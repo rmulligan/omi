@@ -3026,5 +3026,12 @@
   "mindMap": "Mind Map",
   "@mindMap": {
     "description": "Section header for memory knowledge graph on home page"
-  }
+  },
+  "quickActionAddTask": "Görev Ekle",
+  "quickActionAskOmiAnything": "Omi'ye herhangi bir şey sor",
+  "quickActionVoiceMode": "Ses Modu",
+  "quickActionMute": "Sesi Kapat",
+  "quickActionUnmute": "Sesi Aç",
+  "quickActionConnectDevice": "Cihaz Bağla",
+  "quickActionDeviceSettings": "Cihaz Ayarları"
 }

@@ -11,6 +11,7 @@ import 'package:omi/pages/settings/device_settings.dart';
 import 'package:omi/providers/capture_provider.dart';
 import 'package:omi/providers/device_provider.dart';
 import 'package:omi/providers/home_provider.dart';
+import 'package:omi/utils/l10n_extensions.dart';
 
 const _kAddTask = 'add_task';
 const _kAskOmi = 'ask_omi';
@@ -53,19 +54,20 @@ class QuickActionsService {
 
     // iOS displays items in reverse array order (last = top of menu).
     // Desired display (top→bottom): Add Task / Ask Omi Anything / Voice Mode / [Mute|Unmute] / Connect Device|Device Settings
+    final l10n = context.l10n;
     final items = <ShortcutItem>[
       ShortcutItem(
         type: isDeviceConnected ? _kDeviceSettings : _kConnectDevice,
-        localizedTitle: isDeviceConnected ? 'Device Settings' : 'Connect Device',
+        localizedTitle: isDeviceConnected ? l10n.quickActionDeviceSettings : l10n.quickActionConnectDevice,
       ),
       if (isDeviceConnected)
         ShortcutItem(
           type: isMuted ? _kUnmute : _kMute,
-          localizedTitle: isMuted ? 'Unmute' : 'Mute',
+          localizedTitle: isMuted ? l10n.quickActionUnmute : l10n.quickActionMute,
         ),
-      const ShortcutItem(type: _kVoiceMode, localizedTitle: 'Voice Mode'),
-      const ShortcutItem(type: _kAskOmi, localizedTitle: 'Ask Omi Anything'),
-      const ShortcutItem(type: _kAddTask, localizedTitle: 'Add Task'),
+      ShortcutItem(type: _kVoiceMode, localizedTitle: l10n.quickActionVoiceMode),
+      ShortcutItem(type: _kAskOmi, localizedTitle: l10n.quickActionAskOmiAnything),
+      ShortcutItem(type: _kAddTask, localizedTitle: l10n.quickActionAddTask),
     ];
 
     _quickActions.setShortcutItems(items);

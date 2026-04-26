@@ -2996,5 +2996,12 @@
   "mindMap": "Mind Map",
   "@mindMap": {
     "description": "Section header for memory knowledge graph on home page"
-  }
+  },
+  "quickActionAddTask": "Thêm nhiệm vụ",
+  "quickActionAskOmiAnything": "Hỏi Omi bất cứ điều gì",
+  "quickActionVoiceMode": "Chế độ giọng nói",
+  "quickActionMute": "Tắt tiếng",
+  "quickActionUnmute": "Bật tiếng",
+  "quickActionConnectDevice": "Kết nối thiết bị",
+  "quickActionDeviceSettings": "Cài đặt thiết bị"
 }

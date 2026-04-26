@@ -822,8 +822,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get deleteKnowledgeGraphTitle => '지식 그래프를 삭제하시겠습니까?';
 
   @override
-  String get deleteKnowledgeGraphMessage =>
-      '파생된 모든 지식 그래프 데이터(노드 및 연결)가 삭제됩니다. 원본 기억은 안전하게 유지됩니다. 그래프는 시간이 지나면 다시 구축되거나 다음 요청 시 재구축됩니다.';
+  String get deleteKnowledgeGraphMessage => '파생된 모든 지식 그래프 데이터(노드 및 연결)가 삭제됩니다. 원본 기억은 안전하게 유지됩니다. 그래프는 시간이 지나면 다시 구축되거나 다음 요청 시 재구축됩니다.';
 
   @override
   String get knowledgeGraphDeleted => '지식 그래프가 삭제되었습니다';
@@ -1090,8 +1089,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get enhanceTranscriptAccuracyDesc => '모델이 개선됨에 따라 녹음에 대한 더 나은 변환 결과를 제공할 수 있습니다.';
 
   @override
-  String get legalNotice =>
-      '법적 고지: 음성 데이터 녹음 및 저장의 합법성은 위치 및 이 기능 사용 방법에 따라 다를 수 있습니다. 현지 법률 및 규정을 준수하는지 확인하는 것은 귀하의 책임입니다.';
+  String get legalNotice => '법적 고지: 음성 데이터 녹음 및 저장의 합법성은 위치 및 이 기능 사용 방법에 따라 다를 수 있습니다. 현지 법률 및 규정을 준수하는지 확인하는 것은 귀하의 책임입니다.';
 
   @override
   String get alreadyAuthorized => '이미 승인됨';
@@ -1871,8 +1869,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get permissionGrantedNow => '권한이 부여되었습니다! 이제:\n\n워치에서 Omi 앱을 열고 아래의 \"계속\"을 탭하세요';
 
   @override
-  String get needMicrophonePermission =>
-      '마이크 권한이 필요합니다.\n\n1. \"권한 부여\" 탭\n2. iPhone에서 허용\n3. 워치 앱이 닫힙니다\n4. 다시 열고 \"계속\" 탭';
+  String get needMicrophonePermission => '마이크 권한이 필요합니다.\n\n1. \"권한 부여\" 탭\n2. iPhone에서 허용\n3. 워치 앱이 닫힙니다\n4. 다시 열고 \"계속\" 탭';
 
   @override
   String get grantPermissionButton => '권한 부여';
@@ -1881,8 +1878,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get needHelp => '도움이 필요하신가요?';
 
   @override
-  String get troubleshootingSteps =>
-      '문제 해결:\n\n1. 워치에 Omi가 설치되어 있는지 확인\n2. 워치에서 Omi 앱 열기\n3. 권한 팝업 찾기\n4. 메시지가 나타나면 \"허용\" 탭\n5. 워치의 앱이 닫힙니다 - 다시 열기\n6. 돌아와서 iPhone에서 \"계속\" 탭';
+  String get troubleshootingSteps => '문제 해결:\n\n1. 워치에 Omi가 설치되어 있는지 확인\n2. 워치에서 Omi 앱 열기\n3. 권한 팝업 찾기\n4. 메시지가 나타나면 \"허용\" 탭\n5. 워치의 앱이 닫힙니다 - 다시 열기\n6. 돌아와서 iPhone에서 \"계속\" 탭';
 
   @override
   String get recordingStartedSuccessfully => '녹음이 성공적으로 시작되었습니다!';
@@ -2342,8 +2338,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get unpairDeviceDialogTitle => '기기 페어링 해제';
 
   @override
-  String get unpairDeviceDialogMessage =>
-      '기기 페어링을 해제하여 다른 전화기에 연결할 수 있도록 합니다. 설정 > Bluetooth로 이동하여 기기를 삭제하여 프로세스를 완료해야 합니다.';
+  String get unpairDeviceDialogMessage => '기기 페어링을 해제하여 다른 전화기에 연결할 수 있도록 합니다. 설정 > Bluetooth로 이동하여 기기를 삭제하여 프로세스를 완료해야 합니다.';
 
   @override
   String get unpair => '페어링 해제';
@@ -4114,8 +4109,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get omiApiKeys => 'Omi API 키';
 
   @override
-  String get apiKeysDescription =>
-      'API 키는 앱이 OMI 서버와 통신할 때 인증에 사용됩니다. 애플리케이션이 메모리를 생성하고 다른 OMI 서비스에 안전하게 접근할 수 있게 합니다.';
+  String get apiKeysDescription => 'API 키는 앱이 OMI 서버와 통신할 때 인증에 사용됩니다. 애플리케이션이 메모리를 생성하고 다른 OMI 서비스에 안전하게 접근할 수 있게 합니다.';
 
   @override
   String get aboutOmiApiKeys => 'Omi API 키 정보';
@@ -4246,8 +4240,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get maximumSecurityE2ee => '최대 보안 (E2EE)';
 
   @override
-  String get e2eeDescription =>
-      '엔드투엔드 암호화는 개인정보 보호의 최고 기준입니다. 활성화되면 데이터가 서버로 전송되기 전에 기기에서 암호화됩니다. 이는 Omi를 포함한 그 누구도 귀하의 콘텐츠에 접근할 수 없음을 의미합니다.';
+  String get e2eeDescription => '엔드투엔드 암호화는 개인정보 보호의 최고 기준입니다. 활성화되면 데이터가 서버로 전송되기 전에 기기에서 암호화됩니다. 이는 Omi를 포함한 그 누구도 귀하의 콘텐츠에 접근할 수 없음을 의미합니다.';
 
   @override
   String get importantTradeoffs => '중요한 절충 사항:';
@@ -4281,8 +4274,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get secureEncryption => '안전한 암호화';
 
   @override
-  String get secureEncryptionDescription =>
-      '귀하의 데이터는 Google Cloud에서 호스팅되는 당사 서버에서 귀하만의 고유한 키로 암호화됩니다. 이는 Omi 직원이나 Google을 포함한 누구도 데이터베이스에서 직접 귀하의 원시 콘텐츠에 접근할 수 없음을 의미합니다.';
+  String get secureEncryptionDescription => '귀하의 데이터는 Google Cloud에서 호스팅되는 당사 서버에서 귀하만의 고유한 키로 암호화됩니다. 이는 Omi 직원이나 Google을 포함한 누구도 데이터베이스에서 직접 귀하의 원시 콘텐츠에 접근할 수 없음을 의미합니다.';
 
   @override
   String get endToEndEncryption => '엔드투엔드 암호화';
@@ -4519,8 +4511,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get yourPrivacyMattersToUs => '당신의 개인정보는 우리에게 중요합니다';
 
   @override
-  String get privacyIntroText =>
-      'Omi에서는 귀하의 개인정보를 매우 중요하게 생각합니다. 수집하는 데이터와 사용 방법에 대해 투명하게 알려드리고자 합니다. 알아야 할 사항은 다음과 같습니다:';
+  String get privacyIntroText => 'Omi에서는 귀하의 개인정보를 매우 중요하게 생각합니다. 수집하는 데이터와 사용 방법에 대해 투명하게 알려드리고자 합니다. 알아야 할 사항은 다음과 같습니다:';
 
   @override
   String get whatWeTrack => '추적 항목';
@@ -4612,8 +4603,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get exportStartedMayTakeFewSeconds => '내보내기가 시작되었습니다. 몇 초 정도 걸릴 수 있습니다...';
 
   @override
-  String get knowledgeGraphDeleteDescription =>
-      '이렇게 하면 모든 파생 지식 그래프 데이터(노드 및 연결)가 삭제됩니다. 원본 기억은 안전하게 유지됩니다. 그래프는 시간이 지나면서 또는 다음 요청 시 다시 구축됩니다.';
+  String get knowledgeGraphDeleteDescription => '이렇게 하면 모든 파생 지식 그래프 데이터(노드 및 연결)가 삭제됩니다. 원본 기억은 안전하게 유지됩니다. 그래프는 시간이 지나면서 또는 다음 요청 시 다시 구축됩니다.';
 
   @override
   String get configureDailySummaryDigest => '일일 작업 요약 구성';
@@ -4996,8 +4986,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get additionalSpeechSampleRemoved => '추가 음성 샘플이 삭제되었습니다';
 
   @override
-  String get consentDataMessage =>
-      '계속하면 대화, 녹음 및 개인 정보가 서버에 안전하게 저장됩니다. 오디오 녹음 및 텍스트 변환은 제3자 AI 서비스(전사를 위한 Deepgram 및 분석을 위한 OpenAI 포함)에 의해 처리되어 AI 기반 인사이트를 제공하고 모든 앱 기능을 활성화합니다.';
+  String get consentDataMessage => '계속하면 대화, 녹음 및 개인 정보가 서버에 안전하게 저장됩니다. 오디오 녹음 및 텍스트 변환은 제3자 AI 서비스(전사를 위한 Deepgram 및 분석을 위한 OpenAI 포함)에 의해 처리되어 AI 기반 인사이트를 제공하고 모든 앱 기능을 활성화합니다.';
 
   @override
   String get tasksEmptyStateMessage => '대화에서 생성된 작업이 여기에 표시됩니다.\n수동으로 만들려면 +를 탭하세요.';
@@ -5051,8 +5040,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get iveInstalledAndOpenedTheApp => '앱을 설치하고 열었습니다';
 
   @override
-  String get unableToOpenWatchApp =>
-      'Apple Watch 앱을 열 수 없습니다. Apple Watch에서 Watch 앱을 수동으로 열고 \"사용 가능한 앱\" 섹션에서 Omi를 설치하세요.';
+  String get unableToOpenWatchApp => 'Apple Watch 앱을 열 수 없습니다. Apple Watch에서 Watch 앱을 수동으로 열고 \"사용 가능한 앱\" 섹션에서 Omi를 설치하세요.';
 
   @override
   String get appleWatchConnectedSuccessfully => 'Apple Watch가 성공적으로 연결되었습니다!';
@@ -5504,8 +5492,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get howToTakeGoodSample => '좋은 샘플을 얻는 방법은?';
 
   @override
-  String get goodSampleInstructions =>
-      '1. 조용한 장소에 있는지 확인하세요.\n2. 명확하고 자연스럽게 말하세요.\n3. 기기가 목에 자연스러운 위치에 있는지 확인하세요.\n\n생성 후에는 언제든지 개선하거나 다시 할 수 있습니다.';
+  String get goodSampleInstructions => '1. 조용한 장소에 있는지 확인하세요.\n2. 명확하고 자연스럽게 말하세요.\n3. 기기가 목에 자연스러운 위치에 있는지 확인하세요.\n\n생성 후에는 언제든지 개선하거나 다시 할 수 있습니다.';
 
   @override
   String get noDeviceConnectedUseMic => '연결된 기기가 없습니다. 휴대폰 마이크를 사용합니다.';
@@ -8342,8 +8329,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get fairUseAboutTitle => '공정 사용에 대하여';
 
   @override
-  String get fairUseAboutBody =>
-      'Omi는 개인 대화, 회의 및 실시간 상호작용을 위해 설계되었습니다. 사용량은 연결 시간이 아닌 감지된 실제 발화 시간으로 측정됩니다. 비개인적 콘텐츠에 대해 정상 패턴을 크게 초과하는 사용이 있을 경우 조정이 적용될 수 있습니다.';
+  String get fairUseAboutBody => 'Omi는 개인 대화, 회의 및 실시간 상호작용을 위해 설계되었습니다. 사용량은 연결 시간이 아닌 감지된 실제 발화 시간으로 측정됩니다. 비개인적 콘텐츠에 대해 정상 패턴을 크게 초과하는 사용이 있을 경우 조정이 적용될 수 있습니다.';
 
   @override
   String fairUseCaseRefCopied(String caseRef) {
@@ -8381,8 +8367,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get improveConnectionTitle => '연결 개선';
 
   @override
-  String get improveConnectionContent =>
-      'Omi가 기기와 연결을 유지하는 방식을 개선했습니다. 이를 활성화하려면 기기 정보 페이지로 이동하여 \"기기 연결 해제\"를 탭한 다음 기기를 다시 페어링하세요.';
+  String get improveConnectionContent => 'Omi가 기기와 연결을 유지하는 방식을 개선했습니다. 이를 활성화하려면 기기 정보 페이지로 이동하여 \"기기 연결 해제\"를 탭한 다음 기기를 다시 페어링하세요.';
 
   @override
   String get improveConnectionAction => '알겠습니다';
@@ -8747,8 +8732,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get firmwareWarningTitle => '중요: 업데이트 전 확인사항';
 
   @override
-  String get firmwareFormatWarning =>
-      '이 펌웨어는 SD 카드를 포맷합니다. 업그레이드 전에 모든 오프라인 데이터가 동기화되었는지 확인하세요.\n\n이 버전 설치 후 빨간 불이 깜빡이더라도 걱정하지 마세요. 기기를 앱에 연결하면 파란색으로 바뀝니다. 빨간 불은 기기의 시계가 아직 동기화되지 않았다는 의미입니다.';
+  String get firmwareFormatWarning => '이 펌웨어는 SD 카드를 포맷합니다. 업그레이드 전에 모든 오프라인 데이터가 동기화되었는지 확인하세요.\n\n이 버전 설치 후 빨간 불이 깜빡이더라도 걱정하지 마세요. 기기를 앱에 연결하면 파란색으로 바뀝니다. 빨간 불은 기기의 시계가 아직 동기화되지 않았다는 의미입니다.';
 
   @override
   String get continueAnyway => '계속';
@@ -8768,8 +8752,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get tasksMarkComplete => '완료로 표시됨';
 
   @override
-  String get appleHealthManageNote =>
-      'Omi는 Apple의 HealthKit 프레임워크를 통해 Apple Health에 접근합니다. iOS 설정에서 언제든지 접근 권한을 철회할 수 있습니다.';
+  String get appleHealthManageNote => 'Omi는 Apple의 HealthKit 프레임워크를 통해 Apple Health에 접근합니다. iOS 설정에서 언제든지 접근 권한을 철회할 수 있습니다.';
 
   @override
   String get appleHealthConnectCta => 'Apple Health에 연결';
@@ -8871,8 +8854,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get planUpdate => '플랜 업데이트';
 
   @override
-  String get planDeprecationMessage =>
-      'Unlimited 플랜이 중단됩니다. Operator 플랜으로 전환하세요 — 동일한 훌륭한 기능을 월 \$49에 이용할 수 있습니다. 현재 플랜은 당분간 계속 사용할 수 있습니다.';
+  String get planDeprecationMessage => 'Unlimited 플랜이 중단됩니다. Operator 플랜으로 전환하세요 — 동일한 훌륭한 기능을 월 \$49에 이용할 수 있습니다. 현재 플랜은 당분간 계속 사용할 수 있습니다.';
 
   @override
   String get upgradeYourPlan => '플랜 업그레이드';
@@ -9014,4 +8996,25 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get mindMap => 'Mind Map';
+
+  @override
+  String get quickActionAddTask => '작업 추가';
+
+  @override
+  String get quickActionAskOmiAnything => 'Omi에게 무엇이든 물어보세요';
+
+  @override
+  String get quickActionVoiceMode => '음성 모드';
+
+  @override
+  String get quickActionMute => '음소거';
+
+  @override
+  String get quickActionUnmute => '음소거 해제';
+
+  @override
+  String get quickActionConnectDevice => '기기 연결';
+
+  @override
+  String get quickActionDeviceSettings => '기기 설정';
 }

@@ -2958,5 +2958,12 @@
   "mindMap": "Mind Map",
   "@mindMap": {
     "description": "Section header for memory knowledge graph on home page"
-  }
+  },
+  "quickActionAddTask": "إضافة مهمة",
+  "quickActionAskOmiAnything": "اسأل أومي أي شيء",
+  "quickActionVoiceMode": "الوضع الصوتي",
+  "quickActionMute": "كتم الصوت",
+  "quickActionUnmute": "إلغاء كتم الصوت",
+  "quickActionConnectDevice": "ربط الجهاز",
+  "quickActionDeviceSettings": "إعدادات الجهاز"
 }
