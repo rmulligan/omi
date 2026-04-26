@@ -77,6 +77,9 @@ async fn gemini_proxy(
     Path(path): Path<String>,
     body: Bytes,
 ) -> Result<Response, ProxyError> {
+    // Rewrite preview models to stable equivalents (old app compat)
+    let path = maybe_rewrite_preview_model(&path);
+
     // Validate the action is in our allowlist
     let action = extract_gemini_action(&path);
     if !is_gemini_action_allowed(action) {
@@ -117,15 +120,18 @@ async fn gemini_proxy(
     }
 
     // Build request: Vertex AI (Bearer token) or AI Studio (API key).
-    // Routing uses model_qos::is_vertex_available() to decide per-model:
-    //   - Stable models (gemini-2.5-flash, gemini-2.5-pro) → Vertex AI
-    //   - Embedding models, preview models → AI Studio
+    // Routing uses model_qos::is_vertex_available() to decide per-model.
+    // Embedding special case: embedContent uses `:predict` on Vertex AI with
+    // body transformation; batchEmbedContents stays on AI Studio (single-text limit).
     // Falls back to AI Studio if Vertex AI token fetch fails at request time.
     let use_vertex_for_model = crate::llm::model_qos::is_vertex_available(model);
+    let is_batch_embed = action == "batchEmbedContents";
+    let is_single_embed = action == "embedContent";
     let mut used_vertex = false;
     let upstream = if let Some(ref vertex) = state.vertex_auth {
-        if !use_vertex_for_model {
-            // Model not on Vertex AI (embeddings, preview) → AI Studio directly
+        if !use_vertex_for_model || is_batch_embed {
+            // Model not on Vertex AI, or batch embed (Vertex only supports single text)
+            // → AI Studio directly
             let gemini_key = state
                 .config
                 .gemini_api_key
@@ -138,6 +144,46 @@ async fn gemini_proxy(
                 .body(sanitized_body.clone())
                 .send()
                 .await
+        } else if is_single_embed {
+            // Single embed on Vertex AI: transform body and use :predict action
+            let vertex_body = transform_embed_request_to_vertex(&sanitized_body)
+                .map_err(|e| {
+                    tracing::warn!("gemini_proxy: embed body transform failed: {}", e);
+                    ProxyError::Status(StatusCode::BAD_REQUEST)
+                })?;
+            // Build URL with :predict instead of :embedContent
+            let predict_path = effective_path.replace(":embedContent", ":predict");
+            let url = vertex.build_url_from_path(&predict_path).ok_or_else(|| {
+                tracing::error!("gemini_proxy: failed to parse path for Vertex AI embed: {}", predict_path);
+                ProxyError::Status(StatusCode::BAD_REQUEST)
+            })?;
+            match vertex.token().await {
+                Ok(token) => {
+                    used_vertex = true;
+                    reqwest::Client::new()
+                        .post(&url)
+                        .header("content-type", "application/json")
+                        .header("authorization", format!("Bearer {}", token))
+                        .body(vertex_body)
+                        .send()
+                        .await
+                }
+                Err(e) => {
+                    if let Some(gemini_key) = state.config.gemini_api_key.as_ref() {
+                        tracing::warn!("gemini_proxy: Vertex AI token failed for embed, falling back: {}", e);
+                        let url = build_gemini_url(&effective_path, gemini_key);
+                        reqwest::Client::new()
+                            .post(&url)
+                            .header("content-type", "application/json")
+                            .body(sanitized_body.clone())
+                            .send()
+                            .await
+                    } else {
+                        tracing::error!("gemini_proxy: Vertex AI token error and no fallback: {}", e);
+                        return Err(ProxyError::Status(StatusCode::SERVICE_UNAVAILABLE));
+                    }
+                }
+            }
         } else {
             let url = vertex.build_url_from_path(&effective_path).ok_or_else(|| {
                 tracing::error!("gemini_proxy: failed to parse path for Vertex AI: {}", effective_path);
@@ -187,7 +233,6 @@ async fn gemini_proxy(
             .await
     };
 
-    let _ = used_vertex; // for future logging/metrics
     let upstream = upstream.map_err(|e| {
         tracing::error!("gemini_proxy: upstream request failed: {}", e);
         ProxyError::Status(StatusCode::BAD_GATEWAY)
@@ -199,6 +244,18 @@ async fn gemini_proxy(
         tracing::error!("gemini_proxy: failed to read upstream body: {}", e);
         ProxyError::Status(StatusCode::BAD_GATEWAY)
     })?;
+
+    // Transform Vertex AI predict response back to AI Studio embedContent format
+    // so the desktop app (EmbeddingService.swift) can parse it unchanged.
+    if used_vertex && is_single_embed && status.is_success() {
+        match transform_vertex_embed_response(&bytes) {
+            Ok(transformed) => return Ok((status, transformed).into_response()),
+            Err(e) => {
+                tracing::warn!("gemini_proxy: embed response transform failed: {}", e);
+                // Fall through to return raw response
+            }
+        }
+    }
 
     Ok((status, bytes).into_response())
 }
@@ -213,6 +270,9 @@ async fn gemini_stream_proxy(
     axum::extract::Query(query): axum::extract::Query<std::collections::HashMap<String, String>>,
     body: Bytes,
 ) -> Result<Response, ProxyError> {
+    // Rewrite preview models to stable equivalents (old app compat)
+    let path = maybe_rewrite_preview_model(&path);
+
     // Validate the action
     let action = extract_gemini_action(&path);
     if !is_gemini_action_allowed(action) {
@@ -656,6 +716,78 @@ fn sanitize_gemini_body(body: &[u8], action: &str) -> Result<Vec<u8>, String> {
     }
 
     serde_json::to_vec(&json).map_err(|e| format!("failed to re-serialize: {}", e))
+}
+
+/// Transform an AI Studio embedContent request body to Vertex AI predict format.
+///
+/// AI Studio: `{"content": {"parts": [{"text": "TEXT"}]}, "taskType": "X", "title": "T"}`
+/// Vertex AI: `{"instances": [{"content": "TEXT", "taskType": "X", "title": "T"}]}`
+fn transform_embed_request_to_vertex(body: &[u8]) -> Result<Vec<u8>, String> {
+    let json: serde_json::Value =
+        serde_json::from_slice(body).map_err(|e| format!("invalid JSON: {}", e))?;
+    let obj = json
+        .as_object()
+        .ok_or_else(|| "request body must be a JSON object".to_string())?;
+
+    // Extract text from content.parts[0].text
+    let text = obj
+        .get("content")
+        .and_then(|c| c.get("parts"))
+        .and_then(|p| p.as_array())
+        .and_then(|a| a.first())
+        .and_then(|p| p.get("text"))
+        .and_then(|t| t.as_str())
+        .ok_or_else(|| "missing content.parts[0].text in embed request".to_string())?;
+
+    let mut instance = serde_json::Map::new();
+    instance.insert(
+        "content".to_string(),
+        serde_json::Value::String(text.to_string()),
+    );
+
+    // Forward optional fields
+    if let Some(task_type) = obj.get("taskType") {
+        instance.insert("task_type".to_string(), task_type.clone());
+    }
+    if let Some(title) = obj.get("title") {
+        instance.insert("title".to_string(), title.clone());
+    }
+
+    let vertex_body = serde_json::json!({ "instances": [instance] });
+    serde_json::to_vec(&vertex_body).map_err(|e| format!("failed to serialize: {}", e))
+}
+
+/// Transform a Vertex AI predict response back to AI Studio embedContent format.
+///
+/// Vertex AI: `{"predictions": [{"embeddings": {"values": [...], "statistics": {...}}}]}`
+/// AI Studio: `{"embedding": {"values": [...]}}`
+fn transform_vertex_embed_response(body: &[u8]) -> Result<Vec<u8>, String> {
+    let json: serde_json::Value =
+        serde_json::from_slice(body).map_err(|e| format!("invalid JSON: {}", e))?;
+
+    let values = json
+        .get("predictions")
+        .and_then(|p| p.as_array())
+        .and_then(|a| a.first())
+        .and_then(|pred| pred.get("embeddings"))
+        .and_then(|emb| emb.get("values"))
+        .ok_or_else(|| "missing predictions[0].embeddings.values in Vertex response".to_string())?;
+
+    let ai_studio_response = serde_json::json!({
+        "embedding": { "values": values }
+    });
+    serde_json::to_vec(&ai_studio_response).map_err(|e| format!("failed to serialize: {}", e))
+}
+
+/// Rewrite preview model requests to their stable equivalent.
+/// Old desktop app versions hardcode gemini-3-flash-preview — rewrite to gemini-2.5-flash
+/// so these requests go through Vertex AI instead of AI Studio.
+fn maybe_rewrite_preview_model(path: &str) -> std::borrow::Cow<'_, str> {
+    if path.contains("gemini-3-flash-preview") {
+        std::borrow::Cow::Owned(path.replace("gemini-3-flash-preview", "gemini-2.5-flash"))
+    } else {
+        std::borrow::Cow::Borrowed(path)
+    }
 }
 
 /// Build upstream Gemini URL for non-streaming requests
@@ -1334,5 +1466,117 @@ mod tests {
         assert!(debug_strs.contains(&"UpstreamClosed".to_string()));
         assert!(debug_strs.contains(&"ClientError".to_string()));
         assert!(debug_strs.contains(&"UpstreamError".to_string()));
+    }
+
+    // --- Embedding body transform (AI Studio → Vertex AI predict) ---
+
+    #[test]
+    fn embed_request_transform_basic() {
+        let body = serde_json::json!({
+            "content": {"parts": [{"text": "hello world"}]},
+            "taskType": "RETRIEVAL_DOCUMENT"
+        });
+        let result = transform_embed_request_to_vertex(
+            serde_json::to_vec(&body).unwrap().as_slice(),
+        ).unwrap();
+        let parsed: serde_json::Value = serde_json::from_slice(&result).unwrap();
+        assert_eq!(parsed["instances"][0]["content"], "hello world");
+        assert_eq!(parsed["instances"][0]["task_type"], "RETRIEVAL_DOCUMENT");
+    }
+
+    #[test]
+    fn embed_request_transform_with_title() {
+        let body = serde_json::json!({
+            "content": {"parts": [{"text": "doc text"}]},
+            "taskType": "RETRIEVAL_DOCUMENT",
+            "title": "My Document"
+        });
+        let result = transform_embed_request_to_vertex(
+            serde_json::to_vec(&body).unwrap().as_slice(),
+        ).unwrap();
+        let parsed: serde_json::Value = serde_json::from_slice(&result).unwrap();
+        assert_eq!(parsed["instances"][0]["title"], "My Document");
+    }
+
+    #[test]
+    fn embed_request_transform_no_task_type() {
+        let body = serde_json::json!({
+            "content": {"parts": [{"text": "simple text"}]}
+        });
+        let result = transform_embed_request_to_vertex(
+            serde_json::to_vec(&body).unwrap().as_slice(),
+        ).unwrap();
+        let parsed: serde_json::Value = serde_json::from_slice(&result).unwrap();
+        assert_eq!(parsed["instances"][0]["content"], "simple text");
+        assert!(parsed["instances"][0].get("task_type").is_none());
+    }
+
+    #[test]
+    fn embed_request_transform_rejects_missing_content() {
+        let body = serde_json::json!({"taskType": "RETRIEVAL_QUERY"});
+        let result = transform_embed_request_to_vertex(
+            serde_json::to_vec(&body).unwrap().as_slice(),
+        );
+        assert!(result.is_err());
+    }
+
+    // --- Vertex AI predict response → AI Studio embed response ---
+
+    #[test]
+    fn embed_response_transform_basic() {
+        let vertex_resp = serde_json::json!({
+            "predictions": [{
+                "embeddings": {
+                    "values": [0.1, 0.2, 0.3],
+                    "statistics": {"truncated": false, "token_count": 2}
+                }
+            }]
+        });
+        let result = transform_vertex_embed_response(
+            serde_json::to_vec(&vertex_resp).unwrap().as_slice(),
+        ).unwrap();
+        let parsed: serde_json::Value = serde_json::from_slice(&result).unwrap();
+        let values = parsed["embedding"]["values"].as_array().unwrap();
+        assert_eq!(values.len(), 3);
+        assert_eq!(values[0], 0.1);
+    }
+
+    #[test]
+    fn embed_response_transform_rejects_missing_predictions() {
+        let resp = serde_json::json!({"error": "bad request"});
+        let result = transform_vertex_embed_response(
+            serde_json::to_vec(&resp).unwrap().as_slice(),
+        );
+        assert!(result.is_err());
+    }
+
+    // --- Preview model rewrite ---
+
+    #[test]
+    fn preview_rewrite_replaces_preview_model() {
+        let path = "models/gemini-3-flash-preview:generateContent";
+        let result = maybe_rewrite_preview_model(path);
+        assert_eq!(result, "models/gemini-2.5-flash:generateContent");
+    }
+
+    #[test]
+    fn preview_rewrite_preserves_stable_models() {
+        let path = "models/gemini-2.5-flash:generateContent";
+        let result = maybe_rewrite_preview_model(path);
+        assert_eq!(result, path);
+    }
+
+    #[test]
+    fn preview_rewrite_preserves_pro() {
+        let path = "models/gemini-2.5-pro:streamGenerateContent";
+        let result = maybe_rewrite_preview_model(path);
+        assert_eq!(result, path);
+    }
+
+    #[test]
+    fn preview_rewrite_preserves_embedding() {
+        let path = "models/gemini-embedding-001:embedContent";
+        let result = maybe_rewrite_preview_model(path);
+        assert_eq!(result, path);
     }
 }
