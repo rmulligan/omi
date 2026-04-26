@@ -134,6 +134,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
 
   CaptureProvider? _captureProvider;
   DeviceProvider? _deviceProviderForQuickActions;
+  CaptureProvider? _captureProviderForQuickActions;
 
   void _initiateApps() {
     context.read<AppProvider>().getApps();
@@ -483,6 +484,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
       QuickActionsService.instance.initialize(context);
       _deviceProviderForQuickActions = Provider.of<DeviceProvider>(context, listen: false);
       _deviceProviderForQuickActions!.addListener(_onDeviceStateChangedForQuickActions);
+      _captureProviderForQuickActions = Provider.of<CaptureProvider>(context, listen: false);
+      _captureProviderForQuickActions!.addListener(_onDeviceStateChangedForQuickActions);
     });
   }
 
@@ -1114,9 +1117,10 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
       deviceProvider.onDeviceConnected = null;
       deviceProvider.onOfflineDataDetected = null;
     } catch (_) {}
-    // Remove quick actions device listener
     _deviceProviderForQuickActions?.removeListener(_onDeviceStateChangedForQuickActions);
     _deviceProviderForQuickActions = null;
+    _captureProviderForQuickActions?.removeListener(_onDeviceStateChangedForQuickActions);
+    _captureProviderForQuickActions = null;
     // Clean up freemium handler
     _freemiumHandler.dispose();
     // Remove foreground task callback to prevent memory leak
