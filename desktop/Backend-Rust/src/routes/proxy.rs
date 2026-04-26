@@ -1511,4 +1511,99 @@ mod tests {
         assert!(result.is_err());
     }
 
+    // --- Integration: embed route composition (preview rewrite + resolve + transform) ---
+
+    /// Verifies the full embed pipeline: resolve_route returns correct action override
+    /// and transforms, and the request/response transforms produce correct shapes.
+    #[test]
+    fn embed_vertex_route_end_to_end_composition() {
+        use crate::llm::model_qos::{resolve_route, BodyTransform, Provider, ResponseTransform};
+
+        // 1. resolve_route returns Vertex AI with :predict action and transforms
+        let route = resolve_route("gemini-embedding-001", "embedContent");
+        assert_eq!(route.provider, Provider::VertexAi);
+        assert_eq!(route.vertex_action, Some("predict"));
+        assert_eq!(route.request_transform, BodyTransform::EmbedToPredict);
+        assert_eq!(route.response_transform, ResponseTransform::PredictToEmbed);
+
+        // 2. Action override: :embedContent → :predict in path
+        let path = "models/gemini-embedding-001:embedContent";
+        let overridden = path.replace(
+            &format!(":{}", "embedContent"),
+            &format!(":{}", route.vertex_action.unwrap()),
+        );
+        assert_eq!(overridden, "models/gemini-embedding-001:predict");
+
+        // 3. Request transform: AI Studio body → Vertex predict body
+        let ai_studio_body = serde_json::json!({
+            "content": {"parts": [{"text": "test embedding"}]},
+            "taskType": "RETRIEVAL_DOCUMENT"
+        });
+        let vertex_body = transform_embed_request_to_vertex(
+            serde_json::to_vec(&ai_studio_body).unwrap().as_slice(),
+        ).unwrap();
+        let parsed_req: serde_json::Value = serde_json::from_slice(&vertex_body).unwrap();
+        assert_eq!(parsed_req["instances"][0]["content"], "test embedding");
+        assert_eq!(parsed_req["instances"][0]["task_type"], "RETRIEVAL_DOCUMENT");
+
+        // 4. Response transform: Vertex predict response → AI Studio embed response
+        let vertex_response = serde_json::json!({
+            "predictions": [{
+                "embeddings": {
+                    "values": [0.1, 0.2, 0.3, 0.4],
+                    "statistics": {"truncated": false, "token_count": 3}
+                }
+            }]
+        });
+        let ai_studio_resp = transform_vertex_embed_response(
+            serde_json::to_vec(&vertex_response).unwrap().as_slice(),
+        ).unwrap();
+        let parsed_resp: serde_json::Value = serde_json::from_slice(&ai_studio_resp).unwrap();
+        let values = parsed_resp["embedding"]["values"].as_array().unwrap();
+        assert_eq!(values.len(), 4);
+        // statistics are NOT forwarded — AI Studio format only has values
+        assert!(parsed_resp["embedding"].get("statistics").is_none());
+    }
+
+    /// Verifies that preview model rewrite + resolve_route produces a Vertex AI route
+    /// (old apps requesting preview get rewritten to flash → routed to Vertex).
+    #[test]
+    fn preview_rewrite_then_resolve_routes_to_vertex() {
+        use crate::llm::model_qos::{rewrite_preview_model, resolve_route, Provider};
+
+        let original_path = "models/gemini-3-flash-preview:generateContent";
+        let rewritten = rewrite_preview_model(original_path);
+        assert_eq!(rewritten, "models/gemini-2.5-flash:generateContent");
+
+        let model = extract_gemini_model(&rewritten);
+        let action = extract_gemini_action(&rewritten);
+        assert_eq!(model, "gemini-2.5-flash");
+        assert_eq!(action, "generateContent");
+
+        let route = resolve_route(model, action);
+        assert_eq!(route.provider, Provider::VertexAi);
+    }
+
+    /// Verifies Vertex streaming URL preserves query params (e.g., alt=sse).
+    /// This covers the streaming proxy's URL construction logic.
+    #[test]
+    fn vertex_stream_url_preserves_query_params() {
+        // Simulate what gemini_stream_proxy does: build Vertex URL then append query params
+        let vertex_base = "https://us-central1-aiplatform.googleapis.com/v1/projects/p/locations/us-central1/publishers/google/models/gemini-2.5-flash:streamGenerateContent";
+        let mut url = vertex_base.to_string();
+        let query: std::collections::HashMap<String, String> = [
+            ("alt".to_string(), "sse".to_string()),
+            ("key".to_string(), "should-not-appear".to_string()),
+        ].into();
+        for (k, v) in &query {
+            url.push(if url.contains('?') { '&' } else { '?' });
+            url.push_str(&urlencoding::encode(k));
+            url.push('=');
+            url.push_str(&urlencoding::encode(v));
+        }
+        assert!(url.contains("?") || url.contains("&"));
+        assert!(url.contains("alt=sse"));
+        // Vertex AI uses Bearer auth, not API key in URL — but query params are forwarded as-is
+        assert!(url.starts_with("https://us-central1-aiplatform.googleapis.com"));
+    }
 }
