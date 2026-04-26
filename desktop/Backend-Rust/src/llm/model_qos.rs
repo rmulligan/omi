@@ -118,6 +118,95 @@ pub fn preferred_provider(model: &str) -> Provider {
     }
 }
 
+// MARK: - Provider Route (model + action → routing decision)
+//
+// Centralizes all provider-specific behavior for a (model, action) pair.
+// The proxy handler calls resolve_route() once and gets everything it needs:
+// which provider, what Vertex action to use, whether body transforms are needed.
+// No scattered if-else in the proxy — provider differences are data here.
+
+/// How the request body should be transformed for the target provider.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum BodyTransform {
+    /// Send body as-is (AI Studio format works on both providers for this action)
+    None,
+    /// Embedding: AI Studio embedContent body → Vertex AI predict body
+    EmbedToPredict,
+}
+
+/// How the response body should be transformed back for the client.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum ResponseTransform {
+    /// Return response as-is
+    None,
+    /// Embedding: Vertex AI predict response → AI Studio embedContent response
+    PredictToEmbed,
+}
+
+/// Resolved routing decision for a (model, action) pair.
+#[derive(Debug, Clone, PartialEq)]
+pub struct ProviderRoute {
+    /// Which provider to use
+    pub provider: Provider,
+    /// Vertex AI action override (e.g., "predict" instead of "embedContent").
+    /// None means use the original action.
+    pub vertex_action: Option<&'static str>,
+    /// Request body transformation
+    pub request_transform: BodyTransform,
+    /// Response body transformation
+    pub response_transform: ResponseTransform,
+}
+
+/// Resolve the provider route for a (model, action) pair.
+///
+/// This is the single dispatch point for all provider-specific behavior.
+/// The proxy calls this once and follows the returned ProviderRoute.
+pub fn resolve_route(model: &str, action: &str) -> ProviderRoute {
+    // Models not on Vertex AI → always AI Studio, no transforms
+    if !is_vertex_available(model) {
+        return ProviderRoute {
+            provider: Provider::AiStudio,
+            vertex_action: None,
+            request_transform: BodyTransform::None,
+            response_transform: ResponseTransform::None,
+        };
+    }
+
+    match action {
+        // Single embed: Vertex AI uses :predict with different body format
+        "embedContent" => ProviderRoute {
+            provider: Provider::VertexAi,
+            vertex_action: Some("predict"),
+            request_transform: BodyTransform::EmbedToPredict,
+            response_transform: ResponseTransform::PredictToEmbed,
+        },
+        // Batch embed: Vertex AI only supports single text, stay on AI Studio
+        "batchEmbedContents" => ProviderRoute {
+            provider: Provider::AiStudio,
+            vertex_action: None,
+            request_transform: BodyTransform::None,
+            response_transform: ResponseTransform::None,
+        },
+        // All other actions (generateContent, streamGenerateContent): Vertex AI, no transforms
+        _ => ProviderRoute {
+            provider: Provider::VertexAi,
+            vertex_action: None,
+            request_transform: BodyTransform::None,
+            response_transform: ResponseTransform::None,
+        },
+    }
+}
+
+/// Rewrite a preview model to its stable equivalent.
+/// Old desktop app versions hardcode gemini-3-flash-preview — rewrite to gemini-2.5-flash.
+pub fn rewrite_preview_model(path: &str) -> std::borrow::Cow<'_, str> {
+    if path.contains("gemini-3-flash-preview") {
+        std::borrow::Cow::Owned(path.replace("gemini-3-flash-preview", "gemini-2.5-flash"))
+    } else {
+        std::borrow::Cow::Borrowed(path)
+    }
+}
+
 // MARK: - Rate Limit Thresholds (tier-aware)
 
 /// Daily soft limit — at or above this, Pro requests degrade to Flash.
@@ -287,5 +376,70 @@ mod tests {
         for tier in [ModelTier::Premium, ModelTier::Max] {
             assert!(daily_soft_limit_for(tier) < daily_hard_limit_for(tier));
         }
+    }
+
+    // --- ProviderRoute resolution ---
+
+    #[test]
+    fn route_flash_generate_content() {
+        let route = resolve_route("gemini-2.5-flash", "generateContent");
+        assert_eq!(route.provider, Provider::VertexAi);
+        assert_eq!(route.vertex_action, None);
+        assert_eq!(route.request_transform, BodyTransform::None);
+        assert_eq!(route.response_transform, ResponseTransform::None);
+    }
+
+    #[test]
+    fn route_pro_stream_generate_content() {
+        let route = resolve_route("gemini-2.5-pro", "streamGenerateContent");
+        assert_eq!(route.provider, Provider::VertexAi);
+        assert_eq!(route.vertex_action, None);
+        assert_eq!(route.request_transform, BodyTransform::None);
+    }
+
+    #[test]
+    fn route_embed_content_uses_predict() {
+        let route = resolve_route("gemini-embedding-001", "embedContent");
+        assert_eq!(route.provider, Provider::VertexAi);
+        assert_eq!(route.vertex_action, Some("predict"));
+        assert_eq!(route.request_transform, BodyTransform::EmbedToPredict);
+        assert_eq!(route.response_transform, ResponseTransform::PredictToEmbed);
+    }
+
+    #[test]
+    fn route_batch_embed_stays_ai_studio() {
+        let route = resolve_route("gemini-embedding-001", "batchEmbedContents");
+        assert_eq!(route.provider, Provider::AiStudio);
+        assert_eq!(route.vertex_action, None);
+        assert_eq!(route.request_transform, BodyTransform::None);
+    }
+
+    #[test]
+    fn route_preview_model_goes_to_ai_studio() {
+        let route = resolve_route("gemini-3-flash-preview", "generateContent");
+        assert_eq!(route.provider, Provider::AiStudio);
+        assert_eq!(route.request_transform, BodyTransform::None);
+    }
+
+    // --- Preview model rewrite ---
+
+    #[test]
+    fn rewrite_preview_to_flash() {
+        assert_eq!(
+            rewrite_preview_model("models/gemini-3-flash-preview:generateContent"),
+            "models/gemini-2.5-flash:generateContent"
+        );
+    }
+
+    #[test]
+    fn rewrite_preserves_stable_models() {
+        let path = "models/gemini-2.5-flash:generateContent";
+        assert_eq!(rewrite_preview_model(path), path);
+    }
+
+    #[test]
+    fn rewrite_preserves_pro() {
+        let path = "models/gemini-2.5-pro:streamGenerateContent";
+        assert_eq!(rewrite_preview_model(path), path);
     }
 }
