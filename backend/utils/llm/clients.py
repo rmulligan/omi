@@ -170,7 +170,7 @@ def get_openai_chat(model: str, **kwargs) -> ChatOpenAI:
 # Profiles:
 #   premium  — maximize cost savings while preserving 80% of max quality
 #   max      — 100% quality, best models available, no cost optimization
-#   byok     — exact copy of max (BYOK users pay their own API costs)
+#   byok     — same models as max (BYOK users pay their own API costs)
 # ---------------------------------------------------------------------------
 
 MODEL_QOS_PROFILES: Dict[str, Dict[str, Tuple[str, str]]] = {
@@ -276,7 +276,7 @@ MODEL_QOS_PROFILES: Dict[str, Dict[str, Tuple[str, str]]] = {
         'web_search': ('sonar-pro', 'perplexity'),
     },
     # -----------------------------------------------------------------------
-    # byok — exact copy of max. BYOK users pay their own API costs so they
+    # byok — same models as max. BYOK users pay their own API costs so they
     # get the same best-quality routing as max subscribers.
     # -----------------------------------------------------------------------
     'byok': {

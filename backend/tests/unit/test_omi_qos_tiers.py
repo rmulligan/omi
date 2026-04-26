@@ -817,9 +817,30 @@ class TestBYOKWrapperArchitecture:
 class TestBYOKProfile:
     """Verify BYOK QoS profile structure and model selections."""
 
-    def test_byok_is_exact_copy_of_max(self):
-        """byok must be an exact copy of max (BYOK users pay their own costs)."""
-        assert MODEL_QOS_PROFILES['byok'] == MODEL_QOS_PROFILES['max']
+    def test_byok_all_openai_except_special(self):
+        """byok routes all features to OpenAI except chat_agent/web_search/wrapped_analysis."""
+        bk = MODEL_QOS_PROFILES['byok']
+        for feature, (model, provider) in bk.items():
+            if feature in ('chat_agent', 'web_search', 'wrapped_analysis'):
+                continue
+            assert provider == 'openai', f'byok {feature} should be openai, got {provider}'
+
+    def test_byok_model_variants(self):
+        """byok uses same 9 distinct models as max."""
+        bk = MODEL_QOS_PROFILES['byok']
+        distinct = {model for model, _p in bk.values()}
+        expected = {
+            'gpt-5.4',
+            'gpt-5.4-mini',
+            'gpt-4.1',
+            'gpt-4.1-mini',
+            'gpt-4.1-nano',
+            'o4-mini',
+            'claude-sonnet-4-6',
+            'gemini-3-flash-preview',
+            'sonar-pro',
+        }
+        assert distinct == expected
 
     def test_byok_has_same_features_as_premium(self):
         """BYOK profile must cover the same feature set as premium."""
