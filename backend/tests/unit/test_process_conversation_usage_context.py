@@ -491,12 +491,12 @@ def test_all_callsites_use_get_llm():
         conv_proc_calls.count('conv_structure') >= 2
     ), f"Expected at least 2 get_llm('conv_structure') calls (structure + reprocess), got {conv_proc_calls.count('conv_structure')}"
 
-    # knowledge_graph.py: 2 callsites
+    # knowledge_graph.py: 1 callsite (shared _extract_with_retry helper used by both functions)
     kg_source = (backend_dir / "utils" / "llm" / "knowledge_graph.py").read_text()
     kg_calls = re.findall(r"get_llm\('(\w+)'", kg_source)
     assert (
-        kg_calls.count('knowledge_graph') == 2
-    ), f"Expected 2 get_llm('knowledge_graph') calls, got {kg_calls.count('knowledge_graph')}"
+        kg_calls.count('knowledge_graph') == 1
+    ), f"Expected 1 get_llm('knowledge_graph') call (shared retry helper), got {kg_calls.count('knowledge_graph')}"
 
     # memories.py: 5 callsites (memories x2, learnings x1, memory_category x1, memory_conflict x1)
     mem_source = (backend_dir / "utils" / "llm" / "memories.py").read_text()
@@ -506,9 +506,9 @@ def test_all_callsites_use_get_llm():
     assert 'memory_category' in mem_calls, "Missing get_llm('memory_category') in memories.py"
     assert 'memory_conflict' in mem_calls, "Missing get_llm('memory_conflict') in memories.py"
 
-    # Total: 9 + 2 + 5 = 16 callsites
+    # Total: 9 + 1 + 5 = 15 callsites (kg reduced from 2→1 via shared retry helper)
     total = len(conv_proc_calls) + len(kg_calls) + len(mem_calls)
-    assert total == 16, f"Expected 16 total get_llm() callsites, got {total}"
+    assert total == 15, f"Expected 15 total get_llm() callsites, got {total}"
 
 
 def test_no_direct_llm_instance_usage_in_wired_files():

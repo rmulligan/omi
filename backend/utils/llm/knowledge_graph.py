@@ -5,6 +5,7 @@ import logging
 import json
 from concurrent.futures import as_completed
 
+from tenacity import before_sleep_log, retry, stop_after_attempt, wait_random_exponential
 from utils.executors import critical_executor, storage_executor
 
 from langchain_core.output_parsers import PydanticOutputParser
@@ -13,6 +14,10 @@ from pydantic import BaseModel, Field
 from .clients import get_llm
 from .usage_tracker import track_usage, Features
 from database import knowledge_graph as kg_db
+
+logger = logging.getLogger(__name__)
+
+KG_RETRY_ATTEMPTS = 3
 
 
 class ExtractedNode(BaseModel):
@@ -70,6 +75,27 @@ Extract entities and relationships. If no meaningful patterns found, return empt
 """
 
 
+@retry(
+    stop=stop_after_attempt(KG_RETRY_ATTEMPTS),
+    wait=wait_random_exponential(multiplier=1, max=8),
+    reraise=True,
+    before_sleep=before_sleep_log(logger, logging.WARNING),
+)
+def _extract_with_retry(
+    uid: str,
+    prompt: str,
+    parser: PydanticOutputParser,
+) -> KnowledgeGraphExtraction:
+    """Invoke LLM and parse response, retrying on transient failures.
+
+    Retries the entire invoke+parse unit so that malformed JSON responses
+    trigger a fresh LLM call rather than re-parsing the same bad output.
+    """
+    with track_usage(uid, Features.KNOWLEDGE_GRAPH):
+        response = get_llm('knowledge_graph').invoke(prompt)
+    return parser.parse(response.content)
+
+
 def extract_knowledge_from_memory(
     uid: str, memory_content: str, memory_id: str, user_name: str = "User"
 ) -> Optional[Dict[str, Any]]:
@@ -96,9 +122,7 @@ def extract_knowledge_from_memory(
             format_instructions=parser.get_format_instructions(),
         )
 
-        with track_usage(uid, Features.KNOWLEDGE_GRAPH):
-            response = get_llm('knowledge_graph').invoke(prompt)
-        extraction: KnowledgeGraphExtraction = parser.parse(response.content)
+        extraction = _extract_with_retry(uid, prompt, parser)
 
         label_to_node_id = {}
         for existing in existing_nodes:
@@ -150,7 +174,7 @@ def extract_knowledge_from_memory(
         }
 
     except Exception:
-        logging.exception(f"Error extracting knowledge graph from memory_id: {memory_id}")
+        logger.exception("KG extraction failed for memory %s after %d attempts", memory_id, KG_RETRY_ATTEMPTS)
         return None
 
 
@@ -188,9 +212,7 @@ def rebuild_knowledge_graph(uid: str, memories: List[Dict[str, Any]], user_name:
                 format_instructions=parser.get_format_instructions(),
             )
 
-            with track_usage(uid, Features.KNOWLEDGE_GRAPH):
-                response = get_llm('knowledge_graph').invoke(prompt)
-            extraction: KnowledgeGraphExtraction = parser.parse(response.content)
+            extraction = _extract_with_retry(uid, prompt, parser)
 
             created_nodes = []
             created_edges = []
@@ -242,7 +264,7 @@ def rebuild_knowledge_graph(uid: str, memories: List[Dict[str, Any]], user_name:
             return {'nodes': created_nodes, 'edges': created_edges}
 
         except Exception:
-            logging.exception(f"Error extracting knowledge graph from memory_id: {memory_id}")
+            logger.exception("KG extraction failed for memory %s after %d attempts", memory_id, KG_RETRY_ATTEMPTS)
             return {'nodes': [], 'edges': []}
 
     all_nodes = []
@@ -255,6 +277,6 @@ def rebuild_knowledge_graph(uid: str, memories: List[Dict[str, Any]], user_name:
             all_nodes.extend(result.get('nodes', []))
             all_edges.extend(result.get('edges', []))
         except Exception:
-            logging.exception("Error in concurrent memory extraction")
+            logger.exception("Error in concurrent memory extraction")
 
     return kg_db.get_knowledge_graph(uid)
