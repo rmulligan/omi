@@ -44,12 +44,13 @@ class WebhookCircuitBreaker:
     correctly across different event loops.
     """
 
-    __slots__ = ('_failures', '_last_failure_time', '_state', '_half_open_in_flight', '_url')
+    __slots__ = ('_failures', '_last_failure_time', '_last_access_time', '_state', '_half_open_in_flight', '_url')
 
     def __init__(self, url: str):
         self._url = url
         self._failures = 0
         self._last_failure_time = 0.0
+        self._last_access_time = time.monotonic()
         self._state = 'closed'
         self._half_open_in_flight = 0
 
@@ -62,6 +63,7 @@ class WebhookCircuitBreaker:
         return self._state
 
     def allow_request(self) -> bool:
+        self._last_access_time = time.monotonic()
         s = self.state
         if s == 'closed':
             return True
@@ -87,6 +89,8 @@ class WebhookCircuitBreaker:
 
 # Global registry of per-target circuit breakers
 _webhook_circuit_breakers: dict[str, WebhookCircuitBreaker] = {}
+_CIRCUIT_BREAKER_MAX_ENTRIES = 500
+_CIRCUIT_BREAKER_IDLE_TTL = 3600  # seconds — evict entries idle for 1 hour
 
 
 def get_webhook_circuit_breaker(url: str) -> WebhookCircuitBreaker:
@@ -94,6 +98,7 @@ def get_webhook_circuit_breaker(url: str) -> WebhookCircuitBreaker:
 
     Keyed by the URL path (scheme + host + path, without query params) so that
     different webhook endpoints on the same host are isolated from each other.
+    Evicts stale entries when the registry grows beyond _CIRCUIT_BREAKER_MAX_ENTRIES.
     """
     try:
         # Strip query params but keep scheme + host + path
@@ -101,8 +106,26 @@ def get_webhook_circuit_breaker(url: str) -> WebhookCircuitBreaker:
     except (IndexError, AttributeError):
         key = url
     if key not in _webhook_circuit_breakers:
+        if len(_webhook_circuit_breakers) > _CIRCUIT_BREAKER_MAX_ENTRIES:
+            _evict_stale_circuit_breakers()
         _webhook_circuit_breakers[key] = WebhookCircuitBreaker(key)
     return _webhook_circuit_breakers[key]
+
+
+def _evict_stale_circuit_breakers():
+    """Remove circuit breaker entries not accessed for longer than _CIRCUIT_BREAKER_IDLE_TTL.
+
+    Uses _last_access_time (updated on every allow_request call) so actively
+    used breakers are never evicted, regardless of failure state.
+    """
+    now = time.monotonic()
+    stale_keys = [
+        k for k, cb in _webhook_circuit_breakers.items() if now - cb._last_access_time > _CIRCUIT_BREAKER_IDLE_TTL
+    ]
+    for k in stale_keys:
+        del _webhook_circuit_breakers[k]
+    if stale_keys:
+        logger.info(f'Evicted {len(stale_keys)} stale circuit breakers, {len(_webhook_circuit_breakers)} remaining')
 
 
 # ---------------------------------------------------------------------------
@@ -110,17 +133,34 @@ def get_webhook_circuit_breaker(url: str) -> WebhookCircuitBreaker:
 # ---------------------------------------------------------------------------
 
 _latest_wins_versions: dict[str, int] = defaultdict(int)
+_latest_wins_last_seen: dict[str, float] = {}
+_LATEST_WINS_MAX_ENTRIES = 10000
+_LATEST_WINS_IDLE_TTL = 600  # seconds — evict UIDs idle for 10 minutes
 
 
 def latest_wins_start(uid: str) -> int:
     """Increment and return the current version for a uid's audio byte call."""
     _latest_wins_versions[uid] += 1
+    _latest_wins_last_seen[uid] = time.monotonic()
+    if len(_latest_wins_versions) > _LATEST_WINS_MAX_ENTRIES:
+        _evict_stale_latest_wins()
     return _latest_wins_versions[uid]
 
 
 def latest_wins_check(uid: str, version: int) -> bool:
     """Return True if this version is still the latest for the uid."""
     return _latest_wins_versions.get(uid, 0) == version
+
+
+def _evict_stale_latest_wins():
+    """Remove latest-wins entries for UIDs not seen recently."""
+    now = time.monotonic()
+    stale_uids = [uid for uid, last_seen in _latest_wins_last_seen.items() if now - last_seen > _LATEST_WINS_IDLE_TTL]
+    for uid in stale_uids:
+        _latest_wins_versions.pop(uid, None)
+        _latest_wins_last_seen.pop(uid, None)
+    if stale_uids:
+        logger.info(f'Evicted {len(stale_uids)} stale latest-wins entries, {len(_latest_wins_versions)} remaining')
 
 
 # ---------------------------------------------------------------------------
@@ -177,6 +217,10 @@ def get_stt_semaphore() -> asyncio.Semaphore:
     return _get_semaphore('stt', 8)
 
 
+def get_tts_semaphore() -> asyncio.Semaphore:
+    return _get_semaphore('tts', 32)
+
+
 # ---------------------------------------------------------------------------
 # Shared httpx.AsyncClient instances
 # ---------------------------------------------------------------------------
@@ -185,6 +229,7 @@ _webhook_client: httpx.AsyncClient | None = None
 _maps_client: httpx.AsyncClient | None = None
 _auth_client: httpx.AsyncClient | None = None
 _stt_client: httpx.AsyncClient | None = None
+_tts_client: httpx.AsyncClient | None = None
 
 
 def get_webhook_client() -> httpx.AsyncClient:
@@ -235,10 +280,29 @@ def get_stt_client() -> httpx.AsyncClient:
     return _stt_client
 
 
+def get_tts_client() -> httpx.AsyncClient:
+    """Return a shared async HTTP client for TTS streaming (ElevenLabs).
+
+    Keep-alive is disabled (`max_keepalive_connections=0`) because in Cloud
+    Run we observed stale keep-alive sockets being reused after the remote
+    or an intermediate NAT silently dropped them, raising asyncio's
+    "handler is closed" error and returning 502 to the client. TTS
+    volume is low enough that paying a TLS handshake per request is fine,
+    and the correctness win is worth it.
+    """
+    global _tts_client
+    if _tts_client is None:
+        _tts_client = httpx.AsyncClient(
+            timeout=httpx.Timeout(60.0, connect=5.0),
+            limits=httpx.Limits(max_connections=32, max_keepalive_connections=0),
+        )
+    return _tts_client
+
+
 async def close_all_clients():
     """Close all shared HTTP clients. Call at app shutdown."""
-    global _webhook_client, _maps_client, _auth_client, _stt_client
-    for client in (_webhook_client, _maps_client, _auth_client, _stt_client):
+    global _webhook_client, _maps_client, _auth_client, _stt_client, _tts_client
+    for client in (_webhook_client, _maps_client, _auth_client, _stt_client, _tts_client):
         if client is not None:
             try:
                 await client.aclose()
@@ -247,6 +311,10 @@ async def close_all_clients():
     _webhook_client = None
     _maps_client = None
     _auth_client = None
+    _tts_client = None
     _stt_client = None
-    # Reset semaphores (keyed by event loop)
+    # Reset stateful registries
     _semaphores.clear()
+    _webhook_circuit_breakers.clear()
+    _latest_wins_versions.clear()
+    _latest_wins_last_seen.clear()

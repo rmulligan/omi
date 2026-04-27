@@ -71,6 +71,26 @@ _WS_IDLE_TIMEOUT_S = 60
 _MAX_PCM_BODY_BYTES = 200_000_000
 
 
+def _parse_context_keywords(raw: Optional[str]) -> List[str]:
+    if not raw:
+        return []
+
+    keywords = []
+    seen = set()
+    for item in raw.split(','):
+        keyword = item.strip()
+        if len(keyword) < 2 or len(keyword) > 80:
+            continue
+        key = keyword.lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        keywords.append(keyword)
+        if len(keywords) >= 100:
+            break
+    return keywords
+
+
 def filter_messages(messages, app_id):
     logger.info(f'filter_messages {len(messages)} {app_id}')
     collected = []
@@ -90,6 +110,63 @@ def acquire_chat_session(uid: str, app_id: Optional[str] = None):
     return chat_session
 
 
+def _build_quota_exceeded_reply(
+    uid: str, data: SendMessageRequest, compat_app_id: Optional[str], detail: dict
+) -> ResponseMessage:
+    """Persist the user's question + a canned AI reply and return it.
+
+    Mobile clients render the reply as a normal AI message, so users on
+    older builds without structured 402 handling at least see *why* nothing
+    happened instead of a silent failure. Desktop never reaches this path —
+    its client-side quota pre-check in AgentBridge throws BridgeError.quotaExceeded
+    before the request fires.
+    """
+    now = datetime.now(timezone.utc)
+    user_msg = Message(
+        id=str(uuid.uuid4()),
+        text=data.text,
+        created_at=now,
+        sender='human',
+        type='text',
+        app_id=compat_app_id,
+    )
+    chat_db.add_message(uid, user_msg.dict())
+
+    plan = detail.get('plan') or 'Free'
+    unit = detail.get('unit')
+    limit = detail.get('limit')
+    reset_at = detail.get('reset_at')
+    if unit == 'cost_usd' and isinstance(limit, (int, float)):
+        limit_phrase = f"your ${int(limit)} monthly AI compute budget"
+    elif isinstance(limit, (int, float)):
+        limit_phrase = f"your {int(limit)} monthly chat question limit"
+    else:
+        limit_phrase = "your monthly chat limit"
+    reset_phrase = ''
+    if reset_at:
+        try:
+            reset_dt = datetime.fromtimestamp(int(reset_at), tz=timezone.utc)
+            reset_phrase = f' Your limit resets on {reset_dt.strftime("%B %-d")}.'
+        except (TypeError, ValueError):
+            pass
+
+    canned = (
+        f"You've reached {limit_phrase} on the {plan} plan.{reset_phrase}\n\n"
+        "Upgrade your plan to keep chatting, or bring your own API keys in Settings "
+        "to use Omi free."
+    )
+    ai_msg = Message(
+        id=str(uuid.uuid4()),
+        text=canned,
+        created_at=datetime.now(timezone.utc),
+        sender='ai',
+        type='text',
+        app_id=compat_app_id,
+    )
+    chat_db.add_message(uid, ai_msg.dict())
+    return ResponseMessage(**ai_msg.dict(), ask_for_nps=False)
+
+
 @router.post('/v2/messages', tags=['chat'], response_model=ResponseMessage)
 def send_message(
     data: SendMessageRequest,
@@ -97,9 +174,30 @@ def send_message(
     app_id: Optional[str] = None,
     uid: str = Depends(auth.with_rate_limit(auth.get_current_user_uid, "chat:send_message")),
 ):
-    # Hard cap: Free/Plus by question count, Pro by cost_usd. Raises 402 with a
-    # structured body the client can use to render the upgrade modal.
-    enforce_chat_quota(uid)
+    # Hard cap: Free by question count, Architect by cost_usd. Operator enters
+    # overage mode silently. If exceeded, instead of raising 402 (which mobile
+    # clients render as a generic "having issues with the server" error), save
+    # a canned AI reply and emit it as an SSE `done:` chunk — matching the
+    # streaming contract this endpoint already uses — so mobile parses it like
+    # any other reply. Desktop pre-checks via /v1/users/me/usage-quota and
+    # never reaches here when over.
+    try:
+        enforce_chat_quota(uid)
+    except HTTPException as exc:
+        if exc.status_code != 402 or not isinstance(exc.detail, dict):
+            raise
+        if exc.detail.get('error') != 'quota_exceeded':
+            raise
+        _compat_id = app_id or plugin_id
+        if _compat_id in ['null', '']:
+            _compat_id = None
+        response_msg = _build_quota_exceeded_reply(uid, data, _compat_id, exc.detail)
+
+        def _quota_exceeded_stream():
+            encoded = base64.b64encode(bytes(response_msg.model_dump_json(), 'utf-8')).decode('utf-8')
+            yield f"done: {encoded}\n\n"
+
+        return StreamingResponse(_quota_exceeded_stream(), media_type="text/event-stream")
 
     compat_app_id = app_id or plugin_id
     logger.info(f'send_message {data.text} {compat_app_id} {uid}')
@@ -364,6 +462,8 @@ async def create_voice_message_stream(
     language: Optional[str] = Form(None),
     uid: str = Depends(auth.with_rate_limit(auth.get_current_user_uid, "voice:message")),
 ):
+    enforce_chat_quota(uid)
+
     # wav
     paths = retrieve_file_paths(files, uid)
     if len(paths) == 0:
@@ -421,6 +521,7 @@ async def transcribe_voice_message(
             raise HTTPException(status_code=413, detail=f'Body too large (max {_MAX_PCM_BODY_BYTES} bytes)')
 
         language = request.query_params.get("language")
+        context_keywords = _parse_context_keywords(request.query_params.get("keywords"))
         encoding = request.query_params.get("encoding", "linear16")
         try:
             sample_rate = int(request.query_params.get("sample_rate", "16000"))
@@ -449,6 +550,7 @@ async def transcribe_voice_message(
                 encoding=encoding,
                 sample_rate=sample_rate,
                 channels=channels,
+                keywords=context_keywords,
             )
         except RuntimeError as e:
             logger.error(f'PCM transcription failed: {e}')
@@ -580,6 +682,7 @@ async def transcribe_voice_message_stream(
     sample_rate: int = 16000,
     codec: str = 'linear16',
     channels: int = 1,
+    keywords: Optional[str] = None,
 ):
     """WebSocket endpoint for PTT live mode transcription-only streaming.
 
@@ -592,6 +695,7 @@ async def transcribe_voice_message_stream(
         sample_rate: Audio sample rate in Hz (default 16000)
         codec: Audio codec, must be 'linear16' (default 'linear16')
         channels: Number of audio channels (default 1)
+        keywords: Comma-separated context terms to boost recognition
 
     Client sends:
         - binary frames: audio data (PCM 16-bit)
@@ -649,6 +753,7 @@ async def transcribe_voice_message_stream(
     # PTT transcribe-stream always uses Deepgram (lightweight, no conversation lifecycle).
     # get_stt_service_for_language resolves the language/model for the DG call.
     _, stt_language, stt_model = get_stt_service_for_language(language)
+    context_keywords = _parse_context_keywords(keywords)
 
     loop = asyncio.get_running_loop()
 
@@ -683,6 +788,7 @@ async def transcribe_voice_message_stream(
             sample_rate=sample_rate,
             channels=channels,
             model=stt_model,
+            keywords=context_keywords,
             is_active=lambda: websocket_active,
         )
 
