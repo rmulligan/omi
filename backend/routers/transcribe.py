@@ -26,7 +26,18 @@ from fastapi.websockets import WebSocket, WebSocketDisconnect
 from starlette.websockets import WebSocketState
 from websockets.exceptions import ConnectionClosed
 
-from firebase_admin.auth import InvalidIdTokenError
+# Make Firebase auth optional for local development.
+# When SERVICE_ACCOUNT_JSON is not set, use the fallback auth from endpoints.py.
+import os as _os
+if _os.environ.get('SERVICE_ACCOUNT_JSON'):
+    from firebase_admin.auth import InvalidIdTokenError
+    _FIREBASE_AUTH_AVAILABLE = True
+else:
+    from firebase_admin.auth import InvalidIdTokenError as _FakeInvalidIdTokenError
+    # When Firebase isn't configured, InvalidIdTokenError won't be raised by auth.
+    # We still need a valid class for the except clause in the auth handler.
+    InvalidIdTokenError = _FakeInvalidIdTokenError
+    _FIREBASE_AUTH_AVAILABLE = False
 
 from utils.speaker_assignment import (
     process_speaker_assigned_segments,
