@@ -1,8 +1,8 @@
+import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:omi/backend/http/api/apps.dart' as apps_api;
@@ -20,63 +20,45 @@ import 'package:omi/utils/platform/platform_manager.dart';
 import 'package:omi/utils/platform/platform_service.dart';
 
 class AuthenticationProvider extends BaseProvider {
-  FirebaseAuth get _auth => FirebaseAuth.instance;
-
-  User? user;
-  String? authToken;
+  String? _uid;
+  String? _email;
+  String? _givenName;
+  String? _authToken;
   bool _loading = false;
+  final List<VoidCallback> _stateListeners = [];
+
   @override
   bool get loading => _loading;
 
+  String? get uid => _uid;
+  String? get email => _email;
+  String? get givenName => _givenName;
+  String? get authToken => _authToken;
+
   AuthenticationProvider() {
-    _initializeAuthListeners();
+    _initAuth();
   }
 
-  void _initializeAuthListeners() {
-    // DEBUG: Log initial state
+  void _initAuth() {
+    // Restore cached credentials
+    _uid = SharedPreferencesUtil().uid;
+    _email = SharedPreferencesUtil().email;
+    _givenName = SharedPreferencesUtil().givenName;
+    _authToken = SharedPreferencesUtil().authToken;
     Logger.debug(
-      'DEBUG AuthProvider: Initial currentUser=${_auth.currentUser?.uid}, isAnonymous=${_auth.currentUser?.isAnonymous}',
+      'DEBUG AuthProvider: Initial uid=$_uid, isSignedIn=${isSignedIn()}',
     );
+  }
 
-    Future.microtask(() {
-      _auth.authStateChanges().distinct((p, n) => p?.uid == n?.uid).listen((User? user) {
-        Logger.debug(
-          'DEBUG AuthProvider: authStateChanges fired - user=${user?.uid}, isAnonymous=${user?.isAnonymous}',
-        );
-        this.user = user;
-        // Only update SharedPreferences if Firebase has a user
-        // Don't clear cached credentials - allows fallback for dev builds
-        if (user != null) {
-          SharedPreferencesUtil().uid = user.uid;
-          SharedPreferencesUtil().email = user.email ?? '';
-          SharedPreferencesUtil().givenName = user.displayName?.split(' ')[0] ?? '';
-        }
-      });
-      _auth.idTokenChanges().distinct((p, n) => p?.uid == n?.uid).listen((User? user) async {
-        if (user == null) {
-          Logger.debug('User is currently signed out or the token has been revoked!');
-          SharedPreferencesUtil().authToken = '';
-          SharedPreferencesUtil().tokenExpirationTime = 0;
-          authToken = null;
-        } else {
-          Logger.debug('User is signed in at ${DateTime.now()} with user ${user.uid}');
-          try {
-            if (SharedPreferencesUtil().authToken.isEmpty ||
-                DateTime.now().millisecondsSinceEpoch > SharedPreferencesUtil().tokenExpirationTime) {
-              authToken = await AuthService.instance.getIdToken();
-            }
-          } catch (e) {
-            authToken = null;
-            Logger.debug('Failed to get token: $e');
-          }
-        }
-        notifyListeners();
-      });
-    });
+  void _onAuthStateChanged() {
+    Logger.debug(
+      'DEBUG AuthProvider: authStateChanges fired - uid=$_uid, isSignedIn=${isSignedIn()}',
+    );
+    notifyListeners();
   }
 
   bool isSignedIn() {
-    return _auth.currentUser != null && !_auth.currentUser!.isAnonymous;
+    return _uid != null && _uid!.isNotEmpty;
   }
 
   void setLoading(bool value) {
@@ -154,7 +136,7 @@ class AuthenticationProvider extends BaseProvider {
     } catch (e, stackTrace) {
       AppSnackbar.showSnackbarError(
         globalNavigatorKey.currentContext?.l10n.authFailedToRetrieveToken ??
-            'Failed to retrieve firebase token, please try again.',
+            'Failed to retrieve token, please try again.',
       );
       PlatformManager.instance.crashReporter.reportCrash(e, stackTrace);
 
@@ -166,19 +148,7 @@ class AuthenticationProvider extends BaseProvider {
     String? token = await _getIdToken();
 
     if (token != null) {
-      User user;
-      try {
-        user = FirebaseAuth.instance.currentUser!;
-      } catch (e, stackTrace) {
-        AppSnackbar.showSnackbarError(
-          globalNavigatorKey.currentContext?.l10n.authUnexpectedErrorFirebase ??
-              'Unexpected error signing in, Firebase error, please try again.',
-        );
-
-        PlatformManager.instance.crashReporter.reportCrash(e, stackTrace);
-        return;
-      }
-      String newUid = user.uid;
+      String newUid = _uid ?? '';
       SharedPreferencesUtil().uid = newUid;
       MixpanelManager().identify();
       onSignIn();
@@ -216,16 +186,6 @@ class AuthenticationProvider extends BaseProvider {
         return;
       }
     } catch (e) {
-      if (e is FirebaseAuthException && e.code == 'credential-already-in-use') {
-        final oldUserId = FirebaseAuth.instance.currentUser?.uid;
-        if (oldUserId != null) {
-          final newUserId = FirebaseAuth.instance.currentUser?.uid;
-          if (newUserId != null) {
-            await migrateAppOwnerId(oldUserId);
-          }
-        }
-        return;
-      }
       AppSnackbar.showSnackbarError(
         globalNavigatorKey.currentContext?.l10n.authFailedToLinkGoogle ??
             'Failed to link with Google, please try again.',
@@ -239,38 +199,7 @@ class AuthenticationProvider extends BaseProvider {
   Future<void> linkWithApple() async {
     setLoading(true);
     try {
-      final appleProvider = AppleAuthProvider();
-      try {
-        await FirebaseAuth.instance.currentUser?.linkWithProvider(appleProvider);
-      } catch (e) {
-        if (e is FirebaseAuthException && e.code == 'credential-already-in-use') {
-          // Get existing user credentials
-          final existingCred = e.credential;
-          final oldUserId = FirebaseAuth.instance.currentUser?.uid;
-
-          // Sign out current anonymous user
-          await FirebaseAuth.instance.signOut();
-
-          // Sign in with existing account
-          await FirebaseAuth.instance.signInWithCredential(existingCred!);
-          final newUserId = FirebaseAuth.instance.currentUser?.uid;
-          await AuthService.instance.getIdToken();
-
-          SharedPreferencesUtil().onboardingCompleted = false;
-          SharedPreferencesUtil().uid = newUserId ?? '';
-          SharedPreferencesUtil().email = FirebaseAuth.instance.currentUser?.email ?? '';
-          SharedPreferencesUtil().givenName = FirebaseAuth.instance.currentUser?.displayName?.split(' ')[0] ?? '';
-          if (oldUserId != null && newUserId != null) {
-            await migrateAppOwnerId(oldUserId);
-          }
-          return;
-        }
-        AppSnackbar.showSnackbarError(
-          globalNavigatorKey.currentContext?.l10n.authFailedToLinkApple ??
-              'Failed to link with Apple, please try again.',
-        );
-        rethrow;
-      }
+      await AuthService.instance.linkWithApple();
     } catch (e) {
       print('Error linking with Apple: $e');
       AppSnackbar.showSnackbarError(
@@ -285,4 +214,12 @@ class AuthenticationProvider extends BaseProvider {
   Future<bool> migrateAppOwnerId(String oldId) async {
     return await apps_api.migrateAppOwnerId(oldId);
   }
+}
+
+class UserCredential {
+  final String? uid;
+  final String? email;
+  final String? displayName;
+
+  UserCredential({this.uid, this.email, this.displayName});
 }

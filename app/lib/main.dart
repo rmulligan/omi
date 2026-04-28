@@ -9,10 +9,6 @@ import 'package:flutter/services.dart';
 import 'package:marionette_flutter/marionette_flutter.dart';
 
 import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart' as ble;
 import 'package:omi/gen/pigeon_communicator.g.dart';
 import 'package:omi/services/bridges/ble_bridge.dart';
@@ -30,8 +26,6 @@ import 'package:omi/core/app_shell.dart';
 import 'package:omi/env/dev_env.dart';
 import 'package:omi/env/env.dart';
 import 'package:omi/env/prod_env.dart';
-import 'package:omi/firebase_options_dev.dart' as dev;
-import 'package:omi/firebase_options_prod.dart' as prod;
 import 'package:omi/flavors.dart';
 import 'package:omi/l10n/app_localizations.dart';
 import 'package:omi/pages/apps/providers/add_app_provider.dart';
@@ -77,11 +71,9 @@ import 'package:omi/pages/settings/developer.dart';
 import 'package:omi/utils/logger.dart';
 import 'package:omi/utils/platform/platform_manager.dart';
 
-/// Background message handler for FCM data messages
+/// Background message handler for FCM data messages (stubbed for local dev)
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
-
   await AwesomeNotifications().initialize(null, [
     NotificationChannel(
       channelKey: 'channel',
@@ -96,7 +88,6 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   final messageType = data['type'];
   const channelKey = 'channel';
 
-  // Handle action item messages
   if (messageType == 'action_item_reminder') {
     await ActionItemNotificationHandler.handleReminderMessage(data, channelKey);
   } else if (messageType == 'action_item_update') {
@@ -127,28 +118,25 @@ Future _init() async {
   // Service manager
   await ServiceManager.init();
 
-  // Firebase
-  if (Firebase.apps.isEmpty) {
-    final options = F.env == Environment.prod
-        ? prod.DefaultFirebaseOptions.currentPlatform
-        : dev.DefaultFirebaseOptions.currentPlatform;
-    await Firebase.initializeApp(options: options);
-  } else {
-    // Firebase may already be initialized by native SDK (macOS)
-    debugPrint('Firebase already initialized.');
-  }
+  // NOTE: Firebase initialization removed for local dev
+  // if (Firebase.apps.isEmpty) {
+  //   final options = F.env == Environment.prod
+  //       ? prod.DefaultFirebaseOptions.currentPlatform
+  //       : dev.DefaultFirebaseOptions.currentPlatform;
+  //   await Firebase.initializeApp(options: options);
+  // }
 
   await PlatformManager.initializeServices();
   await NotificationService.instance.initialize();
 
-  // Register FCM background message handler
-  if (PlatformManager().isFCMSupported) {
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  }
+  // Register FCM background message handler (stubbed)
+  // if (PlatformManager().isFCMSupported) {
+  //   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  // }
 
   await SharedPreferencesUtil.init();
 
-  // TestFlight environment detection — must be after SharedPreferencesUtil.init()
+  // TestFlight environment detection
   if (F.env == Environment.prod) {
     final isTestFlight = await EnvironmentDetector.isTestFlight();
     if (isTestFlight) {
@@ -167,14 +155,11 @@ Future _init() async {
     }
   }
 
-  // DEBUG: Log Firebase Auth state before getIdToken
-  print('DEBUG main: Before getIdToken - currentUser=${FirebaseAuth.instance.currentUser?.uid}');
+  // Auth check (uses local auth, not Firebase)
   bool isAuth = (await AuthService.instance.getIdToken()) != null;
-  print('DEBUG main: After getIdToken - isAuth=$isAuth, currentUser=${FirebaseAuth.instance.currentUser?.uid}');
+  print('DEBUG main: After getIdToken - isAuth=$isAuth');
   if (isAuth) {
     PlatformManager.instance.mixpanel.identify();
-    // Restore onboarding state from server if not already set locally
-    // This handles the case where cached credentials are used on startup
     if (!SharedPreferencesUtil().onboardingCompleted) {
       print('DEBUG main: Restoring onboarding state from server...');
       await AuthService.instance.restoreOnboardingState();
@@ -194,17 +179,18 @@ Future _init() async {
   await CrashlyticsManager.init();
   if (isAuth) {
     PlatformManager.instance.crashReporter.identifyUser(
-      FirebaseAuth.instance.currentUser?.email ?? '',
+      '',
       SharedPreferencesUtil().fullName,
       SharedPreferencesUtil().uid,
     );
   }
   FlutterError.onError = (FlutterErrorDetails details) {
-    FirebaseCrashlytics.instance.recordFlutterFatalError(details);
+    // NOTE: FirebaseCrashlytics.instance.recordFlutterFatalError() removed for local dev
+    Logger.instance.talker.handle(details.exception, details.stack);
   };
 
   PlatformDispatcher.instance.onError = (error, stack) {
-    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    // NOTE: FirebaseCrashlytics.instance.recordError() removed for local dev
     return true;
   };
 
@@ -222,7 +208,10 @@ void main() {
     }
     await _init();
     runApp(const MyApp());
-  }, (error, stack) => FirebaseCrashlytics.instance.recordError(error, stack, fatal: true));
+  }, (error, stack) {
+    // NOTE: FirebaseCrashlytics.instance.recordError() removed for local dev
+    Logger.instance.talker.handle(error, stack);
+  });
 }
 
 class MyApp extends StatefulWidget {

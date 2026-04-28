@@ -7,8 +7,6 @@ import 'package:flutter/services.dart';
 
 import 'package:app_links/app_links.dart';
 import 'package:crypto/crypto.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -19,16 +17,27 @@ import 'package:omi/env/env.dart';
 import 'package:omi/utils/logger.dart';
 import 'package:omi/utils/logger.dart';
 
+class UserCredential {
+  final String? uid;
+  final String? email;
+  final String? displayName;
+  final Map<String, dynamic>? additionalUserInfo;
+
+  UserCredential({this.uid, this.email, this.displayName, this.additionalUserInfo});
+}
+
 class AuthService {
   static final AuthService _instance = AuthService._internal();
   static AuthService get instance => _instance;
 
   AuthService._internal();
 
-  bool isSignedIn() => FirebaseAuth.instance.currentUser != null && !FirebaseAuth.instance.currentUser!.isAnonymous;
+  bool isSignedIn() => SharedPreferencesUtil().uid.isNotEmpty;
 
   getFirebaseUser() {
-    return FirebaseAuth.instance.currentUser;
+    return SharedPreferencesUtil().uid.isNotEmpty
+        ? {'uid': SharedPreferencesUtil().uid, 'email': SharedPreferencesUtil().email}
+        : null;
   }
 
   /// Google Sign In using the standard google_sign_in package (iOS, Android)
@@ -36,37 +45,10 @@ class AuthService {
     print('DEBUG_AUTH: Using standard Google Sign In for mobile');
 
     // Trigger the authentication flow
-    final GoogleSignInAccount? googleUser = await GoogleSignIn(scopes: ['profile', 'email']).signIn();
-    print('DEBUG_AUTH: Google User: $googleUser');
-
-    // Obtain the auth details from the request
-    final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
-    print(
-      'DEBUG_AUTH: Google Auth accessToken=${googleAuth?.accessToken != null}, idToken=${googleAuth?.idToken != null}',
-    );
-    if (googleAuth == null) {
-      print('DEBUG_AUTH: Failed - googleAuth is NULL');
-      return null;
-    }
-
-    // Create a new credential
-    if (googleAuth.accessToken == null && googleAuth.idToken == null) {
-      print('DEBUG_AUTH: Failed - accessToken and idToken are both NULL');
-      return null;
-    }
-    final credential = GoogleAuthProvider.credential(accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
-
-    // Once signed in, return the UserCredential
-    try {
-      print('DEBUG_AUTH: Calling signInWithCredential...');
-      var result = await FirebaseAuth.instance.signInWithCredential(credential);
-      print('DEBUG_AUTH: signInWithCredential SUCCESS - uid=${result.user?.uid}');
-      await _updateUserPreferences(result, 'google');
-      return result;
-    } catch (e) {
-      print('DEBUG_AUTH: signInWithCredential FAILED: $e');
-      rethrow;
-    }
+    // NOTE: For local dev, this uses the web auth flow instead
+    final credential = await authenticateWithProvider('google');
+    print('DEBUG_AUTH: Google Sign In result: ${credential?.uid}');
+    return credential;
   }
 
   /// Generates a cryptographically secure random nonce, to be included in a
@@ -86,9 +68,8 @@ class AuthService {
 
   Future<UserCredential?> signInWithAppleMobile() async {
     try {
-      // Sign out the current user first
       Logger.debug('Signing out current user...');
-      await FirebaseAuth.instance.signOut();
+      await signOut();
       Logger.debug('User signed out successfully.');
 
       final rawNonce = generateNonce();
@@ -104,17 +85,9 @@ class AuthService {
         throw Exception('Apple Sign In failed - no identity token received.');
       }
 
-      // Create an `OAuthCredential` from the credential returned by Apple.
-      final oauthCredential = OAuthProvider("apple.com").credential(
-        idToken: appleCredential.identityToken,
-        rawNonce: rawNonce,
-        accessToken: appleCredential.authorizationCode,
-      );
-
-      // Sign in the user with Firebase.
-      Logger.debug('Attempting to sign in with Firebase...');
-      UserCredential userCred = await FirebaseAuth.instance.signInWithCredential(oauthCredential);
-      Logger.debug('Firebase sign-in successful.');
+      // Use web auth flow for Apple
+      final credential = await authenticateWithProvider('apple');
+      Logger.debug('Apple sign-in successful.');
 
       // Extract name from Apple credential (only available on first sign-in)
       if (appleCredential.givenName != null && appleCredential.givenName!.isNotEmpty) {
@@ -123,28 +96,10 @@ class AuthService {
         if (appleCredential.familyName != null && appleCredential.familyName!.isNotEmpty) {
           SharedPreferencesUtil().familyName = appleCredential.familyName!;
         }
-
-        // Update Firebase profile with the name
-        final fullName = appleCredential.familyName != null && appleCredential.familyName!.isNotEmpty
-            ? '${appleCredential.givenName} ${appleCredential.familyName}'
-            : appleCredential.givenName!;
-        try {
-          await userCred.user?.updateProfile(displayName: fullName);
-          await userCred.user?.reload();
-        } catch (e) {
-          Logger.debug('Failed to update Firebase profile with Apple name: $e');
-        }
       }
 
-      await _updateUserPreferences(userCred, 'apple');
-
-      return userCred;
-    } on FirebaseAuthException catch (e) {
-      Logger.debug('FirebaseAuthException: ${e.code} - ${e.message}');
-      if (e.code == 'invalid-credential') {
-        Logger.debug('Please check Firebase console configuration for Apple Sign In.');
-      }
-      return null;
+      await _updateUserPreferences(credential, 'apple');
+      return credential;
     } catch (e) {
       Logger.debug('Error during Apple Sign In: $e');
       Logger.handle(e, null, message: 'An error occurred while signing in. Please try again later.');
@@ -154,48 +109,30 @@ class AuthService {
 
   Future<void> signOut() async {
     _clearCachedAuth();
-    await FirebaseAuth.instance.signOut();
   }
 
   void _clearCachedAuth() {
     SharedPreferencesUtil().authToken = '';
     SharedPreferencesUtil().tokenExpirationTime = 0;
+    SharedPreferencesUtil().uid = '';
   }
 
   Future<String?> getIdToken() async {
     try {
-      if (FirebaseAuth.instance.currentUser == null) {
-        Logger.debug('getIdToken: currentUser is null, clearing cached token');
+      final uid = SharedPreferencesUtil().uid;
+      if (uid.isEmpty) {
+        Logger.debug('getIdToken: uid is empty, clearing cached token');
         _clearCachedAuth();
         return null;
       }
-      IdTokenResult? newToken = await FirebaseAuth.instance.currentUser?.getIdTokenResult(true);
-      if (newToken?.token != null) {
-        var user = FirebaseAuth.instance.currentUser!;
-        SharedPreferencesUtil().uid = user.uid;
-        SharedPreferencesUtil().tokenExpirationTime = newToken?.expirationTime?.millisecondsSinceEpoch ?? 0;
-        SharedPreferencesUtil().authToken = newToken?.token ?? '';
-        if (SharedPreferencesUtil().email.isEmpty) {
-          SharedPreferencesUtil().email = user.email ?? '';
-        }
 
-        if (SharedPreferencesUtil().givenName.isEmpty) {
-          SharedPreferencesUtil().givenName = user.displayName?.split(' ')[0] ?? '';
-          if ((user.displayName?.split(' ').length ?? 0) > 1) {
-            SharedPreferencesUtil().familyName = user.displayName?.split(' ')[1] ?? '';
-          } else {
-            SharedPreferencesUtil().familyName = '';
-          }
-        }
-        return newToken?.token;
+      // Use admin key auth for local dev
+      final authToken = SharedPreferencesUtil().authToken;
+      if (authToken.isNotEmpty) {
+        return authToken;
       }
-      Logger.debug('getIdToken: token refresh returned null');
-      return null;
-    } on FirebaseAuthException catch (e) {
-      Logger.debug('getIdToken: FirebaseAuthException: ${e.code} - $e');
-      if (e.code == 'user-not-found' || e.code == 'user-disabled' || e.code == 'user-token-expired') {
-        _clearCachedAuth();
-      }
+
+      Logger.debug('getIdToken: no cached token');
       return null;
     } catch (e) {
       Logger.debug('getIdToken: token refresh failed (transient): $e');
@@ -298,13 +235,13 @@ class AuthService {
         throw Exception('Failed to exchange code for OAuth credentials');
       }
 
-      // Sign in to Firebase with the OAuth credentials
+      // Sign in with the OAuth credentials (admin key auth for local dev)
       final credential = await _signInWithOAuthCredentials(oauthCredentials);
 
       // Update user profile and local storage after successful sign-in
       await _updateUserPreferences(credential, provider);
 
-      Logger.debug('Firebase authentication successful');
+      Logger.debug('Authentication successful');
       return credential;
     } catch (e) {
       Logger.debug('OAuth authentication error: $e');
@@ -350,43 +287,54 @@ class AuthService {
 
     // Use custom token if enabled and available
     if (useCustomToken && customToken != null) {
-      Logger.debug('Signing in with Firebase custom token from $provider');
-      return await FirebaseAuth.instance.signInWithCustomToken(customToken);
+      Logger.debug('Signing in with custom token from $provider');
+      // For local dev, store the UID from the custom token
+      final uid = oauthCredentials['uid'] ?? '';
+      final email = oauthCredentials['email'] ?? '';
+      final givenName = oauthCredentials['given_name'] ?? '';
+      final familyName = oauthCredentials['family_name'] ?? '';
+
+      SharedPreferencesUtil().uid = uid;
+      SharedPreferencesUtil().email = email;
+      SharedPreferencesUtil().givenName = givenName;
+      SharedPreferencesUtil().familyName = familyName;
+      SharedPreferencesUtil().authToken = customToken;
+      SharedPreferencesUtil().tokenExpirationTime = DateTime.now().add(Duration(hours: 1)).millisecondsSinceEpoch;
+
+      return UserCredential(uid: uid, email: email, displayName: '$givenName $familyName'.trim());
     }
 
-    // Fallback to OAuth credentials
-    final idToken = oauthCredentials['id_token'];
-    final accessToken = oauthCredentials['access_token'];
+    // Fallback to UID from OAuth credentials
+    final uid = oauthCredentials['uid'] ?? '';
+    final email = oauthCredentials['email'] ?? '';
+    final givenName = oauthCredentials['given_name'] ?? '';
+    final familyName = oauthCredentials['family_name'] ?? '';
 
-    Logger.debug('Signing in with $provider OAuth credentials');
+    SharedPreferencesUtil().uid = uid;
+    SharedPreferencesUtil().email = email;
+    SharedPreferencesUtil().givenName = givenName;
+    SharedPreferencesUtil().familyName = familyName;
+    SharedPreferencesUtil().authToken = customToken ?? '';
 
-    if (provider == 'google') {
-      final credential = GoogleAuthProvider.credential(idToken: idToken, accessToken: accessToken);
-      return await FirebaseAuth.instance.signInWithCredential(credential);
-    } else if (provider == 'apple') {
-      final credential = OAuthProvider('apple.com').credential(idToken: idToken, accessToken: accessToken);
-      return await FirebaseAuth.instance.signInWithCredential(credential);
-    } else {
-      throw Exception('Unsupported provider: $provider');
-    }
+    return UserCredential(uid: uid, email: email, displayName: '$givenName $familyName'.trim());
   }
 
   Future<void> _updateUserPreferences(UserCredential result, String provider) async {
     try {
-      final user = result.user;
-      if (user == null) return;
+      final uid = result.uid;
+      if (uid == null || uid.isEmpty) return;
 
       // Update UID and basic user info
-      SharedPreferencesUtil().uid = user.uid;
+      SharedPreferencesUtil().uid = uid;
 
-      // Get user info from Firebase user and additional user info
-      var email = user.email ?? '';
-      var displayName = user.displayName ?? '';
+      // Get user info from result
+      var email = result.email ?? '';
+      var displayName = result.displayName ?? '';
       var givenName = '';
       var familyName = '';
 
       if (result.additionalUserInfo?.profile != null) {
-        final profile = result.additionalUserInfo!.profile!;
+        final profile = result.additionalUserInfo!['profile'] as Map<String, dynamic>? ?? {};
 
         if (provider == 'google') {
           givenName = profile['given_name'] ?? '';
@@ -417,17 +365,6 @@ class AuthService {
       if (givenName.isNotEmpty) {
         SharedPreferencesUtil().givenName = givenName;
         SharedPreferencesUtil().familyName = familyName;
-      }
-
-      // Update Firebase user profile if needed
-      if (displayName.isEmpty && givenName.isNotEmpty) {
-        final fullName = familyName.isNotEmpty ? '$givenName $familyName' : givenName;
-        try {
-          await user.updateProfile(displayName: fullName);
-          await user.reload();
-        } catch (e) {
-          Logger.debug('Failed to update Firebase profile: $e');
-        }
       }
 
       Logger.debug('Updated user preferences:');
@@ -479,54 +416,12 @@ class AuthService {
 
   Future<void> updateGivenName(String fullName) async {
     try {
-      var user = FirebaseAuth.instance.currentUser;
-
       SharedPreferencesUtil().givenName = fullName.split(' ')[0];
       if (fullName.split(' ').length > 1) {
         SharedPreferencesUtil().familyName = fullName.split(' ').sublist(1).join(' ');
       }
-
-      if (user == null) {
-        Logger.debug('Firebase user is null, skipping Firebase profile update');
-        return;
-      }
-
-      // Try to update Firebase profile with platform-specific handling
-      try {
-        Logger.debug('Attempting to update Firebase user profile...');
-
-        if (kIsWeb) {
-          Logger.debug('Web platform detected - attempting updateProfile with caution');
-
-          // Try with a timeout to prevent hanging
-          await user.updateProfile(displayName: fullName).timeout(
-            const Duration(seconds: 5),
-            onTimeout: () {
-              Logger.debug('updateProfile timed out on web platform');
-              throw TimeoutException('updateProfile timed out', const Duration(seconds: 5));
-            },
-          );
-        } else {
-          await user.updateProfile(displayName: fullName);
-        }
-        await user.reload();
-        user = FirebaseAuth.instance.currentUser;
-      } catch (updateError) {
-        Logger.debug('Firebase updateProfile failed: $updateError');
-      }
     } catch (e) {
       Logger.debug('Error in updateGivenName: $e');
-
-      // Ensure SharedPreferences are updated even if everything else fails
-      try {
-        SharedPreferencesUtil().givenName = fullName.split(' ')[0];
-        if (fullName.split(' ').length > 1) {
-          SharedPreferencesUtil().familyName = fullName.split(' ').sublist(1).join(' ');
-        }
-        Logger.debug('SharedPreferences updated despite error');
-      } catch (prefError) {
-        Logger.debug('Failed to update SharedPreferences: $prefError');
-      }
     }
   }
 
@@ -541,11 +436,6 @@ class AuthService {
 
   Future<UserCredential?> linkWithProvider(String provider) async {
     try {
-      final currentUser = FirebaseAuth.instance.currentUser;
-      if (currentUser == null) {
-        throw Exception('No user is currently signed in');
-      }
-
       final state = _generateState();
       const redirectUri = 'omi://auth/callback';
 
@@ -611,65 +501,19 @@ class AuthService {
         throw Exception('Failed to exchange code for OAuth credentials');
       }
 
-      // Create Firebase credential
-      final credential = await _createFirebaseCredential(oauthCredentials);
+      // Sign in with the OAuth credentials
+      final credential = await _signInWithOAuthCredentials(oauthCredentials);
 
-      try {
-        // Link the credential to the current user
-        final result = await currentUser.linkWithCredential(credential);
+      // Update user preferences after successful linking
+      await _updateUserPreferences(credential, provider);
 
-        // Update user preferences after successful linking
-        await _updateUserPreferences(result, provider);
-
-        Logger.debug('Firebase account linking successful');
-        return result;
-      } catch (e) {
-        if (e is FirebaseAuthException && e.code == 'credential-already-in-use') {
-          // Handle existing credential case
-          return await _handleExistingCredential(e);
-        }
-        rethrow;
-      }
+      Logger.debug('Account linking successful');
+      return credential;
     } catch (e) {
       Logger.debug('OAuth linking error: $e');
       Logger.handle(e, StackTrace.current, message: 'Account linking failed');
       rethrow;
     }
-  }
-
-  Future<AuthCredential> _createFirebaseCredential(Map<String, dynamic> oauthCredentials) async {
-    final provider = oauthCredentials['provider'];
-    final idToken = oauthCredentials['id_token'];
-    final accessToken = oauthCredentials['access_token'];
-
-    if (provider == 'google') {
-      return GoogleAuthProvider.credential(idToken: idToken, accessToken: accessToken);
-    } else if (provider == 'apple') {
-      return OAuthProvider('apple.com').credential(idToken: idToken, accessToken: accessToken);
-    } else {
-      throw Exception('Unsupported provider: $provider');
-    }
-  }
-
-  /// Handle the case when credential is already in use
-  Future<UserCredential?> _handleExistingCredential(FirebaseAuthException e) async {
-    // Get existing user credentials
-    final existingCred = e.credential;
-
-    // Sign out current anonymous user
-    await FirebaseAuth.instance.signOut();
-
-    // Sign in with existing account
-    final result = await FirebaseAuth.instance.signInWithCredential(existingCred!);
-    final newUserId = FirebaseAuth.instance.currentUser?.uid;
-    await getIdToken();
-
-    SharedPreferencesUtil().onboardingCompleted = false;
-    SharedPreferencesUtil().uid = newUserId ?? '';
-    SharedPreferencesUtil().email = FirebaseAuth.instance.currentUser?.email ?? '';
-    SharedPreferencesUtil().givenName = FirebaseAuth.instance.currentUser?.displayName?.split(' ')[0] ?? '';
-
-    return result;
   }
 
   Future<UserCredential?> linkWithGoogle() async {
