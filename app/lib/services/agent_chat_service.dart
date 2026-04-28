@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:omi/backend/preferences.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -64,9 +64,9 @@ class AgentChatService {
     }
     _connected = false;
 
-    final user = FirebaseAuth.instance.currentUser;
+    final user = AuthService.instance.currentUser;
     agentLog('[TIMING] cleanup done +${connectSw.elapsedMilliseconds}ms');
-    final token = await user?.getIdToken();
+    final token = user?.token;
     if (token == null) {
       agentLog('ERROR: no Firebase user/token');
       return false;

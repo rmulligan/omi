@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:omi/backend/preferences.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -300,9 +300,9 @@ class _OnboardingWrapperState extends State<OnboardingWrapper> with TickerProvid
         goNext: () {
           _goNext(); // Go to Primary Language page
           IntercomManager.instance.updateUser(
-            FirebaseAuth.instance.currentUser!.email,
-            FirebaseAuth.instance.currentUser!.displayName,
-            FirebaseAuth.instance.currentUser!.uid,
+            SharedPreferencesUtil().email,
+            SharedPreferencesUtil().fullName,
+            SharedPreferencesUtil().uid,
           );
           MixpanelManager().onboardingStepCompleted('Name');
         },

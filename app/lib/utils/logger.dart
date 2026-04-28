@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:intercom_flutter/intercom_flutter.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 
@@ -11,14 +9,10 @@ class CrashlyticsTalkerObserver extends TalkerObserver {
   CrashlyticsTalkerObserver();
 
   @override
-  void onError(err) {
-    FirebaseCrashlytics.instance.recordError(err.error, err.stackTrace, reason: err.message);
-  }
+  void onError(err) {}
 
   @override
-  void onException(err) {
-    FirebaseCrashlytics.instance.recordError(err.exception, err.stackTrace, reason: err.message);
-  }
+  void onException(err) {}
 }
 
 class Logger {
@@ -41,7 +35,7 @@ class Logger {
   }
 
   static void warning(dynamic message) {
-    instance.talker.warning(message);
+    instance.talker.warning(message.toString());
     DebugLogManager.logWarning(message.toString());
   }
 

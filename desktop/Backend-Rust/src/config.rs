@@ -75,6 +75,8 @@ pub struct Config {
     pub elevenlabs_api_key: Option<String>,
     /// Google Calendar API key (served to desktop clients)
     pub google_calendar_api_key: Option<String>,
+    /// Local webhook for speaker-label feedback into the diarization/voiceprint service
+    pub omi_speaker_refinement_url: Option<String>,
 }
 
 impl Config {
@@ -137,6 +139,16 @@ impl Config {
             desktop_legacy_anthropic_key: env::var("DESKTOP_LEGACY_ANTHROPIC_KEY").ok(),
             elevenlabs_api_key: env::var("ELEVENLABS_API_KEY").ok(),
             google_calendar_api_key: env::var("GOOGLE_CALENDAR_API_KEY").ok(),
+            omi_speaker_refinement_url: env::var("OMI_SPEAKER_REFINEMENT_URL")
+                .ok()
+                .and_then(|value| {
+                    let trimmed = value.trim().to_string();
+                    if trimmed.is_empty() {
+                        None
+                    } else {
+                        Some(trimmed)
+                    }
+                }),
         }
     }
 

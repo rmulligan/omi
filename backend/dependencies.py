@@ -2,7 +2,6 @@ from typing import List, Optional
 
 import os
 
-# NOTE: Firebase removed for local dev — use admin key auth instead.
 from fastapi import Depends, HTTPException, Security
 from fastapi.security import APIKeyHeader, HTTPAuthorizationCredentials, HTTPBearer
 
@@ -15,27 +14,19 @@ logger = logging.getLogger(__name__)
 
 bearer_scheme = HTTPBearer()
 
+# Local dev: single default user ID.
+# For the omi-fork fork (single-tenant, local dev), all requests
+# are treated as coming from this user.
+_DEFAULT_UID = os.environ.get('OMI_USER_UID', 'local-dev-user')
 
+# Accept any non-empty bearer token in local dev; the actual
+# value is ignored and we always return the default uid.
 async def get_current_user_id(
     credentials: HTTPAuthorizationCredentials = Security(bearer_scheme),
 ) -> str:
     if not credentials:
         raise HTTPException(status_code=401, detail="Not authenticated")
-    token = credentials.credentials
-    # Local dev: accept ADMIN_KEY<uid> format
-    admin_key = os.environ.get('ADMIN_KEY', '')
-    if admin_key and token.startswith(f'{admin_key}'):
-        return token[len(admin_key):]
-    # Production: verify Firebase ID token
-    try:
-        from firebase_admin import auth
-        decoded_token = auth.verify_id_token(token)
-        return decoded_token["uid"]
-    except ImportError:
-        raise HTTPException(status_code=401, detail="Firebase auth not configured")
-    except Exception as e:
-        logger.error(f"Error verifying Firebase ID token: {e}")
-        raise HTTPException(status_code=401, detail="Invalid authentication credentials")
+    return _DEFAULT_UID
 
 
 api_key_header = APIKeyHeader(name="Authorization", auto_error=False)

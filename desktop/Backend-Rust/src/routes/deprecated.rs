@@ -94,21 +94,6 @@ pub fn deprecated_routes() -> Router<AppState> {
         // ── Daily score (0 traffic) ───────────────────────────────────────────
         .route("/v1/daily-score", get(deprecated_handler))
         .route("/v1/scores", get(deprecated_handler))
-        // ── People (0 traffic) ────────────────────────────────────────────────
-        .route(
-            "/v1/users/people",
-            get(deprecated_handler).post(deprecated_handler),
-        )
-        .route("/v1/users/people/:person_id", delete(deprecated_handler))
-        .route(
-            "/v1/users/people/:person_id/name",
-            patch(deprecated_handler),
-        )
-        // Segment assignment was owned by people.rs
-        .route(
-            "/v1/conversations/:conversation_id/segments/assign-bulk",
-            patch(deprecated_handler),
-        )
         // ── Personas (0 traffic) ──────────────────────────────────────────────
         .route(
             "/v1/personas",

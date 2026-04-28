@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:omi/backend/preferences.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:omi/backend/http/api/users.dart';
@@ -103,7 +103,7 @@ class _DeleteAccountState extends State<DeleteAccount> {
       MixpanelManager().deleteUser();
       await WalFileManager.clearAll();
       await SharedPreferencesUtil().clear();
-      await FirebaseAuth.instance.signOut();
+      await AuthService.instance.signOut();
       if (!mounted) return;
       routeToPage(context, const AppShell(), replace: true);
     } catch (_) {

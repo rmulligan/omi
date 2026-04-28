@@ -48,6 +48,7 @@ pub use config::config_routes;
 pub use crisp::crisp_routes;
 pub use deprecated::deprecated_routes;
 pub use health::health_routes;
+pub use people::people_routes;
 pub use proxy::proxy_routes;
 pub use screen_activity::screen_activity_routes;
 pub use tts::tts_routes;
