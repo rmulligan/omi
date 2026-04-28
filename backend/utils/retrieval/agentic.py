@@ -12,6 +12,8 @@ import contextvars
 import traceback
 from typing import List, Optional, AsyncGenerator, Any, Tuple
 
+import os
+
 from langchain_core.runnables import RunnableConfig
 from langchain_openai import ChatOpenAI
 
@@ -471,14 +473,20 @@ async def execute_agentic_chat_stream(
     openai_messages = _messages_to_openai(messages)
 
     # Build the LLM - uses LLM_BASE_URL if set (routes through Hermes agent)
-    llm = ChatOpenAI(
-        model='magnum-opus:35b',
-        temperature=0.7,
-        max_tokens=8192,
-        streaming=True,
-        stream_options={"include_usage": True},
-        callbacks=[_usage_callback],
-    )
+    _local_url = os.environ.get('LLM_BASE_URL')
+    _local_key = os.environ.get('LLM_API_KEY', '') or 'local'
+    llm_kwargs: dict[str, Any] = {
+        'model': 'magnum-opus:35b',
+        'temperature': 0.7,
+        'max_tokens': 8192,
+        'streaming': True,
+        'stream_options': {'include_usage': True},
+        'callbacks': [_usage_callback],
+    }
+    if _local_url:
+        llm_kwargs['base_url'] = _local_url.rstrip('/') + '/v1'
+        llm_kwargs['api_key'] = _local_key
+    llm = ChatOpenAI(**llm_kwargs)
 
     callback = AsyncStreamingCallback()
     full_response = []
