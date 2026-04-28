@@ -24,8 +24,11 @@ _usage_callback = get_usage_callback()
 # ---------------------------------------------------------------------------
 _LLM_BASE_URL = os.environ.get('LLM_BASE_URL')
 _LLM_API_KEY = os.environ.get('LLM_API_KEY', '')
+# MARKER 384075
 
-# ---------------------------------------------------------------------------
+
+
+# -----------------------------
 # BYOK routing proxies
 #
 # The backend has ~50 call sites that use module-level `llm_medium`, `llm_mini`,
@@ -188,7 +191,7 @@ def _byok_openai(model: str, **ctor_kwargs) -> _OpenAIChatProxy:
         kwargs: Dict[str, Any] = {
             'model': model,
             'api_key': _LLM_API_KEY or 'local',
-            'base_url': _LLM_BASE_URL.rstrip('/') + '/v1',
+            'base_url': _LLM_BASE_URL.rstrip('/') + ('' if _LLM_BASE_URL.rstrip('/').endswith('/v1') else '/v1'),
         }
         kwargs.update(ctor_kwargs)
         return _OpenAIChatProxy(model=model, default=ChatOpenAI(**kwargs), ctor_kwargs=kwargs)
@@ -469,6 +472,18 @@ def get_llm(feature: str, streaming: bool = False, cache_key: Optional[str] = No
         response = llm_stream.invoke(prompt, {'callbacks': callbacks})
     """
     if feature in _ANTHROPIC_ONLY_FEATURES:
+        if _LLM_BASE_URL:
+            # Route through local LLM (llama-swap / Hermes)
+            model = get_model(feature)
+            kwargs: Dict[str, Any] = {
+                'api_key': _LLM_API_KEY or 'local',
+                'base_url': _LLM_BASE_URL.rstrip('/') + ('' if _LLM_BASE_URL.rstrip('/').endswith('/v1') else '/v1'),
+                'callbacks': [_usage_callback],
+            }
+            if streaming:
+                kwargs['streaming'] = True
+                kwargs['stream_options'] = {"include_usage": True}
+            return ChatOpenAI(model=model, **kwargs)
         raise ValueError(
             f"Feature '{feature}' is Anthropic — use get_model('{feature}') with anthropic_client instead of get_llm()"
         )
@@ -484,7 +499,7 @@ def get_llm(feature: str, streaming: bool = False, cache_key: Optional[str] = No
     if _LLM_BASE_URL:
         kwargs: Dict[str, Any] = {
             'api_key': _LLM_API_KEY or 'local',
-            'base_url': _LLM_BASE_URL.rstrip('/') + '/v1',
+            'base_url': _LLM_BASE_URL.rstrip('/') + ('' if _LLM_BASE_URL.rstrip('/').endswith('/v1') else '/v1'),
             'callbacks': [_usage_callback],
         }
         if streaming:
