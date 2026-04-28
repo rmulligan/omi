@@ -140,4 +140,6 @@ def get_db():
 def __getattr__(name):
     if name == 'db':
         return get_db()
+    if name == 'document_id_from_seed':
+        return document_id_from_seed
     raise AttributeError(f"module '{__name__}' has no attribute '{name}'")
