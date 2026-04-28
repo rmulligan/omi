@@ -1,8 +1,10 @@
 from typing import List, Optional
 
+import os
+
+# NOTE: Firebase removed for local dev — use admin key auth instead.
 from fastapi import Depends, HTTPException, Security
 from fastapi.security import APIKeyHeader, HTTPAuthorizationCredentials, HTTPBearer
-from firebase_admin import auth
 
 import database.mcp_api_key as mcp_api_key_db
 import database.dev_api_key as dev_api_key_db
@@ -19,10 +21,18 @@ async def get_current_user_id(
 ) -> str:
     if not credentials:
         raise HTTPException(status_code=401, detail="Not authenticated")
+    token = credentials.credentials
+    # Local dev: accept ADMIN_KEY<uid> format
+    admin_key = os.environ.get('ADMIN_KEY', '')
+    if admin_key and token.startswith(f'{admin_key}'):
+        return token[len(admin_key):]
+    # Production: verify Firebase ID token
     try:
-        id_token = credentials.credentials
-        decoded_token = auth.verify_id_token(id_token)
+        from firebase_admin import auth
+        decoded_token = auth.verify_id_token(token)
         return decoded_token["uid"]
+    except ImportError:
+        raise HTTPException(status_code=401, detail="Firebase auth not configured")
     except Exception as e:
         logger.error(f"Error verifying Firebase ID token: {e}")
         raise HTTPException(status_code=401, detail="Invalid authentication credentials")

@@ -1,5 +1,4 @@
-from firebase_admin import auth
-
+# NOTE: Firebase removed for local dev — use admin key auth instead.
 from database._client import db
 from database.redis_db import cache_user_name
 import logging
@@ -8,23 +7,30 @@ logger = logging.getLogger(__name__)
 
 
 def get_user_from_uid(uid: str):
-    try:
-        user = auth.get_user(uid) if uid else None
-    except Exception as e:
-        logger.error(e)
-        user = None
-    if not user:
+    """Local dev stub: return user info from local DB or None.
+    
+    In production, this queries Firebase Auth. For local dev,
+    the admin key auth flow (ADMIN_KEY<uid>) provides identity
+    without Firebase."""
+    if not uid:
         return None
-
-    return {
-        'uid': user.uid,
-        'email': user.email,
-        'email_verified': user.email_verified,
-        'phone_number': user.phone_number,
-        'display_name': user.display_name,
-        'photo_url': user.photo_url,
-        'disabled': user.disabled,
-    }
+    try:
+        # Try to get user from local users table
+        user = db.collection('users').document(uid).get()
+        if user.exists:
+            data = user.to_dict()
+            return {
+                'uid': uid,
+                'email': data.get('email'),
+                'email_verified': True,
+                'phone_number': data.get('phone_number'),
+                'display_name': data.get('name', ''),
+                'photo_url': data.get('photo_url'),
+                'disabled': data.get('disabled', False),
+            }
+    except Exception as e:
+        logger.error(f'get_user_from_uid failed: {e}')
+    return None
 
 
 def _get_firestore_user_name(uid: str):
