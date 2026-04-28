@@ -19,6 +19,13 @@ logger = logging.getLogger(__name__)
 _usage_callback = get_usage_callback()
 
 # ---------------------------------------------------------------------------
+# Local LLM (llama-swap) — when set, all OpenAI-compatible clients route here.
+# This enables fully local operation (no OpenAI/Anthropic API keys needed).
+# ---------------------------------------------------------------------------
+_LLM_BASE_URL = os.environ.get('LLM_BASE_URL')
+_LLM_API_KEY = os.environ.get('LLM_API_KEY', '')
+
+# ---------------------------------------------------------------------------
 # BYOK routing proxies
 #
 # The backend has ~50 call sites that use module-level `llm_medium`, `llm_mini`,
@@ -173,7 +180,18 @@ def _cached_anthropic(api_key: str) -> anthropic.AsyncAnthropic:
 
 
 def _byok_openai(model: str, **ctor_kwargs) -> _OpenAIChatProxy:
-    """Build a module-level ChatOpenAI that transparently routes to BYOK if set."""
+    """Build a module-level ChatOpenAI that transparently routes to BYOK if set.
+
+    When LLM_BASE_URL is set, uses the local llama-swap instance instead.
+    """
+    if _LLM_BASE_URL:
+        kwargs: Dict[str, Any] = {
+            'model': model,
+            'api_key': _LLM_API_KEY or 'local',
+            'base_url': _LLM_BASE_URL.rstrip('/') + '/v1',
+        }
+        kwargs.update(ctor_kwargs)
+        return _OpenAIChatProxy(model=model, default=ChatOpenAI(**kwargs), ctor_kwargs=kwargs)
     default = ChatOpenAI(model=model, **ctor_kwargs)
     return _OpenAIChatProxy(model=model, default=default, ctor_kwargs=ctor_kwargs)
 
@@ -435,6 +453,9 @@ def get_llm(feature: str, streaming: bool = False, cache_key: Optional[str] = No
     Works for OpenAI and OpenRouter features (returns ChatOpenAI or BYOK proxy).
     For Anthropic/Perplexity, use get_model(feature) to get the model string.
 
+    When LLM_BASE_URL is set, all OpenAI features route through the local
+    llama-swap instance instead of the cloud API.
+
     Args:
         feature: Feature name (e.g. 'conv_action_items', 'persona_chat').
         streaming: Whether to return a streaming-enabled client.
@@ -458,6 +479,18 @@ def get_llm(feature: str, streaming: bool = False, cache_key: Optional[str] = No
 
     model = get_model(feature)
     provider = _classify_provider(model)
+
+    # When local LLM is configured, route all OpenAI-compatible models through it.
+    if _LLM_BASE_URL:
+        kwargs: Dict[str, Any] = {
+            'api_key': _LLM_API_KEY or 'local',
+            'base_url': _LLM_BASE_URL.rstrip('/') + '/v1',
+            'callbacks': [_usage_callback],
+        }
+        if streaming:
+            kwargs['streaming'] = True
+            kwargs['stream_options'] = {"include_usage": True}
+        return ChatOpenAI(model=model, **kwargs)
 
     # Reject models that can't be served via ChatOpenAI (Anthropic direct, Perplexity)
     if provider == 'anthropic':
