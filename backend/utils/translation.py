@@ -119,8 +119,11 @@ _non_lexical_utterances_pattern = re.compile(
     r'\b(' + '|'.join(re.escape(word) for word in _non_lexical_utterances) + r')\b', re.IGNORECASE
 )
 
-# Initialize the translation client globally
-_client = translate_v3.TranslationServiceClient()
+# Initialize the translation client globally (only if credentials are available)
+if os.environ.get('GOOGLE_APPLICATION_CREDENTIALS'):
+    _client = translate_v3.TranslationServiceClient()
+else:
+    _client = None
 _parent = f"projects/{PROJECT_ID}/locations/global"
 _mime_type = "text/plain"
 
@@ -444,6 +447,10 @@ class TranslationService:
         """
         if not text:
             return ("", "")
+
+        # Translation service not available without credentials
+        if _client is None:
+            return (text, "en")
 
         sentences = split_into_sentences(text)
         if not sentences:

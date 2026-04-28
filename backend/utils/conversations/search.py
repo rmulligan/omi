@@ -5,13 +5,19 @@ from typing import Dict
 
 import typesense
 
-client = typesense.Client(
-    {
-        'nodes': [{'host': os.getenv('TYPESENSE_HOST'), 'port': os.getenv('TYPESENSE_HOST_PORT'), 'protocol': 'https'}],
-        'api_key': os.getenv('TYPESENSE_API_KEY'),
-        'connection_timeout_seconds': 2,
-    }
-)
+_client = None
+if os.getenv('TYPESENSE_HOST') and os.getenv('TYPESENSE_API_KEY'):
+    try:
+        _client = typesense.Client(
+            {
+                'nodes': [{'host': os.getenv('TYPESENSE_HOST'), 'port': os.getenv('TYPESENSE_HOST_PORT'), 'protocol': 'https'}],
+                'api_key': os.getenv('TYPESENSE_API_KEY'),
+                'connection_timeout_seconds': 2,
+            }
+        )
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).warning(f"Failed to init typesense client: {e}")
 
 
 def search_conversations(
@@ -23,6 +29,8 @@ def search_conversations(
     start_date: int = None,
     end_date: int = None,
 ) -> Dict:
+    if _client is None:
+        return {'items': [], 'total_pages': 1, 'current_page': page, 'per_page': per_page}
     try:
 
         filter_by = f'userId:={uid}'
@@ -44,7 +52,7 @@ def search_conversations(
             'page': page,
         }
 
-        results = client.collections['conversations'].documents.search(search_parameters)
+        results = _client.collections['conversations'].documents.search(search_parameters)
         memories = []
         for item in results['hits']:
             doc = item['document']

@@ -5,27 +5,26 @@ import sqlite3
 import threading
 import uuid
 
-from google.cloud import firestore
+# ---------------------------------------------------------------------------
+# Lazy import of firestore — only imported when actually used.
+# This avoids the credentials check at module load time when
+# SERVICE_ACCOUNT_JSON is not set.
+# ---------------------------------------------------------------------------
 
-if os.environ.get('SERVICE_ACCOUNT_JSON'):
-    service_account_info = json.loads(os.environ["SERVICE_ACCOUNT_JSON"])
-    # create google-credentials.json
+def _get_firestore():
+    from google.cloud import firestore
+    return firestore
+
+
+def _get_firestore_client():
+    sa_json = os.environ.get('SERVICE_ACCOUNT_JSON')
+    if not sa_json:
+        return None
+    service_account_info = json.loads(sa_json)
     with open('google-credentials.json', 'w') as f:
         json.dump(service_account_info, f)
-
-db = firestore.Client()
-
-
-def get_users_uid():
-    users_ref = db.collection('users')
-    return [str(doc.id) for doc in users_ref.stream()]
-
-
-def document_id_from_seed(seed: str) -> uuid.UUID:
-    """Avoid repeating the same data"""
-    seed_hash = hashlib.sha256(seed.encode('utf-8')).digest()
-    generated_uuid = uuid.UUID(bytes=seed_hash[:16], version=4)
-    return str(generated_uuid)
+    firestore = _get_firestore()
+    return firestore.Client()
 
 
 # ---------------------------------------------------------------------------
@@ -126,20 +125,34 @@ class _FakeDoc:
         self.get = lambda k, default=None: json.loads(self.data).get(k, default)
 
 
+# ---------------------------------------------------------------------------
+# Module-level db — set at import time: a real Firestore client if
+# credentials are available, otherwise a LocalDB('users').  This way
+# callers that do `from ._client import db, document_id_from_seed` get
+# a usable object either way.
+# ---------------------------------------------------------------------------
+db = _get_firestore_client()
+if db is None:
+    db = LocalDB('users')
+
+
+def get_users_uid():
+    if hasattr(db, 'stream'):
+        users_ref = db.collection('users')
+        return [str(doc.id) for doc in users_ref.stream()]
+    return []
+
+
+def document_id_from_seed(seed: str) -> uuid.UUID:
+    """Avoid repeating the same data"""
+    seed_hash = hashlib.sha256(seed.encode('utf-8')).digest()
+    generated_uuid = uuid.UUID(bytes=seed_hash[:16], version=4)
+    return str(generated_uuid)
+
+
 # Factory that returns either the real Firebase client or a LocalDB.
 def get_db():
     """Return a Firestore collection ('users') — or LocalDB fallback."""
     if os.environ.get('SERVICE_ACCOUNT_JSON'):
         return db
     return LocalDB('users')
-
-
-# Alias for callers that do `from database._client import db` directly.
-# This is the main entry point — all other modules import `db` from here.
-# For the local fork, `db` is replaced with a factory function.
-def __getattr__(name):
-    if name == 'db':
-        return get_db()
-    if name == 'document_id_from_seed':
-        return document_id_from_seed
-    raise AttributeError(f"module '{__name__}' has no attribute '{name}'")
