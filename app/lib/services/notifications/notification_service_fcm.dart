@@ -6,8 +6,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 
 import 'package:omi/backend/http/api/notifications.dart';
@@ -16,15 +14,11 @@ import 'package:omi/services/notifications/action_item_notification_handler.dart
 import 'package:omi/services/notifications/important_conversation_notification_handler.dart';
 import 'package:omi/services/notifications/merge_notification_handler.dart';
 import 'package:omi/services/notifications/notification_interface.dart';
-import 'package:omi/utils/analytics/intercom.dart';
 import 'package:omi/utils/logger.dart';
 
-/// Firebase Cloud Messaging enabled notification service
-/// Supports iOS, Android, macOS, web, and Linux with full FCM functionality
+/// Stubbed FCM notification service (local dev)
 class _FCMNotificationService implements NotificationInterface {
   _FCMNotificationService._();
-
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
   final channel = NotificationChannel(
     channelGroupKey: 'channel_group_key',
@@ -39,16 +33,7 @@ class _FCMNotificationService implements NotificationInterface {
 
   @override
   Future<void> initialize() async {
-    await _initializeAwesomeNotifications();
-    // Calling it here because the APNS token can sometimes arrive early or it might take some time (like a few seconds)
-    // Reference: https://github.com/firebase/flutterfire/issues/12244#issuecomment-1969286794
-    await _firebaseMessaging.getAPNSToken();
-    listenForMessages();
-  }
-
-  Future<void> _initializeAwesomeNotifications() async {
     bool initialized = await _awesomeNotifications.initialize(
-      // set the icon to null if you want to use the default app icon
       'resource://drawable/icon',
       [
         NotificationChannel(
@@ -60,16 +45,12 @@ class _FCMNotificationService implements NotificationInterface {
           ledColor: Colors.white,
         ),
       ],
-      // Channel groups are only visual and are not required
       channelGroups: [
         NotificationChannelGroup(channelGroupKey: channel.channelKey!, channelGroupName: channel.channelName!),
       ],
       debug: false,
     );
-
     Logger.debug('initializeNotifications: $initialized');
-
-    // Reset badge to clear existing badge count if any
     int badgeCount = await _awesomeNotifications.getGlobalBadgeCounter();
     if (badgeCount > 0) await _awesomeNotifications.resetGlobalBadge();
   }
@@ -85,9 +66,7 @@ class _FCMNotificationService implements NotificationInterface {
     NotificationLayout layout = NotificationLayout.Default,
   }) async {
     final allowed = await _awesomeNotifications.isNotificationAllowed();
-    if (!allowed) {
-      return;
-    }
+    if (!allowed) return;
     try {
       await _awesomeNotifications.createNotification(
         content: NotificationContent(
@@ -101,7 +80,7 @@ class _FCMNotificationService implements NotificationInterface {
         ),
       );
     } catch (e) {
-      Logger.debug('Failed to create notification (channel may be disabled): $e');
+      Logger.debug('Failed to create notification: $e');
     }
   }
 
@@ -110,7 +89,6 @@ class _FCMNotificationService implements NotificationInterface {
     bool isAllowed = await _awesomeNotifications.isNotificationAllowed();
     if (!isAllowed) {
       isAllowed = await _awesomeNotifications.requestPermissionToSendNotifications();
-      register();
     }
     return isAllowed;
   }
@@ -120,48 +98,45 @@ class _FCMNotificationService implements NotificationInterface {
 
   @override
   Future<String> getTimeZone() async {
-    final String currentTimeZone = await FlutterTimezone.getLocalTimezone();
-    return currentTimeZone;
+    return await FlutterTimezone.getLocalTimezone();
   }
 
   @override
   Future<void> saveFcmToken(String? token) async {
+    // NOTE: Firebase auth removed for local dev
+    // Only save if we have a uid
     if (token == null) return;
-    String timeZone = await getTimeZone();
-    if (FirebaseAuth.instance.currentUser != null && token.isNotEmpty) {
+    final uid = await _getUid();
+    if (uid != null && token.isNotEmpty) {
+      String timeZone = await getTimeZone();
       await saveFcmTokenServer(token: token, timeZone: timeZone);
-
-      try {
-        await IntercomManager.instance.sendTokenToIntercom(token);
-      } catch (e) {
-        print(e);
-      }
+      Logger.debug('FCM token saved: $token');
     }
   }
 
-  @override
-  void saveNotificationToken() async {
+  Future<String?> _getUid() async {
     try {
-      if (Platform.isIOS) {
-        String? apnsToken;
-        for (int i = 0; i < 10; i++) {
-          apnsToken = await _firebaseMessaging.getAPNSToken();
-          if (apnsToken != null) break;
-          await Future.delayed(const Duration(seconds: 1));
-        }
+      final prefs = await _getPrefs();
+      return prefs.getString('uid');
+    } catch (e) {
+      return null;
+    }
+  }
 
-        if (apnsToken == null) {
-          Logger.debug('APNS token not available yet, will retry on refresh');
-          return;
-        }
-      }
+  Future<dynamic> _getPrefs() async {
+    // Stub: in real app this would be SharedPreferencesUtil
+    return null;
+  }
 
-      String? token = await _firebaseMessaging.getToken();
+  @override
+  Future<void> saveNotificationToken() async {
+    try {
+      String? token;
+      // Stubbed: no Firebase messaging token in local dev
+      Logger.debug('saveNotificationToken: stubbed (no FCM)');
       await saveFcmToken(token);
     } catch (e) {
       Logger.debug('Failed to save notification token: $e');
-    } finally {
-      _firebaseMessaging.onTokenRefresh.listen(saveFcmToken);
     }
   }
 
@@ -178,77 +153,18 @@ class _FCMNotificationService implements NotificationInterface {
     Map<String, String?>? payload,
   }) async {
     var allowed = await _awesomeNotifications.isNotificationAllowed();
-    Logger.debug('createNotification: $allowed');
     if (!allowed) return;
-    Logger.debug('createNotification ~ Creating notification: $title');
+    Logger.debug('createNotification: Creating notification: $title');
     showNotification(id: notificationId, title: title, body: body, wakeUpScreen: true, payload: payload);
   }
 
   @override
   void clearNotification(int id) => _awesomeNotifications.cancel(id);
 
-  bool _shouldShowForegroundNotificationOnFCMMessageReceived() {
-    return Platform.isAndroid;
-  }
-
   @override
   Future<void> listenForMessages() async {
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      final data = message.data;
-      final noti = message.notification;
-
-      // Plugin
-      if (data.isNotEmpty) {
-        final Map<String, String> payload = <String, String>{};
-        final navigateTo = data['navigate_to'];
-        if (navigateTo != null && navigateTo.toString().isNotEmpty) {
-          payload['navigate_to'] = navigateTo.toString();
-        }
-
-        // Handle action item data messages
-        final messageType = data['type'];
-        if (messageType == 'apple_reminders_sync') {
-          // Handled natively by AppDelegate; foreground resume catches missed FCM
-          return;
-        } else if (messageType == 'action_item_reminder') {
-          ActionItemNotificationHandler.handleReminderMessage(data, channel.channelKey!);
-          return;
-        } else if (messageType == 'action_item_update') {
-          ActionItemNotificationHandler.handleUpdateMessage(data, channel.channelKey!);
-          return;
-        } else if (messageType == 'action_item_delete') {
-          ActionItemNotificationHandler.handleDeletionMessage(data);
-          return;
-        } else if (messageType == 'merge_completed') {
-          MergeNotificationHandler.handleMergeCompleted(data, channel.channelKey!, isAppInForeground: true);
-          return;
-        } else if (messageType == 'important_conversation') {
-          ImportantConversationNotificationHandler.handleImportantConversation(
-            data,
-            channel.channelKey!,
-            isAppInForeground: true,
-          );
-          return;
-        }
-
-        // plugin, daily summary
-        final notificationType = data['notification_type'];
-        if (notificationType == 'plugin' || notificationType == 'daily_summary') {
-          data['from_integration'] = data['from_integration'] == 'true';
-          _serverMessageStreamController.add(ServerMessage.fromJson(data));
-        }
-        if (noti != null && _shouldShowForegroundNotificationOnFCMMessageReceived()) {
-          _showForegroundNotification(noti: noti, payload: payload);
-        }
-        return;
-      }
-
-      // Announcement likes
-      if (noti != null && _shouldShowForegroundNotificationOnFCMMessageReceived()) {
-        _showForegroundNotification(noti: noti, layout: NotificationLayout.BigText);
-        return;
-      }
-    });
+    // Stubbed: no FCM in local dev
+    Logger.debug('listenForMessages: stubbed (no FCM)');
   }
 
   final _serverMessageStreamController = StreamController<ServerMessage>.broadcast();
@@ -256,6 +172,7 @@ class _FCMNotificationService implements NotificationInterface {
   @override
   Stream<ServerMessage> get listenForServerMessages => _serverMessageStreamController.stream;
 
+  @override
   Future<void> _showForegroundNotification({
     required RemoteNotification noti,
     NotificationLayout layout = NotificationLayout.Default,
@@ -267,5 +184,5 @@ class _FCMNotificationService implements NotificationInterface {
   }
 }
 
-/// Factory function to create the FCM notification service
+/// Factory function to create the FCM notification service (stubbed for local dev)
 NotificationInterface createNotificationService() => _FCMNotificationService._();
