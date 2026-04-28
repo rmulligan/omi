@@ -10,7 +10,7 @@ import 'package:omi/utils/logger.dart';
 
 class CompositeTranscriptionSocket implements IPureSocket {
   final IPureSocket primarySocket;
-  final IPureSocket secondarySocket;
+  final IPureSocket? secondarySocket;
 
   final String? suggestedTranscriptType;
   final String? sttProvider;
@@ -19,19 +19,20 @@ class CompositeTranscriptionSocket implements IPureSocket {
   IPureSocketListener? _listener;
 
   late final _PrimarySocketListener _primaryListener;
-  late final _SecondarySocketListener _secondaryListener;
+  _SecondarySocketListener? _secondaryListener;
 
   CompositeTranscriptionSocket({
     required this.primarySocket,
-    required this.secondarySocket,
+    this.secondarySocket,
     this.suggestedTranscriptType = 'suggested_transcript',
     this.sttProvider,
   }) {
     _primaryListener = _PrimarySocketListener(this);
-    _secondaryListener = _SecondarySocketListener(this);
-
     primarySocket.setListener(_primaryListener);
-    secondarySocket.setListener(_secondaryListener);
+    if (secondarySocket != null) {
+      _secondaryListener = _SecondarySocketListener(this, secondarySocket!);
+      secondarySocket!.setListener(_secondaryListener);
+    }
   }
 
   @override
@@ -51,38 +52,56 @@ class CompositeTranscriptionSocket implements IPureSocket {
     CustomSttLogService.instance.info('Composite', 'Connecting both sockets...');
     _status = PureSocketStatus.connecting;
 
-    final results = await Future.wait([primarySocket.connect(), secondarySocket.connect()]);
+    if (secondarySocket != null) {
+      final results = await Future.wait([primarySocket.connect(), secondarySocket!.connect()]);
+      final primaryOk = results[0] && primarySocket.status == PureSocketStatus.connected;
+      final secondaryOk = results[1] && secondarySocket!.status == PureSocketStatus.connected;
 
-    final primaryOk = results[0] && primarySocket.status == PureSocketStatus.connected;
-    final secondaryOk = results[1] && secondarySocket.status == PureSocketStatus.connected;
+      if (primaryOk && secondaryOk) {
+        _status = PureSocketStatus.connected;
+        CustomSttLogService.instance.info('Composite', 'Both sockets connected');
+        DebugLogManager.logEvent('composite_socket_connected', {
+          'primary_status': primarySocket.status.toString(),
+          'secondary_status': secondarySocket!.status.toString(),
+        });
+        onConnected();
+        return true;
+      }
 
-    if (primaryOk && secondaryOk) {
-      _status = PureSocketStatus.connected;
-      CustomSttLogService.instance.info('Composite', 'Both sockets connected');
-      DebugLogManager.logEvent('composite_socket_connected', {
+      // Either failed - disconnect both and fail
+      CustomSttLogService.instance.error('Composite', 'Connection failed - primary: $primaryOk, secondary: $secondaryOk');
+      DebugLogManager.logWarning('composite_socket_connect_failed', {
+        'primary_ok': primaryOk,
+        'secondary_ok': secondaryOk,
         'primary_status': primarySocket.status.toString(),
-        'secondary_status': secondarySocket.status.toString(),
+        'secondary_status': secondarySocket!.status.toString(),
       });
-      onConnected();
-      return true;
-    }
+      await _disconnectBothQuietly();
+      _status = PureSocketStatus.notConnected;
+      return false;
+    } else {
+      final primaryOk = await primarySocket.connect();
+      if (primaryOk && primarySocket.status == PureSocketStatus.connected) {
+        _status = PureSocketStatus.connected;
+        CustomSttLogService.instance.info('Composite', 'Primary socket connected (no secondary)');
+        onConnected();
+        return true;
+      }
 
-    // Either failed - disconnect both and fail
-    CustomSttLogService.instance.error('Composite', 'Connection failed - primary: $primaryOk, secondary: $secondaryOk');
-    DebugLogManager.logWarning('composite_socket_connect_failed', {
-      'primary_ok': primaryOk,
-      'secondary_ok': secondaryOk,
-      'primary_status': primarySocket.status.toString(),
-      'secondary_status': secondarySocket.status.toString(),
-    });
-    await _disconnectBothQuietly();
-    _status = PureSocketStatus.notConnected;
-    return false;
+      CustomSttLogService.instance.error('Composite', 'Primary connection failed');
+      await primarySocket.disconnect();
+      _status = PureSocketStatus.notConnected;
+      return false;
+    }
   }
 
   /// Disconnect both sockets without triggering composite callbacks
   Future<void> _disconnectBothQuietly() async {
-    await Future.wait([primarySocket.disconnect(), secondarySocket.disconnect()]);
+    if (secondarySocket != null) {
+      await Future.wait([primarySocket.disconnect(), secondarySocket!.disconnect()]);
+    } else {
+      await primarySocket.disconnect();
+    }
   }
 
   @override
@@ -101,7 +120,11 @@ class CompositeTranscriptionSocket implements IPureSocket {
     CustomSttLogService.instance.info('Composite', 'Stopping...');
     DebugLogManager.logEvent('composite_socket_stopping', {});
 
-    await Future.wait([primarySocket.stop(), secondarySocket.stop()]);
+    if (secondarySocket != null) {
+      await Future.wait([primarySocket.stop(), secondarySocket!.stop()]);
+    } else {
+      await primarySocket.stop();
+    }
 
     _status = PureSocketStatus.disconnected;
   }
@@ -143,7 +166,9 @@ class CompositeTranscriptionSocket implements IPureSocket {
       return;
     }
     primarySocket.send(message);
-    secondarySocket.send(message);
+    if (secondarySocket != null) {
+      secondarySocket!.send(message);
+    }
   }
 
   void _onPrimaryMessage(dynamic message) {
@@ -164,7 +189,9 @@ class CompositeTranscriptionSocket implements IPureSocket {
         payload['stt_provider'] = sttProvider;
       }
 
-      secondarySocket.send(jsonEncode(payload));
+      if (secondarySocket != null) {
+        secondarySocket!.send(jsonEncode(payload));
+      }
     } catch (e) {
       CustomSttLogService.instance.error('Composite', 'Error forwarding transcript: $e');
     }
@@ -215,7 +242,8 @@ class _PrimarySocketListener implements IPureSocketListener {
 
 class _SecondarySocketListener implements IPureSocketListener {
   final CompositeTranscriptionSocket _composite;
-  _SecondarySocketListener(this._composite);
+  final IPureSocket _socket;
+  _SecondarySocketListener(this._composite, this._socket);
 
   @override
   void onConnected() => Logger.debug("[Composite/Secondary] Connected");

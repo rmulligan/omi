@@ -6,7 +6,6 @@ import time
 from fastapi import Depends, Header, HTTPException, WebSocketException
 from fastapi import Request
 from starlette.websockets import WebSocket
-from firebase_admin import auth
 from firebase_admin.auth import InvalidIdTokenError
 import logging
 import redis as redis_pkg
@@ -18,9 +17,26 @@ from utils.rate_limit_config import RATE_POLICIES, RATE_LIMIT_SHADOW, get_effect
 
 logger = logging.getLogger(__name__)
 
+# Make Firebase auth import optional for local development.
+# When SERVICE_ACCOUNT_JSON is not set, we skip Firebase entirely and
+# use the ADMIN_KEY fallback for all auth.
+_FIREBASE_AVAILABLE = os.environ.get('SERVICE_ACCOUNT_JSON') is not None
+
+if _FIREBASE_AVAILABLE:
+    from firebase_admin import auth as _firebase_auth
+else:
+    class _FakeFirebaseAuth:
+        def verify_id_token(self, token):
+            raise InvalidIdTokenError(f"Firebase not configured — set SERVICE_ACCOUNT_JSON")
+        def get_user(self, uid):
+            raise InvalidIdTokenError(f"Firebase not configured — set SERVICE_ACCOUNT_JSON")
+        def delete_user(self, uid):
+            raise InvalidIdTokenError(f"Firebase not configured — set SERVICE_ACCOUNT_JSON")
+    _firebase_auth = _FakeFirebaseAuth()
+
 
 def get_user(uid: str):
-    user = auth.get_user(uid)
+    user = _firebase_auth.get_user(uid)
     return user
 
 
@@ -40,11 +56,11 @@ def verify_token(token: str) -> str:
     # Check for ADMIN_KEY format
     admin_key = os.getenv('ADMIN_KEY')
     if admin_key and token.startswith(admin_key):
-        return token[len(admin_key) :]
+        return token[len(admin_key):]
 
     # Verify Firebase token
     try:
-        decoded_token = auth.verify_id_token(token)
+        decoded_token = _firebase_auth.verify_id_token(token)
         return decoded_token['uid']
     except InvalidIdTokenError:
         if os.getenv('LOCAL_DEVELOPMENT') == 'true':
@@ -202,7 +218,7 @@ def get_current_user_uid_from_ws_message(message: dict) -> str:
     """
     Get user uid from WebSocket first-message auth.
 
-    Expected message format: {"type": "auth", "token": "<token>"}
+    Expected message format: {"type": "auth", "token": "***"}
 
     Returns:
         The user's uid
@@ -347,5 +363,5 @@ def timeit(func):
 
 
 def delete_account(uid: str):
-    auth.delete_user(uid)
+    _firebase_auth.delete_user(uid)
     return {"message": "User deleted"}

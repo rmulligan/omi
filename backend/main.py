@@ -8,7 +8,15 @@ load_dotenv()  # No-op if .env doesn't exist (production); loads local dev secre
 
 logging.basicConfig(level=logging.INFO)
 
-import firebase_admin
+# Note: Firebase initialization removed for local dev — no auth dependency.
+# Firebase is not used in the local fork.
+# if os.environ.get('SERVICE_ACCOUNT_JSON'):
+#     service_account_info = json.loads(os.environ["SERVICE_ACCOUNT_JSON"])
+#     credentials = firebase_admin.credentials.Certificate(service_account_info)
+#     firebase_admin.initialize_app(credentials)
+# else:
+#     firebase_admin.initialize_app()
+
 from fastapi import FastAPI
 
 from routers import (
@@ -22,7 +30,7 @@ from routers import (
     trends,
     sync,
     apps,
-    payment,
+    # payment removed — no Stripe in local fork
     integration,
     conversations,
     memories,
@@ -57,22 +65,11 @@ from routers import (
 )
 
 from utils.other.timeout import TimeoutMiddleware
-from utils.observability import log_langsmith_status
-from utils.subscription import validate_stripe_price_ids
 from utils.http_client import close_all_clients
 
-# Log LangSmith tracing status at startup
-log_langsmith_status()
-
-# Validate Stripe price IDs so misconfigured plans fail loud
-validate_stripe_price_ids()
-
-if os.environ.get('SERVICE_ACCOUNT_JSON'):
-    service_account_info = json.loads(os.environ["SERVICE_ACCOUNT_JSON"])
-    credentials = firebase_admin.credentials.Certificate(service_account_info)
-    firebase_admin.initialize_app(credentials)
-else:
-    firebase_admin.initialize_app()
+# LangSmith removed — not used in local fork.
+# from utils.observability import log_langsmith_status
+# log_langsmith_status()
 
 app = FastAPI()
 
@@ -102,8 +99,8 @@ app.include_router(calendar_meetings.router)
 app.include_router(oauth.router)  # Added oauth router (for Omi Apps)
 app.include_router(auth.router)  # Added auth router (for the main Omi App, this is the core auth router)
 
-
-app.include_router(payment.router)
+# payment router removed — no Stripe in local fork
+# app.include_router(payment.router)
 app.include_router(mcp.router)
 app.include_router(mcp_sse.router)
 app.include_router(developer.router)
