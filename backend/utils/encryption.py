@@ -12,8 +12,10 @@ logger = logging.getLogger(__name__)
 # Load the master secret from environment variables. This must be a securely managed 32-byte key.
 ENCRYPTION_SECRET=os.environ.get('ENCRYPTION_SECRET', '').encode('utf-8')
 if not ENCRYPTION_SECRET or len(ENCRYPTION_SECRET) < 32:
-    # Local dev: use a default key for local development
-    ENCRYPTION_SECRET = b'omi_ZwB2ZNqB2HHpMK6wStk7sTpavJiPTFg7gXUHnc4tFABPU6pZ2c2DKgehtfgi4RZv'
+    raise RuntimeError(
+        "ENCRYPTION_SECRET environment variable not set or is too short. "
+        "It must be a securely managed 32-byte key."
+    )
 
 def derive_key(uid: str) -> bytes:
     """

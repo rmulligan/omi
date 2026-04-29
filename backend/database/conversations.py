@@ -1142,7 +1142,10 @@ def get_conversation(uid: str, conversation_id: str):
             )
             row = res.fetchone()
             if row:
-                return row[0]
+                try:
+                    return json.loads(row[0])
+                except (json.JSONDecodeError, TypeError):
+                    return None
     except Exception as e:
         logger.error(f"Error getting conversation from pg: {e}")
     return None
@@ -1160,7 +1163,13 @@ def get_conversations(
                 text("SELECT metadata FROM events WHERE source_type='omi_audio' AND source_id LIKE :uid_prefix ORDER BY timestamp DESC LIMIT :limit OFFSET :offset"),
                 {"uid_prefix": f"{uid}_%", "limit": limit, "offset": offset}
             )
-            return [row[0] for row in res.fetchall()]
+            results = []
+            for row in res.fetchall():
+                try:
+                    results.append(json.loads(row[0]))
+                except (json.JSONDecodeError, TypeError):
+                    pass
+            return results
     except Exception as e:
         logger.error(f"Error getting conversations from pg: {e}")
         return []
@@ -1236,7 +1245,10 @@ def get_last_completed_conversation(uid: str):
             )
             row = res.fetchone()
             if row:
-                return row[0]
+                try:
+                    return json.loads(row[0])
+                except (json.JSONDecodeError, TypeError):
+                    return None
     except Exception as e:
         logger.error(f"Error getting last completed conversation from pg: {e}")
     return None
