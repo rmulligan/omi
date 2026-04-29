@@ -37,7 +37,7 @@ class CrashlyticsManager implements CrashReporter {
 
   @override
   void logWarn(String message) {
-    Logger.warn(message);
+    Logger.warning(message);
   }
 
   @override

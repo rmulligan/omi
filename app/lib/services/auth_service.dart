@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:math';
+import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:omi/backend/preferences.dart';
-import 'package:omi/env/env.dart';
 import 'package:omi/utils/logger.dart';
 
 class UserCredential {
@@ -58,6 +58,12 @@ class AuthService {
     SharedPreferencesUtil().authToken = '';
     SharedPreferencesUtil().tokenExpirationTime = 0;
     SharedPreferencesUtil().uid = '';
+  }
+
+  UserCredential? get currentUser {
+    final uid = SharedPreferencesUtil().uid;
+    if (uid == null || uid.isEmpty) return null;
+    return UserCredential(uid: uid, email: SharedPreferencesUtil().email, displayName: SharedPreferencesUtil().givenName);
   }
 
   Future<String?> getIdToken() async {
@@ -147,8 +153,7 @@ class AuthService {
 
   // --- internals ---
 
-  static String get _defaultUid =>
-      Env.env['OMI_USER_UID'] ?? 'local-dev-user';
+  static String get _defaultUid => 'local-dev-user';
 
   void _autoSignIn() {
     if (isSignedIn()) return;

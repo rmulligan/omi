@@ -9,6 +9,8 @@ class AuthProvider extends ChangeNotifier {
   bool get isAuthenticated => _isAuthenticated;
   bool get loading => _loading;
 
+  bool get isSignedIn => _isAuthenticated;
+
   AuthProvider() {
     _isAuthenticated = AuthService.instance.isSignedIn();
   }
