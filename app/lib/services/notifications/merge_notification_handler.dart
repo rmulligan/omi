@@ -1,11 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
-
-import 'package:awesome_notifications/awesome_notifications.dart';
-
-import 'package:omi/app_globals.dart';
-import 'package:omi/utils/l10n_extensions.dart';
 import 'package:omi/utils/logger.dart';
 
 /// Event data for merge completion
@@ -18,8 +12,6 @@ class MergeCompletedEvent {
 
 /// Handler for conversation merge FCM notifications
 class MergeNotificationHandler {
-  static final _awesomeNotifications = AwesomeNotifications();
-
   /// Stream controller for merge completed events
   static final StreamController<MergeCompletedEvent> _mergeCompletedController =
       StreamController<MergeCompletedEvent>.broadcast();
@@ -60,44 +52,7 @@ class MergeNotificationHandler {
 
     // Show notification if app was in background
     if (!isAppInForeground) {
-      await _showMergeCompletedNotification(
-        channelKey: channelKey,
-        mergedConversationId: mergedConversationId,
-        removedCount: removedIds.length,
-      );
-    }
-  }
-
-  /// Show local notification that merge completed
-  static Future<void> _showMergeCompletedNotification({
-    required String channelKey,
-    required String mergedConversationId,
-    required int removedCount,
-  }) async {
-    try {
-      final notificationId = mergedConversationId.hashCode;
-      final ctx = globalNavigatorKey.currentContext;
-      final totalCount = removedCount + 1;
-
-      await _awesomeNotifications.createNotification(
-        content: NotificationContent(
-          id: notificationId,
-          channelKey: channelKey,
-          title: '✅ ${ctx?.l10n.mergeConversationsSuccessTitle ?? 'Conversations Merged Successfully'}',
-          body: ctx?.l10n.mergeConversationsSuccessBody(totalCount) ??
-              '$totalCount conversations have been merged successfully',
-          payload: {
-            'merged_conversation_id': mergedConversationId,
-            'navigate_to': '/conversation/$mergedConversationId',
-          },
-          notificationLayout: NotificationLayout.Default,
-          category: NotificationCategory.Status,
-        ),
-      );
-
-      Logger.debug('[MergeNotification] Showed merge completed notification');
-    } catch (e) {
-      Logger.debug('[MergeNotification] Error showing notification: $e');
+      Logger.debug('[MergeNotification] local notification disabled for Lilly fork');
     }
   }
 }

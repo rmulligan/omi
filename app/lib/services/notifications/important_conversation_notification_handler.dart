@@ -1,10 +1,6 @@
 import 'dart:async';
 
-import 'package:awesome_notifications/awesome_notifications.dart';
-
-import 'package:omi/app_globals.dart';
 import 'package:omi/utils/analytics/mixpanel.dart';
-import 'package:omi/utils/l10n_extensions.dart';
 import 'package:omi/utils/logger.dart';
 
 /// Event data for important conversation completion
@@ -18,8 +14,6 @@ class ImportantConversationEvent {
 /// Handler for important conversation FCM notifications
 /// Triggered when a conversation >30 minutes completes processing
 class ImportantConversationNotificationHandler {
-  static final _awesomeNotifications = AwesomeNotifications();
-
   /// Stream controller for important conversation events
   static final StreamController<ImportantConversationEvent> _importantConversationController =
       StreamController<ImportantConversationEvent>.broadcast();
@@ -59,40 +53,6 @@ class ImportantConversationNotificationHandler {
       ),
     );
 
-    // Always show notification (foreground and background) so user can tap to share
-    await _showImportantConversationNotification(
-      channelKey: channelKey,
-      conversationId: conversationId,
-      navigateTo: navigateTo ?? '/conversation/$conversationId?share=1',
-    );
-  }
-
-  /// Show local notification for important conversation
-  static Future<void> _showImportantConversationNotification({
-    required String channelKey,
-    required String conversationId,
-    required String navigateTo,
-  }) async {
-    try {
-      final notificationId = conversationId.hashCode;
-
-      final ctx = globalNavigatorKey.currentContext;
-      await _awesomeNotifications.createNotification(
-        content: NotificationContent(
-          id: notificationId,
-          channelKey: channelKey,
-          title: ctx?.l10n.importantConversationTitle ?? 'Important Conversation',
-          body: ctx?.l10n.importantConversationBody ??
-              'You just had an important convo. Tap to share the summary with others.',
-          payload: {'conversation_id': conversationId, 'navigate_to': navigateTo},
-          notificationLayout: NotificationLayout.Default,
-          category: NotificationCategory.Social,
-        ),
-      );
-
-      Logger.debug('[ImportantConversationNotification] Showed notification for conversation: $conversationId');
-    } catch (e) {
-      Logger.debug('[ImportantConversationNotification] Error showing notification: $e');
-    }
+    Logger.debug('[ImportantConversationNotification] local notification disabled for Lilly fork');
   }
 }
