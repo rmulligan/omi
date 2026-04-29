@@ -1,62 +1,34 @@
-import 'package:envied/envied.dart';
-
 import 'env.dart';
 
-part 'dev_env.g.dart';
-
-@Envied(allowOptionalFields: true, path: '.dev.env')
+// Stubbed envied — Firebase and envied codegen were stripped from this fork.
+// All values are null so the app compiles without the generated .g.dart file.
 final class DevEnv implements EnvFields {
   DevEnv();
 
   @override
-  @EnviedField(varName: 'OPENAI_API_KEY', obfuscate: true)
-  final String? openAIAPIKey = _DevEnv.openAIAPIKey;
-
+  String? get openAIAPIKey => null;
   @override
-  @EnviedField(varName: 'MIXPANEL_PROJECT_TOKEN', obfuscate: true)
-  final String? mixpanelProjectToken = _DevEnv.mixpanelProjectToken;
-
+  String? get mixpanelProjectToken => null;
   @override
-  @EnviedField(varName: 'API_BASE_URL', obfuscate: true)
-  final String? apiBaseUrl = _DevEnv.apiBaseUrl;
-
+  String? get apiBaseUrl => null;
   @override
-  @EnviedField(varName: 'GROWTHBOOK_API_KEY', obfuscate: true)
-  final String? growthbookApiKey = _DevEnv.growthbookApiKey;
-
+  String? get growthbookApiKey => null;
   @override
-  @EnviedField(varName: 'GOOGLE_MAPS_API_KEY', obfuscate: true)
-  final String? googleMapsApiKey = _DevEnv.googleMapsApiKey;
-
+  String? get googleMapsApiKey => null;
   @override
-  @EnviedField(varName: 'INTERCOM_APP_ID', obfuscate: true)
-  final String? intercomAppId = _DevEnv.intercomAppId;
-
+  String? get intercomAppId => null;
   @override
-  @EnviedField(varName: 'INTERCOM_IOS_API_KEY', obfuscate: true)
-  final String? intercomIOSApiKey = _DevEnv.intercomIOSApiKey;
-
+  String? get intercomIOSApiKey => null;
   @override
-  @EnviedField(varName: 'INTERCOM_ANDROID_API_KEY', obfuscate: true)
-  final String? intercomAndroidApiKey = _DevEnv.intercomAndroidApiKey;
-
+  String? get intercomAndroidApiKey => null;
   @override
-  @EnviedField(varName: 'GOOGLE_CLIENT_ID', obfuscate: true)
-  final String? googleClientId = _DevEnv.googleClientId;
-
+  String? get googleClientId => null;
   @override
-  @EnviedField(varName: 'GOOGLE_CLIENT_SECRET', obfuscate: true)
-  final String? googleClientSecret = _DevEnv.googleClientSecret;
-
+  String? get googleClientSecret => null;
   @override
-  @EnviedField(varName: 'USE_WEB_AUTH', obfuscate: false, defaultValue: false)
-  final bool? useWebAuth = _DevEnv.useWebAuth;
-
+  bool? get useWebAuth => false;
   @override
-  @EnviedField(varName: 'USE_AUTH_CUSTOM_TOKEN', obfuscate: false, defaultValue: false)
-  final bool? useAuthCustomToken = _DevEnv.useAuthCustomToken;
-
+  bool? get useAuthCustomToken => false;
   @override
-  @EnviedField(varName: 'STAGING_API_URL', obfuscate: true)
-  final String? stagingApiUrl = _DevEnv.stagingApiUrl;
+  String? get stagingApiUrl => null;
 }
