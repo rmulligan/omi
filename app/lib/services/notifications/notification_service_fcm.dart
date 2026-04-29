@@ -174,7 +174,7 @@ class _FCMNotificationService implements NotificationInterface {
 
   @override
   Future<void> _showForegroundNotification({
-    required RemoteNotification noti,
+    required dynamic noti,
     NotificationLayout layout = NotificationLayout.Default,
     Map<String, String?>? payload,
   }) async {

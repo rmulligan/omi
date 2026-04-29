@@ -31,7 +31,7 @@ class CompositeTranscriptionSocket implements IPureSocket {
     primarySocket.setListener(_primaryListener);
     if (secondarySocket != null) {
       _secondaryListener = _SecondarySocketListener(this, secondarySocket!);
-      secondarySocket!.setListener(_secondaryListener);
+      secondarySocket!.setListener(_secondaryListener!);
     }
   }
 
