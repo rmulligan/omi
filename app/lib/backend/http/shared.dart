@@ -60,6 +60,7 @@ Future<String> getAuthHeader() async {
   }
   return 'Bearer ${SharedPreferencesUtil().authToken}';
 }
+*/
 
 /// Builds common headers for API and WebSocket requests
 /// Centralizes header logic for easy maintenance and consistency
