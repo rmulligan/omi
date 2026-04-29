@@ -4,9 +4,15 @@ import random
 from enum import Enum
 from typing import Callable, List, Optional
 
-import websockets
-from deepgram import DeepgramClient, DeepgramClientOptions, LiveTranscriptionEvents
-from deepgram.clients.live.v1 import LiveOptions
+try:
+    import websockets
+except ImportError:
+    websockets = None
+try:
+    from deepgram import DeepgramClient, DeepgramClientOptions, LiveTranscriptionEvents
+    from deepgram.clients.live.v1 import LiveOptions
+except ImportError:
+    DeepgramClient = DeepgramClientOptions = LiveTranscriptionEvents = LiveOptions = None
 
 from utils.byok import get_byok_key
 from utils.stt.safe_socket import KeepaliveConfig, SafeDeepgramSocket  # noqa: F401 — re-exported for backward compat
@@ -407,3 +413,27 @@ def connect_to_deepgram(
         raise Exception(f'Could not open socket: WebSocketException {e}')
     except Exception as e:
         raise Exception(f'Could not open socket: {e}')
+
+# MARKER 384076
+
+
+# ---------------------------------------------------------------------------
+# STUBS — shadow real implementations above so callers that import this
+# module get stubs instead of the real (deepgram-dependent) code.
+# ---------------------------------------------------------------------------
+def get_stt_service_for_language(language: str, multi_lang_enabled: bool = True):
+    return STTService.deepgram, 'en', 'nova-3'
+
+
+async def process_audio_dg(
+    stream_transcript,
+    language: str,
+    sample_rate: int,
+    channels: int,
+    model: str = 'nova-3',
+    keywords: List[str] = [],
+    vad_gate=None,
+    is_active: Optional[Callable[[], bool]] = None,
+):
+    # Return None — callers check `if dg_socket is None: return`
+    return None

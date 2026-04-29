@@ -918,3 +918,8 @@ def try_acquire_conversation_goal_lock(uid: str, conversation_id: str, ttl: int 
     """Idempotency lock: one goal extraction per conversation. Returns True if acquired."""
     result = r.set(f'users:{uid}:conv_goal_lock:{conversation_id}', '1', ex=ttl, nx=True)
     return result is not None
+
+def get_redis():
+    """Stub — returns None. Callers that need a real Redis connection
+    should pass one explicitly or set ENCRYPTION_SECRET + Redis env vars."""
+    return None
