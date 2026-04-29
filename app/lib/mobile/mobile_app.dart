@@ -15,7 +15,7 @@ class MobileApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<AuthenticationProvider>(
+    return Consumer<AuthProvider>(
       builder: (context, authProvider, child) {
         if (authProvider.isSignedIn()) {
           // Returning users who haven't yet given consent under the new

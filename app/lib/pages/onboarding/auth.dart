@@ -22,7 +22,7 @@ class AuthComponent extends StatefulWidget {
 class _AuthComponentState extends State<AuthComponent> {
   @override
   Widget build(BuildContext context) {
-    return Consumer<AuthenticationProvider>(
+    return Consumer<AuthProvider>(
       builder: (context, provider, child) {
         return Column(
           children: [

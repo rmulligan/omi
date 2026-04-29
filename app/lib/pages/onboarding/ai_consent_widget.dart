@@ -22,7 +22,7 @@ class _AiConsentWidgetState extends State<AiConsentWidget> {
   @override
   void initState() {
     super.initState();
-    final provider = context.read<AuthenticationProvider>();
+    final provider = context.read<AuthProvider>();
     _privacyRecognizer.onTap = provider.openPrivacyPolicy;
     _termsRecognizer.onTap = provider.openTermsOfService;
   }
