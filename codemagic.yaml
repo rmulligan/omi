@@ -18,7 +18,7 @@ workflows:
       - name: Build iOS Unsigned
         script: |
           # Build for release but skip code signing (we'll sign locally with Sideloadly)
-          flutter build ios --release --no-codesign
+          flutter build ios --release --no-codesign --flavor prod
       - name: Prepare Artifact
         script: |
           # Zip the .app folder so it's easily downloadable
