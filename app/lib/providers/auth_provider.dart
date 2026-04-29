@@ -4,8 +4,10 @@ import 'package:omi/services/auth_service.dart';
 
 class AuthProvider extends ChangeNotifier {
   bool _isAuthenticated = false;
+  bool _loading = false;
 
   bool get isAuthenticated => _isAuthenticated;
+  bool get loading => _loading;
 
   AuthProvider() {
     _isAuthenticated = AuthService.instance.isSignedIn();
@@ -23,6 +25,34 @@ class AuthProvider extends ChangeNotifier {
     _isAuthenticated = true;
     notifyListeners();
     onSuccess();
+  }
+
+  Future<void> onAppleSignIn(VoidCallback onSuccess) async {
+    _loading = true;
+    notifyListeners();
+    await AuthService.instance.signInWithAppleMobile();
+    _isAuthenticated = true;
+    _loading = false;
+    notifyListeners();
+    onSuccess();
+  }
+
+  Future<void> onGoogleSignIn(VoidCallback onSuccess) async {
+    _loading = true;
+    notifyListeners();
+    await AuthService.instance.signInWithGoogleMobile();
+    _isAuthenticated = true;
+    _loading = false;
+    notifyListeners();
+    onSuccess();
+  }
+
+  void openPrivacyPolicy() {
+    // Stub: in production this opens the privacy policy URL
+  }
+
+  void openTermsOfService() {
+    // Stub: in production this opens the terms of service URL
   }
 
   Future<void> signOut() async {
