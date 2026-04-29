@@ -17,7 +17,7 @@ class MobileApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<AuthProvider>(
       builder: (context, authProvider, child) {
-        if (authProvider.isSignedIn()) {
+        if (authProvider.isSignedIn) {
           // Returning users who haven't yet given consent under the new
           // model must see the consent screen before any AI processing
           // begins, even if the server says they completed onboarding

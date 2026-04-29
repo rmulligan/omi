@@ -73,7 +73,7 @@ import 'package:omi/utils/platform/platform_manager.dart';
 
 /// Background message handler for FCM data messages (stubbed for local dev)
 @pragma('vm:entry-point')
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+Future<void> _firebaseMessagingBackgroundHandler(dynamic message) async {
   await AwesomeNotifications().initialize(null, [
     NotificationChannel(
       channelKey: 'channel',

@@ -353,7 +353,7 @@ class _AppShellState extends State<AppShell> {
 
   Future<void> _initializeProviders() async {
     if (!mounted) return;
-    final isSignedIn = context.read<AuthProvider>().isSignedIn();
+    final isSignedIn = context.read<AuthProvider>().isSignedIn;
     if (isSignedIn) {
       context.read<HomeProvider>().setupHasSpeakerProfile();
       context.read<HomeProvider>().setupUserPrimaryLanguage();
