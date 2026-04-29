@@ -25,28 +25,49 @@ logger = logging.getLogger(__name__)
 
 conversations_collection = 'conversations'
 
-# Stubbed functions for local development (omi-fork).
+# Stubs for local development (omi-fork).
+# These shadow the real Firestore implementations below.
 # The pusher's WebSocket handler calls these functions directly.
 
-def get_conversation(uid: str, conversation_id: str):
-    """Return None for local dev (no real conversations)."""
-    return None
-
-def update_conversation_status(uid: str, conversation_id: str, status):
-    """Stub: no-op."""
-    return False
-
-def set_conversation_as_discarded(uid: str, conversation_id: str):
-    """Stub: no-op."""
-    return False
-
-def create_audio_files_from_chunks(uid: str, conversation_id: str):
-    """Stub: no audio files."""
-    return []
-
-def update_conversation(uid: str, conversation_id: str, update_data: dict):
-    """Stub: no-op."""
-    return False
+from database.omi_conversations import (
+    get_conversation as get_conversation,
+    update_conversation_status as update_conversation_status,
+    set_conversation_as_discarded as set_conversation_as_discarded,
+    create_audio_files_from_chunks as create_audio_files_from_chunks,
+    update_conversation as update_conversation,
+    get_conversations as get_conversations,
+    get_conversations_without_photos as get_conversations_without_photos,
+    get_conversations_count as get_conversations_count,
+    upsert_conversation as upsert_conversation,
+    get_last_completed_conversation as get_last_completed_conversation,
+    get_in_progress_conversation as get_in_progress_conversation,
+    get_processing_conversations as get_processing_conversations,
+    update_conversation_title as update_conversation_title,
+    update_conversation_segments as update_conversation_segments,
+    update_conversation_events as update_conversation_events,
+    update_conversation_action_items as update_conversation_action_items,
+    get_conversation_transcripts_by_model as get_conversation_transcripts_by_model,
+    store_conversation_photos as store_conversation_photos,
+    delete_conversation as delete_conversation,
+    get_conversation_photos as get_conversation_photos,
+    update_conversation_segment_text as update_conversation_segment_text,
+    delete_conversation_photos as delete_conversation_photos,
+    get_conversations_by_id as get_conversations_by_id,
+    get_conversations_to_migrate as get_conversations_to_migrate,
+    migrate_conversations_level_batch as migrate_conversations_level_batch,
+    iter_all_conversations as iter_all_conversations,
+    set_conversation_visibility as set_conversation_visibility,
+    set_conversation_starred as set_conversation_starred,
+    unlock_all_conversations as unlock_all_conversations,
+    set_postprocessing_status as set_postprocessing_status,
+    store_model_segments_result as store_model_segments_result,
+    store_model_emotion_predictions_result as store_model_emotion_predictions_result,
+    get_action_items as get_action_items,
+    update_conversation_finished_at as update_conversation_finished_at,
+    get_closest_conversation_to_timestamps as get_closest_conversation_to_timestamps,
+    get_user_data_protection_level as get_user_data_protection_level,
+    get_user_transcription_preferences as get_user_transcription_preferences,
+)
 
 
 def _ensure_timezone_aware(dt: datetime) -> datetime:
