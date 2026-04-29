@@ -1,4 +1,5 @@
 import asyncio
+import os
 from datetime import datetime, timezone
 from typing import AsyncGenerator, List, Optional, Any
 from agents import Agent, ModelSettings, Runner, trace
@@ -26,8 +27,41 @@ Documentation:
 """
 
 
+def _hermes_mcp_server() -> Optional[MCPServer]:
+    """Return the Hermes Agent MCP server if enabled.
+
+    The Hermes Agent is wired as an additional MCP server that gives the
+    Omi Agent access to:
+    - memory retrieval (recall/reflect from hindsight)
+    - code execution (execute_code with Python)
+    - file operations (read/write/patch)
+    - web browsing and search
+    - calendar/email/matrix communication
+    - skill management and cron jobs
+    - system health monitoring
+    - and all other Hermes Agent tools
+
+    Set HERMES_AGENT_MCP_ENABLED=1 to enable.
+
+    Set HERMES_AGENT_MCP_CMD (default: "hermes") and
+    HERMES_AGENT_MCP_ARGS (default: "mcp serve") to override the command.
+    """
+    enabled = os.environ.get("HERMES_AGENT_MCP_ENABLED", "").lower()
+    if enabled != "1":
+        return None
+
+    command = os.environ.get("HERMES_AGENT_MCP_CMD", "hermes")
+    args_str = os.environ.get("HERMES_AGENT_MCP_ARGS", "mcp serve")
+    args = args_str.split()
+
+    return MCPServerStdio(
+        cache_tools_list=True,
+        params={"command": command, "args": args},
+    )
+
+
 async def run(
-    mcp_server: MCPServer,
+    mcp_servers: List[MCPServer],
     uid: str,
     messages: List[Message],
     respond: callable,
@@ -42,7 +76,7 @@ async def run(
     omi_agent = Agent(
         name="Omi Agent",
         instructions=f"You are a helpful assistant that answers questions from the user {uid}, using the tools you were provided.",
-        mcp_servers=[mcp_server],
+        mcp_servers=mcp_servers,
         model="o4-mini",
         model_settings=ModelSettings(
             reasoning=Reasoning(effort="high"),  # summary="auto"
@@ -80,13 +114,16 @@ async def execute_agent_chat_stream(
     logger.info(f'execute_agent_chat_stream app:  {app.id if app else "<none>"}')
     callback = AsyncStreamingCallback()
 
-    async with MCPServerStdio(
+    oserver = MCPServerStdio(
         cache_tools_list=True,
         params={"command": "uvx", "args": ["mcp-server-omi", "-v"]},
-    ) as server:
+    )
+    hermes_server = _hermes_mcp_server()
+
+    async with oserver as server, hermes_server if hermes_server else None:
         task = asyncio.create_task(
             run(
-                server,
+                [server] + ([hermes_server] if hermes_server else []),
                 uid,
                 messages,
                 lambda x: callback_data.update({"answer": x}),
@@ -125,7 +162,7 @@ async def send_single_message():
     ) as server:
         with trace(workflow_name="Omi Agent"):
             await run(
-                server,
+                [server],
                 "viUv7GtdoHXbK1UBCDlPuTDuPgJ2",
                 "What do you know about me?",
                 lambda x: logger.info(x),
@@ -147,7 +184,7 @@ async def interactive_chat_stream():
 
             with trace(workflow_name="Omi Agent"):
                 await run(
-                    server,
+                    [server],
                     "viUv7GtdoHXbK1UBCDlPuTDuPgJ2",
                     user_input,
                     lambda x: None,  # Response is streamed in real-time
