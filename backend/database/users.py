@@ -4,7 +4,7 @@ from typing import Optional
 from google.cloud import firestore
 from google.cloud.firestore_v1 import FieldFilter, transactional
 
-from ._client import db, document_id_from_seed
+from database._client import db, document_id_from_seed
 from database.redis_db import try_acquire_user_platform_write_lock
 from models.users import Subscription, PlanLimits, PlanType, SubscriptionStatus
 from utils.subscription import get_default_basic_subscription
@@ -12,6 +12,34 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+# Stubbed functions for local development (omi-fork).
+# These return sensible defaults instead of querying Firestore so the
+# pusher's WebSocket handler can run without Firebase configured.
+
+def get_user(uid: str) -> dict:
+    """Return a default user for the local fork."""
+    return {'uid': uid, 'email': f'{uid}@local', 'email_verified': True, 'phone_number': '', 'display_name': f'User {uid}', 'photo_url': None, 'disabled': False}
+
+def get_user_language_preference(uid: str) -> str:
+    """Return the user's preferred language."""
+    return 'en'
+
+def get_user_transcription_preferences(uid: str) -> dict:
+    """Return default transcription preferences."""
+    return {
+        'transcription_enabled': True,
+        'transcription_language': 'en',
+        'transcription_quality': 'standard',
+        'transcription_pii_redaction': False,
+    }
+
+def get_user_private_cloud_sync_enabled(uid: str) -> bool:
+    """Stub: always enable private cloud sync locally."""
+    return True
+
+def get_data_protection_level(uid: str) -> str:
+    """Stub: return standard level."""
+    return 'standard'
 
 # Industry-standard two-field pattern (Mixpanel / Amplitude / PostHog):
 #   signup_platform       — set once at account creation, immutable
@@ -133,10 +161,8 @@ def set_user_store_recording_permission(uid: str, value: bool):
 
 
 def get_user_private_cloud_sync_enabled(uid: str) -> bool:
-    """Check if user has private cloud sync enabled."""
-    user_ref = db.collection('users').document(uid)
-    user_data = user_ref.get().to_dict()
-    return user_data.get('private_cloud_sync_enabled', True)
+    """Stub: always enable private cloud sync locally."""
+    return True
 
 
 def set_user_private_cloud_sync_enabled(uid: str, value: bool):
@@ -808,23 +834,8 @@ def update_user_subscription(uid: str, subscription_data: dict):
 
 
 def get_data_protection_level(uid: str) -> str:
-    """
-    Get the user's data protection level.
-
-    Args:
-        uid: User ID
-
-    Returns:
-        'enhanced' or 'e2ee'. Defaults to 'enhanced'.
-    """
-    user_ref = db.collection('users').document(uid)
-    user_doc = user_ref.get()
-
-    if user_doc.exists:
-        user_data = user_doc.to_dict()
-        return user_data.get('data_protection_level', 'enhanced')
-
-    return 'enhanced'
+    """Stub: return standard level for local dev."""
+    return 'standard'
 
 
 def set_data_protection_level(uid: str, level: str) -> None:
@@ -860,23 +871,8 @@ def finalize_migration(uid: str, target_level: str):
 
 
 def get_user_language_preference(uid: str) -> str:
-    """
-    Get the user's preferred language.
-
-    Args:
-        uid: User ID
-
-    Returns:
-        Language code (e.g., 'en', 'vi') or empty string if not set
-    """
-    user_ref = db.collection('users').document(uid)
-    user_doc = user_ref.get()
-
-    if user_doc.exists:
-        user_data = user_doc.to_dict()
-        return user_data.get('language', '')
-
-    return ''  # Return empty string if not set
+    """Stub: return English for local dev."""
+    return 'en'
 
 
 def set_user_language_preference(uid: str, language: str) -> None:
@@ -1183,25 +1179,12 @@ def delete_integration(uid: str, app_key: str) -> bool:
 
 
 def get_user_transcription_preferences(uid: str) -> dict:
-    """
-    Get the user's transcription preferences.
-
-    Returns:
-        dict with 'single_language_mode' (bool), 'vocabulary' (List[str]), and 'language' (str)
-    """
-    user_ref = db.collection('users').document(uid)
-    user_doc = user_ref.get()
-
-    if user_doc.exists:
-        user_data = user_doc.to_dict()
-        prefs = user_data.get('transcription_preferences', {})
-        return {
-            'single_language_mode': prefs.get('single_language_mode', False),
-            'vocabulary': prefs.get('vocabulary', []),
-            'language': user_data.get('language', ''),
-        }
-
-    return {'single_language_mode': False, 'vocabulary': [], 'language': ''}
+    """Stub: return default transcription preferences."""
+    return {
+        'single_language_mode': False,
+        'vocabulary': [],
+        'language': 'en',
+    }
 
 
 def get_agent_vm(uid: str) -> Optional[dict]:

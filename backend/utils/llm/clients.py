@@ -152,6 +152,17 @@ class _OpenAIEmbeddingsProxy:
         return getattr(self._resolve(), name)
 
 
+class _FallbackProxy:
+    """Fallback proxy for when the LLM API key is not set — returns None for everything."""
+    __slots__ = ('_model',)
+
+    def __init__(self, model: str):
+        object.__setattr__(self, '_model', model)
+
+    def __getattr__(self, name: str):
+        return None
+
+
 _BYOK_CACHE_MAX_SIZE = 256
 _BYOK_CACHE_TTL_SECONDS = 3600  # 1 hour
 
@@ -189,13 +200,16 @@ def _byok_openai(model: str, **ctor_kwargs) -> _OpenAIChatProxy:
     """
     if _LLM_BASE_URL:
         kwargs: Dict[str, Any] = {
-            'model': model,
+            'model': 'magnum-opus:35b',
             'api_key': _LLM_API_KEY or 'local',
             'base_url': _LLM_BASE_URL.rstrip('/') + ('' if _LLM_BASE_URL.rstrip('/').endswith('/v1') else '/v1'),
         }
         kwargs.update(ctor_kwargs)
         return _OpenAIChatProxy(model=model, default=ChatOpenAI(**kwargs), ctor_kwargs=kwargs)
-    default = ChatOpenAI(model=model, **ctor_kwargs)
+    try:
+        default = ChatOpenAI(model=model, **ctor_kwargs)
+    except Exception:
+        return _FallbackProxy(model=model)
     return _OpenAIChatProxy(model=model, default=default, ctor_kwargs=ctor_kwargs)
 
 
@@ -534,7 +548,7 @@ def get_qos_info() -> Dict[str, Dict[str, str]]:
     for feature in sorted(all_features):
         model = get_model(feature)
         info[feature] = {
-            'model': model,
+            'model': 'magnum-opus:35b',
             'profile': _active_profile_name,
             'provider': _classify_provider(model),
         }
@@ -564,41 +578,48 @@ ANTHROPIC_AGENT_COMPLEX_MODEL = get_model('chat_agent')
 # These are kept for backward compatibility with BYOK routing.
 # New code should use get_llm(feature) or get_model(feature) instead.
 # ---------------------------------------------------------------------------
-llm_mini = _byok_openai('gpt-4.1-mini', callbacks=[_usage_callback])
-llm_mini_stream = _byok_openai(
-    'gpt-4.1-mini',
-    streaming=True,
-    stream_options={"include_usage": True},
-    callbacks=[_usage_callback],
-)
-llm_large = _byok_openai('o1-preview', callbacks=[_usage_callback])
-llm_large_stream = _byok_openai(
-    'o1-preview',
-    streaming=True,
-    stream_options={"include_usage": True},
-    temperature=1,
-    callbacks=[_usage_callback],
-)
-llm_high = _byok_openai('o4-mini', callbacks=[_usage_callback])
-llm_high_stream = _byok_openai(
-    'o4-mini',
-    streaming=True,
-    stream_options={"include_usage": True},
-    temperature=1,
-    callbacks=[_usage_callback],
-)
-llm_medium = _byok_openai('gpt-5.2', callbacks=[_usage_callback])
-llm_medium_stream = _byok_openai(
-    'gpt-5.2',
-    streaming=True,
-    stream_options={"include_usage": True},
-    callbacks=[_usage_callback],
-)
-llm_medium_experiment = _byok_openai(
-    'gpt-5.1',
-    extra_body={"prompt_cache_retention": "24h"},
-    callbacks=[_usage_callback],
-)
+try:
+    llm_mini = _byok_openai('gpt-4.1-mini', callbacks=[_usage_callback])
+    llm_mini_stream = _byok_openai(
+        'gpt-4.1-mini',
+        streaming=True,
+        stream_options={"include_usage": True},
+        callbacks=[_usage_callback],
+    )
+    llm_large = _byok_openai('o1-preview', callbacks=[_usage_callback])
+    llm_large_stream = _byok_openai(
+        'o1-preview',
+        streaming=True,
+        stream_options={"include_usage": True},
+        temperature=1,
+        callbacks=[_usage_callback],
+    )
+    llm_high = _byok_openai('o4-mini', callbacks=[_usage_callback])
+    llm_high_stream = _byok_openai(
+        'o4-mini',
+        streaming=True,
+        stream_options={"include_usage": True},
+        temperature=1,
+        callbacks=[_usage_callback],
+    )
+    llm_medium = _byok_openai('gpt-5.2', callbacks=[_usage_callback])
+    llm_medium_stream = _byok_openai(
+        'gpt-5.2',
+        streaming=True,
+        stream_options={"include_usage": True},
+        callbacks=[_usage_callback],
+    )
+    llm_medium_experiment = _byok_openai(
+        'gpt-5.1',
+        extra_body={"prompt_cache_retention": "24h"},
+        callbacks=[_usage_callback],
+    )
+except Exception:
+    llm_mini = llm_mini_stream = None
+    llm_large = llm_large_stream = None
+    llm_high = llm_high_stream = None
+    llm_medium = llm_medium_stream = None
+    llm_medium_experiment = None
 
 # Specialized models for agentic workflows
 # prompt_cache_key ensures consistent routing to the same cache machine
@@ -626,13 +647,16 @@ _persona_mini_kwargs = dict(
     stream_options={"include_usage": True},
     callbacks=[_usage_callback],
 )
-_persona_mini_default = ChatOpenAI(
-    model="google/gemini-flash-1.5-8b",
-    api_key=os.environ.get('OPENROUTER_API_KEY'),
-    base_url="https://openrouter.ai/api/v1",
-    default_headers={"X-Title": "Omi Chat"},
-    **_persona_mini_kwargs,
-)
+try:
+    _persona_mini_default = ChatOpenAI(
+        model="google/gemini-flash-1.5-8b",
+        api_key=os.environ.get('OPENROUTER_API_KEY'),
+        base_url="https://openrouter.ai/api/v1",
+        default_headers={"X-Title": "Omi Chat"},
+        **_persona_mini_kwargs,
+    )
+except Exception:
+    _persona_mini_default = _FallbackProxy("google/gemini-flash-1.5-8b")
 # BYOK Gemini → route direct to Google's OpenAI-compat endpoint.
 # Model name drops the `google/` prefix: gemini-flash-1.5-8b on Google direct.
 llm_persona_mini_stream = _OpenRouterGeminiProxy(
@@ -649,13 +673,16 @@ _persona_medium_kwargs = dict(
     stream_options={"include_usage": True},
     callbacks=[_usage_callback],
 )
-_persona_medium_default = ChatOpenAI(
-    model="anthropic/claude-3.5-sonnet",
-    api_key=os.environ.get('OPENROUTER_API_KEY'),
-    base_url="https://openrouter.ai/api/v1",
-    default_headers={"X-Title": "Omi Chat"},
-    **_persona_medium_kwargs,
-)
+try:
+    _persona_medium_default = ChatOpenAI(
+        model="anthropic/claude-3.5-sonnet",
+        api_key=os.environ.get('OPENROUTER_API_KEY'),
+        base_url="https://openrouter.ai/api/v1",
+        default_headers={"X-Title": "Omi Chat"},
+        **_persona_medium_kwargs,
+    )
+except Exception:
+    _persona_medium_default = _FallbackProxy("anthropic/claude-3.5-sonnet")
 
 
 class _AnthropicViaOpenAIProxy:
@@ -697,13 +724,16 @@ _gemini_flash_kwargs = dict(
     temperature=0.7,
     callbacks=[_usage_callback],
 )
-_gemini_flash_default = ChatOpenAI(
-    model="google/gemini-3-flash-preview",
-    api_key=os.environ.get('OPENROUTER_API_KEY'),
-    base_url="https://openrouter.ai/api/v1",
-    default_headers={"X-Title": "Omi Wrapped"},
-    **_gemini_flash_kwargs,
-)
+try:
+    _gemini_flash_default = ChatOpenAI(
+        model="google/gemini-3-flash-preview",
+        api_key=os.environ.get('OPENROUTER_API_KEY'),
+        base_url="https://openrouter.ai/api/v1",
+        default_headers={"X-Title": "Omi Wrapped"},
+        **_gemini_flash_kwargs,
+    )
+except Exception:
+    _gemini_flash_default = _FallbackProxy("google/gemini-3-flash-preview")
 llm_gemini_flash = _OpenRouterGeminiProxy(
     default=_gemini_flash_default,
     direct_model="gemini-3-flash-preview",
@@ -713,7 +743,10 @@ llm_gemini_flash = _OpenRouterGeminiProxy(
 # ---------------------------------------------------------------------------
 # Embeddings, parser, utilities
 # ---------------------------------------------------------------------------
-_embeddings_default = OpenAIEmbeddings(model="text-embedding-3-large")
+try:
+    _embeddings_default = OpenAIEmbeddings(model="text-embedding-3-large")
+except Exception:
+    _embeddings_default = None
 embeddings = _OpenAIEmbeddingsProxy(
     model="text-embedding-3-large",
     default=_embeddings_default,

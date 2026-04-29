@@ -4,18 +4,24 @@ import os
 from typing import List, Union, Optional
 from datetime import datetime, timedelta, timezone
 
-import redis
+try:
+    import redis
+except ImportError:
+    redis = None
+
 import logging
 
 logger = logging.getLogger(__name__)
 
-r = redis.Redis(
-    host=os.getenv('REDIS_DB_HOST'),
-    port=int(os.getenv('REDIS_DB_PORT')) if os.getenv('REDIS_DB_PORT') is not None else 6379,
-    username='default',
-    password=os.getenv('REDIS_DB_PASSWORD'),
-    health_check_interval=30,
-)
+r = None
+if redis:
+    r = redis.Redis(
+        host=os.getenv('REDIS_DB_HOST'),
+        port=int(os.getenv('REDIS_DB_PORT')) if os.getenv('REDIS_DB_PORT') is not None else 6379,
+        username='default',
+        password=os.getenv('REDIS_DB_PASSWORD'),
+        health_check_interval=30,
+    )
 
 
 def try_catch_decorator(func):
@@ -210,7 +216,10 @@ def is_app_enabled(uid: str, app_id: str) -> bool:
     return r.sismember(f'users:{uid}:enabled_plugins', app_id)
 
 
+@try_catch_decorator
 def get_enabled_apps(uid: str):
+    if r is None:
+        return []
     val = r.smembers(f'users:{uid}:enabled_plugins')
     if not val:
         return []
@@ -353,14 +362,20 @@ def enable_user_webhook_db(uid: str, wtype: str):
     r.set(f'users:{uid}:developer:webhook_status:{wtype}', str(True).lower())
 
 
+@try_catch_decorator
 def user_webhook_status_db(uid: str, wtype: str):
+    if r is None:
+        return False
     status = r.get(f'users:{uid}:developer:webhook_status:{wtype}')
     if status is None:
         return None
     return status.decode() == str(True).lower()
 
 
+@try_catch_decorator
 def get_user_webhook_db(uid: str, wtype: str) -> str:
+    if r is None:
+        return ''
     url = r.get(f'users:{uid}:developer:webhook:{wtype}')
     if not url:
         return ''

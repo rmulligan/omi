@@ -128,7 +128,7 @@ extension FlutterError: Error {}
     // so the WidgetKit extension can read it.
     let batteryWidgetChannel = FlutterMethodChannel(name: "com.omi.battery_widget", binaryMessenger: controller!.binaryMessenger)
     batteryWidgetChannel.setMethodCallHandler { (call, result) in
-      let defaults = UserDefaults(suiteName: "group.com.friend-app-with-wearable.ios12")
+      let defaults = UserDefaults(suiteName: "group.com.homegrown.lilly")
       guard let args = call.arguments as? [String: Any] else {
         result(FlutterMethodNotImplemented)
         return

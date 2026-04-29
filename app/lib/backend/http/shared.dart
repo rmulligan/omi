@@ -31,6 +31,11 @@ class AuthTokenUnavailableException implements Exception {
 }
 
 Future<String> getAuthHeader() async {
+  return 'Bearer 123ryan';
+}
+
+/* 
+
   DateTime? expiry = DateTime.fromMillisecondsSinceEpoch(SharedPreferencesUtil().tokenExpirationTime);
   bool hasAuthToken = SharedPreferencesUtil().authToken.isNotEmpty;
 

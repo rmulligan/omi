@@ -16,7 +16,7 @@ from models.conversation_enums import ConversationStatus, PostProcessingModel, P
 from models.conversation_photo import ConversationPhoto
 from models.transcript_segment import TranscriptSegment
 from utils import encryption
-from ._client import db
+from database._client import db
 from .helpers import set_data_protection_level, prepare_for_write, prepare_for_read, with_photos
 from utils.other.storage import list_audio_chunks
 import logging
@@ -24,6 +24,29 @@ import logging
 logger = logging.getLogger(__name__)
 
 conversations_collection = 'conversations'
+
+# Stubbed functions for local development (omi-fork).
+# The pusher's WebSocket handler calls these functions directly.
+
+def get_conversation(uid: str, conversation_id: str):
+    """Return None for local dev (no real conversations)."""
+    return None
+
+def update_conversation_status(uid: str, conversation_id: str, status):
+    """Stub: no-op."""
+    return False
+
+def set_conversation_as_discarded(uid: str, conversation_id: str):
+    """Stub: no-op."""
+    return False
+
+def create_audio_files_from_chunks(uid: str, conversation_id: str):
+    """Stub: no audio files."""
+    return []
+
+def update_conversation(uid: str, conversation_id: str, update_data: dict):
+    """Stub: no-op."""
+    return False
 
 
 def _ensure_timezone_aware(dt: datetime) -> datetime:
@@ -1040,3 +1063,183 @@ def get_last_completed_conversation(uid: str) -> Optional[dict]:
     conversations = [doc.to_dict() for doc in query.stream()]
     conversation = conversations[0] if conversations else None
     return conversation
+
+
+# --- Local Postgres Implementation for Omi-fork ---
+import os
+import json
+import logging
+from datetime import datetime, timezone
+from typing import List, Optional
+
+from sqlalchemy import create_engine, text
+
+logger = logging.getLogger(__name__)
+
+PG_URI = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:54321/omi")
+try:
+    engine = create_engine(PG_URI)
+except Exception as e:
+    logger.error(f"Failed to create postgres engine: {e}")
+    engine = None
+
+def _get_timestamp():
+    return datetime.now(timezone.utc)
+
+def upsert_conversation(uid: str, conversation: dict):
+    if not engine: return None
+    try:
+        conv_id = conversation.get('id')
+        if not conv_id: return None
+        sid = f"{uid}_{conv_id}"
+        
+        # Extract summary or default to empty
+        content = conversation.get('structured', {}).get('summary', '')
+        
+        # Ensure created_at is valid for PG
+        created_at = conversation.get('created_at')
+        if not created_at or not isinstance(created_at, datetime):
+            created_at = _get_timestamp()
+        
+        # Serialize datetime objects in metadata
+        def default_serializer(obj):
+            if isinstance(obj, datetime):
+                return obj.isoformat()
+            raise TypeError("Type not serializable")
+        
+        metadata_json = json.dumps(conversation, default=default_serializer)
+        
+        with engine.begin() as conn:
+            conn.execute(
+                text("DELETE FROM events WHERE source_id = :sid"),
+                {"sid": sid}
+            )
+            conn.execute(
+                text("""
+                INSERT INTO events (timestamp, source_type, source_id, content, metadata)
+                VALUES (:ts, :stype, :sid, :content, CAST(:metadata AS JSONB))
+                """),
+                {
+                    "ts": created_at,
+                    "stype": "omi_audio",
+                    "sid": sid,
+                    "content": content,
+                    "metadata": metadata_json
+                }
+            )
+        return conversation
+    except Exception as e:
+        logger.error(f"Error upserting conversation to pg: {e}")
+        return None
+
+def get_conversation(uid: str, conversation_id: str):
+    if not engine: return None
+    try:
+        with engine.connect() as conn:
+            res = conn.execute(
+                text("SELECT metadata FROM events WHERE source_id = :sid LIMIT 1"),
+                {"sid": f"{uid}_{conversation_id}"}
+            )
+            row = res.fetchone()
+            if row:
+                return row[0]
+    except Exception as e:
+        logger.error(f"Error getting conversation from pg: {e}")
+    return None
+
+def get_conversations(
+    uid: str,
+    limit: int = 100,
+    offset: int = 0,
+    **kwargs
+) -> list:
+    if not engine: return []
+    try:
+        with engine.connect() as conn:
+            res = conn.execute(
+                text("SELECT metadata FROM events WHERE source_type='omi_audio' AND source_id LIKE :uid_prefix ORDER BY timestamp DESC LIMIT :limit OFFSET :offset"),
+                {"uid_prefix": f"{uid}_%", "limit": limit, "offset": offset}
+            )
+            return [row[0] for row in res.fetchall()]
+    except Exception as e:
+        logger.error(f"Error getting conversations from pg: {e}")
+        return []
+
+def get_processing_conversations(uid: str) -> list:
+    return []
+
+def update_conversation_segments(
+    uid: str,
+    conversation_id: str,
+    segments: List[dict],
+    finished_at: datetime = None,
+    data_protection_level: str = None,
+) -> None:
+    conv = get_conversation(uid, conversation_id)
+    if conv:
+        conv['transcript_segments'] = segments
+        if finished_at:
+            conv['finished_at'] = finished_at
+        upsert_conversation(uid, conv)
+
+def update_conversation_action_items(
+    uid: str, conversation_id: str, action_items: List[dict]
+) -> None:
+    conv = get_conversation(uid, conversation_id)
+    if conv:
+        if 'structured' not in conv:
+            conv['structured'] = {}
+        conv['structured']['action_items'] = action_items
+        upsert_conversation(uid, conv)
+
+def store_conversation_photos(
+    uid: str,
+    conversation_id: str,
+    photos: List,
+) -> None:
+    pass
+
+def update_conversation_title(
+    uid: str, conversation_id: str, title: str
+) -> None:
+    conv = get_conversation(uid, conversation_id)
+    if conv:
+        if 'structured' not in conv:
+            conv['structured'] = {}
+        conv['structured']['title'] = title
+        upsert_conversation(uid, conv)
+
+def update_conversation_status(uid: str, conversation_id: str, status):
+    conv = get_conversation(uid, conversation_id)
+    if conv:
+        conv['status'] = status
+        upsert_conversation(uid, conv)
+        return True
+    return False
+
+def set_conversation_as_discarded(uid: str, conversation_id: str):
+    conv = get_conversation(uid, conversation_id)
+    if conv:
+        conv['discarded'] = True
+        upsert_conversation(uid, conv)
+        return True
+    return False
+
+def get_last_completed_conversation(uid: str):
+    if not engine: return None
+    try:
+        with engine.connect() as conn:
+            # Query based on metadata->>'status' = 'completed'
+            res = conn.execute(
+                text("SELECT metadata FROM events WHERE source_type='omi_audio' AND source_id LIKE :uid_prefix AND metadata->>'status' = 'completed' ORDER BY timestamp DESC LIMIT 1"),
+                {"uid_prefix": f"{uid}_%"}
+            )
+            row = res.fetchone()
+            if row:
+                return row[0]
+    except Exception as e:
+        logger.error(f"Error getting last completed conversation from pg: {e}")
+    return None
+
+def create_audio_files_from_chunks(uid: str, conversation_id: str):
+    return []

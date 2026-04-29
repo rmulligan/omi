@@ -773,7 +773,13 @@ def process_conversation(
         )
         if not is_reprocess:
             critical_executor.submit(save_structured_vector, uid, conversation)
-        critical_executor.submit(_extract_memories, uid, conversation)
+        try:
+            import sys
+            sys.path.append("/home/ryan/homegrown_lilly")
+            from falkor_bridge import bridge_to_falkor
+            critical_executor.submit(bridge_to_falkor, uid, conversation.dict())
+        except ImportError as e:
+            logger.error(f"Could not import falkor_bridge: {e}")
         critical_executor.submit(_extract_trends, uid, conversation)
         critical_executor.submit(_save_action_items, uid, conversation)
         critical_executor.submit(_update_goal_progress, uid, conversation)
