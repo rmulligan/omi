@@ -70,6 +70,12 @@ logger = logging.getLogger(__name__)
 
 _usage_callback = get_usage_callback()
 
+
+def _openai_compatible_base_url(base_url: str) -> str:
+    base = base_url.rstrip('/')
+    return base if base.endswith('/v1') else f'{base}/v1'
+
+
 # PROMPT CACHE OPTIMIZATION: This list MUST stay fixed and in this exact order.
 # Tools are bound to the ChatOpenAI instance so they're included in the request.
 # Dynamic per-user app tools are appended to CORE_TOOLS before binding.
@@ -475,8 +481,9 @@ async def execute_agentic_chat_stream(
     # Build the LLM - uses LLM_BASE_URL if set (routes through Hermes agent)
     _local_url = os.environ.get('LLM_BASE_URL')
     _local_key = os.environ.get('LLM_API_KEY', '') or 'local'
+    _local_model = os.environ.get('LLM_MODEL', 'magnum-opus:35b').strip() or 'magnum-opus:35b'
     llm_kwargs: dict[str, Any] = {
-        'model': 'magnum-opus:35b',
+        'model': _local_model,
         'temperature': 0.7,
         'max_tokens': 8192,
         'streaming': True,
@@ -484,7 +491,7 @@ async def execute_agentic_chat_stream(
         'callbacks': [_usage_callback],
     }
     if _local_url:
-        llm_kwargs['base_url'] = _local_url.rstrip('/') + '/v1'
+        llm_kwargs['base_url'] = _openai_compatible_base_url(_local_url)
         llm_kwargs['api_key'] = _local_key
     llm = ChatOpenAI(**llm_kwargs)
 

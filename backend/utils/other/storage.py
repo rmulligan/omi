@@ -49,11 +49,20 @@ chat_files_bucket = os.getenv('BUCKET_CHAT_FILES')
 desktop_updates_bucket = os.getenv('BUCKET_DESKTOP_UPDATES')
 
 
+def _get_bucket(bucket_name: str | None, purpose: str):
+    if storage_client is None or not bucket_name:
+        logger.info('GCS bucket unavailable for %s; running with local storage disabled', purpose)
+        return None
+    return storage_client.bucket(bucket_name)
+
+
 # *******************************************
 # ************* SPEECH PROFILE **************
 # *******************************************
 def upload_profile_audio(file_path: str, uid: str):
-    bucket = storage_client.bucket(speech_profiles_bucket)
+    bucket = _get_bucket(speech_profiles_bucket, 'speech profile upload')
+    if bucket is None:
+        raise RuntimeError('Speech profile uploads require BUCKET_SPEECH_PROFILES and SERVICE_ACCOUNT_JSON')
     path = f'{uid}/speech_profile.wav'
     blob = bucket.blob(path)
     blob.upload_from_filename(file_path)
@@ -61,7 +70,9 @@ def upload_profile_audio(file_path: str, uid: str):
 
 
 def get_user_has_speech_profile(uid: str, max_age_days: int = None) -> bool:
-    bucket = storage_client.bucket(speech_profiles_bucket)
+    bucket = _get_bucket(speech_profiles_bucket, 'speech profile lookup')
+    if bucket is None:
+        return False
     blob = bucket.blob(f'{uid}/speech_profile.wav')
     if not blob.exists():
         return False
@@ -78,7 +89,9 @@ def get_user_has_speech_profile(uid: str, max_age_days: int = None) -> bool:
 
 
 def get_profile_audio_if_exists(uid: str, download: bool = True) -> str:
-    bucket = storage_client.bucket(speech_profiles_bucket)
+    bucket = _get_bucket(speech_profiles_bucket, 'speech profile download')
+    if bucket is None:
+        return None
     path = f'{uid}/speech_profile.wav'
     blob = bucket.blob(path)
     if blob.exists():
@@ -92,7 +105,9 @@ def get_profile_audio_if_exists(uid: str, download: bool = True) -> str:
 
 
 def delete_additional_profile_audio(uid: str, file_name: str) -> None:
-    bucket = storage_client.bucket(speech_profiles_bucket)
+    bucket = _get_bucket(speech_profiles_bucket, 'additional speech profile delete')
+    if bucket is None:
+        return
     blob = bucket.blob(f'{uid}/additional_profile_recordings/{file_name}')
     if blob.exists():
         logger.info(f'delete_additional_profile_audio deleting {file_name}')
@@ -100,7 +115,9 @@ def delete_additional_profile_audio(uid: str, file_name: str) -> None:
 
 
 def get_additional_profile_recordings(uid: str, download: bool = False) -> List[str]:
-    bucket = storage_client.bucket(speech_profiles_bucket)
+    bucket = _get_bucket(speech_profiles_bucket, 'additional speech profile list')
+    if bucket is None:
+        return []
     blobs = bucket.list_blobs(prefix=f'{uid}/additional_profile_recordings/')
     if download:
         paths = []
@@ -119,14 +136,18 @@ def get_additional_profile_recordings(uid: str, download: bool = False) -> List[
 
 
 def delete_user_person_speech_sample(uid: str, person_id: str, file_name: str) -> None:
-    bucket = storage_client.bucket(speech_profiles_bucket)
+    bucket = _get_bucket(speech_profiles_bucket, 'person speech sample delete')
+    if bucket is None:
+        return
     blob = bucket.blob(f'{uid}/people_profiles/{person_id}/{file_name}')
     if blob.exists():
         blob.delete()
 
 
 def delete_user_person_speech_samples(uid: str, person_id: str) -> None:
-    bucket = storage_client.bucket(speech_profiles_bucket)
+    bucket = _get_bucket(speech_profiles_bucket, 'person speech samples delete')
+    if bucket is None:
+        return
     blobs = bucket.list_blobs(prefix=f'{uid}/people_profiles/{person_id}/')
     for blob in blobs:
         blob.delete()
@@ -148,7 +169,9 @@ def upload_person_speech_sample_from_bytes(
         wav_file.setframerate(sample_rate)
         wav_file.writeframes(audio_bytes)
 
-    bucket = storage_client.bucket(speech_profiles_bucket)
+    bucket = _get_bucket(speech_profiles_bucket, 'person speech sample upload')
+    if bucket is None:
+        raise RuntimeError('Person speech sample uploads require BUCKET_SPEECH_PROFILES and SERVICE_ACCOUNT_JSON')
     filename = f"{uuid_module.uuid4()}.wav"
     path = f'{uid}/people_profiles/{person_id}/{filename}'
     blob = bucket.blob(path)
@@ -158,13 +181,17 @@ def upload_person_speech_sample_from_bytes(
 
 
 def get_user_people_ids(uid: str) -> List[str]:
-    bucket = storage_client.bucket(speech_profiles_bucket)
+    bucket = _get_bucket(speech_profiles_bucket, 'person speech sample ids')
+    if bucket is None:
+        return []
     blobs = bucket.list_blobs(prefix=f'{uid}/people_profiles/')
     return [blob.name.split("/")[-2] for blob in blobs]
 
 
 def get_user_person_speech_samples(uid: str, person_id: str, download: bool = False) -> List[str]:
-    bucket = storage_client.bucket(speech_profiles_bucket)
+    bucket = _get_bucket(speech_profiles_bucket, 'person speech samples list')
+    if bucket is None:
+        return []
     blobs = bucket.list_blobs(prefix=f'{uid}/people_profiles/{person_id}/')
     if download:
         paths = []
@@ -190,7 +217,9 @@ def get_speech_sample_signed_urls(paths: List[str]) -> List[str]:
     """
     if not paths:
         return []
-    bucket = storage_client.bucket(speech_profiles_bucket)
+    bucket = _get_bucket(speech_profiles_bucket, 'speech sample signed urls')
+    if bucket is None:
+        return []
     signed_urls = []
     for path in paths:
         blob = bucket.blob(path)
