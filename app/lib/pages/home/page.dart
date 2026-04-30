@@ -240,7 +240,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
       HomeContentPage(key: _homeContentPageKey),
       ConversationsPage(key: _conversationsPageKey),
       ActionItemsPage(key: _actionItemsPageKey, onAddGoal: _addGoal),
-      AppsPage(key: _appsPageKey),
+      
     ];
     SharedPreferencesUtil().onboardingCompleted = true;
     if (!SharedPreferencesUtil().permissionsCompleted) {

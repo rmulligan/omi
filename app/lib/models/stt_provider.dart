@@ -1,3 +1,4 @@
+import 'package:omi/env/env.dart';
 import 'package:flutter/material.dart';
 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -417,7 +418,7 @@ class SttProviderConfig {
 
     switch (provider) {
       case SttProvider.openai:
-        config['url'] = 'https://api.openai.com/v1/audio/transcriptions';
+        config['url'] = '${Env.apiBaseUrl}v1/audio/transcriptions';
         config['audio_field_name'] = 'file';
         config['headers'] = {'Authorization': 'Bearer ${apiKey ?? ''}'};
         config['params'] = {
@@ -429,7 +430,7 @@ class SttProviderConfig {
         break;
 
       case SttProvider.openaiDiarize:
-        config['url'] = 'https://api.openai.com/v1/audio/transcriptions';
+        config['url'] = '${Env.apiBaseUrl}v1/audio/transcriptions';
         config['audio_field_name'] = 'file';
         config['headers'] = {'Authorization': 'Bearer ${apiKey ?? ''}'};
         config['params'] = {

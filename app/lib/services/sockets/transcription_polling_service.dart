@@ -1,3 +1,4 @@
+import 'package:omi/env/env.dart';
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -110,7 +111,7 @@ class SchemaBasedSttProvider implements ISttProvider {
 
   factory SchemaBasedSttProvider.openAI({required String apiKey, String model = 'whisper-1', String language = 'en'}) {
     return SchemaBasedSttProvider(
-      apiUrl: 'https://api.openai.com/v1/audio/transcriptions',
+      apiUrl: '${Env.apiBaseUrl}v1/audio/transcriptions',
       schema: SttResponseSchema.openAI,
       defaultHeaders: {'Authorization': 'Bearer $apiKey'},
       defaultFields: {
@@ -214,7 +215,7 @@ class SchemaBasedSttProvider implements ISttProvider {
   /// ref: https://platform.openai.com/docs/models/gpt-4o-transcribe-diarize
   factory SchemaBasedSttProvider.openAIDiarize({required String apiKey, String language = 'en'}) {
     return SchemaBasedSttProvider(
-      apiUrl: 'https://api.openai.com/v1/audio/transcriptions',
+      apiUrl: '${Env.apiBaseUrl}v1/audio/transcriptions',
       schema: SttResponseSchema.openAIDiarize,
       defaultHeaders: {'Authorization': 'Bearer $apiKey'},
       defaultFields: {
