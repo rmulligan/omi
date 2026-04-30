@@ -238,28 +238,35 @@ class HomeProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> updateUserPrimaryLanguage(String languageCode, {UserProvider? userProvider}) async {
+  Future<bool> updateUserPrimaryLanguage(String languageCode, {UserProvider? userProvider}) {
     try {
-      final success = await setUserPrimaryLanguage(languageCode);
-      if (success) {
-        userPrimaryLanguage = languageCode;
-        hasSetPrimaryLanguage = true;
-        SharedPreferencesUtil().userPrimaryLanguage = languageCode;
-        SharedPreferencesUtil().hasSetPrimaryLanguage = true;
-        AnalyticsManager().setUserAttribute('Primary Language', languageCode);
+      userPrimaryLanguage = languageCode;
+      hasSetPrimaryLanguage = true;
+      SharedPreferencesUtil().userPrimaryLanguage = languageCode;
+      SharedPreferencesUtil().hasSetPrimaryLanguage = true;
+      AnalyticsManager().setUserAttribute('Primary Language', languageCode);
 
-        // Backend auto-sets single_language_mode — sync local state to match
-        final singleLanguageMode = !multiLanguageSupported.contains(languageCode);
-        userProvider?.updateSingleLanguageModeLocally(singleLanguageMode);
+      final singleLanguageMode = !multiLanguageSupported.contains(languageCode);
+      userProvider?.updateSingleLanguageModeLocally(singleLanguageMode);
 
-        notifyListeners();
-        return true;
-      }
-      return false;
+      _syncUserPrimaryLanguage(languageCode);
+
+      notifyListeners();
+      return Future.value(true);
     } catch (e) {
-      Logger.debug('Error setting user primary language: $e');
-      return false;
+      Logger.debug('Error saving user primary language locally: $e');
+      return Future.value(false);
     }
+  }
+
+  void _syncUserPrimaryLanguage(String languageCode) {
+    setUserPrimaryLanguage(languageCode).then((success) {
+      if (!success) {
+        Logger.debug('Unable to sync user primary language to backend; using local value: $languageCode');
+      }
+    }).catchError((e) {
+      Logger.debug('Error syncing user primary language to backend: $e');
+    });
   }
 
   String getLanguageName(String code) {
