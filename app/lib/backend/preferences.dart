@@ -13,6 +13,8 @@ import 'package:omi/models/custom_stt_config.dart';
 import 'package:omi/models/stt_provider.dart';
 import 'package:omi/utils/logger.dart';
 
+const String defaultUserPrimaryLanguage = 'en-US';
+
 class SharedPreferencesUtil {
   static final SharedPreferencesUtil _instance = SharedPreferencesUtil._internal();
   static SharedPreferences? _preferences;
@@ -369,11 +371,11 @@ class SharedPreferencesUtil {
   set cachedTranscriptionVocabulary(List<String> value) => saveStringList('cachedTranscriptionVocabulary', value);
 
   // User primary language preferences
-  String get userPrimaryLanguage => getString('userPrimaryLanguage');
+  String get userPrimaryLanguage => getString('userPrimaryLanguage', defaultValue: defaultUserPrimaryLanguage);
 
   set userPrimaryLanguage(String value) => saveString('userPrimaryLanguage', value);
 
-  bool get hasSetPrimaryLanguage => getBool('hasSetPrimaryLanguage');
+  bool get hasSetPrimaryLanguage => getBool('hasSetPrimaryLanguage', defaultValue: true);
 
   set hasSetPrimaryLanguage(bool value) => saveBool('hasSetPrimaryLanguage', value);
 

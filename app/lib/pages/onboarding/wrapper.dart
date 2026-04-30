@@ -18,7 +18,6 @@ import 'package:omi/pages/onboarding/knowledge_graph_step.dart';
 import 'package:omi/pages/onboarding/name/name_widget.dart';
 import 'package:omi/pages/onboarding/permissions/permissions_checker.dart';
 import 'package:omi/pages/onboarding/permissions/permissions_widget.dart';
-import 'package:omi/pages/onboarding/primary_language/primary_language_widget.dart';
 import 'package:omi/pages/onboarding/complete_screen.dart';
 import 'package:omi/pages/onboarding/speech_profile_widget.dart';
 import 'package:omi/pages/onboarding/user_review_page.dart';
@@ -56,6 +55,14 @@ class _OnboardingWrapperState extends State<OnboardingWrapper> with TickerProvid
 
   // Special index values used in comparisons
   static const List<int> kHiddenHeaderPages = [-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+  static const List<int> kProgressPages = [
+    kNamePage,
+    kFoundOmiPage,
+    kPermissionsPage,
+    kUserReviewPage,
+    kSpeechProfilePage,
+    kKnowledgeGraphPage,
+  ];
 
   TabController? _controller;
   late AnimationController _backgroundAnimationController;
@@ -298,7 +305,8 @@ class _OnboardingWrapperState extends State<OnboardingWrapper> with TickerProvid
       ),
       NameWidget(
         goNext: () {
-          _goNext(); // Go to Primary Language page
+          context.read<HomeProvider>().useDefaultPrimaryLanguage();
+          _controller!.animateTo(kFoundOmiPage);
           IntercomManager.instance.updateUser(
             SharedPreferencesUtil().email,
             SharedPreferencesUtil().fullName,
@@ -307,12 +315,7 @@ class _OnboardingWrapperState extends State<OnboardingWrapper> with TickerProvid
           MixpanelManager().onboardingStepCompleted('Name');
         },
       ),
-      PrimaryLanguageWidget(
-        goNext: () {
-          _goNext(); // Go to Found Omi page
-          MixpanelManager().onboardingStepCompleted('Primary Language');
-        },
-      ),
+      Container(), // Primary language is fixed to US English for this fork.
       FoundOmiWidget(
         goNext: () {
           _goNext(); // Go to Permissions page
@@ -436,8 +439,7 @@ class _OnboardingWrapperState extends State<OnboardingWrapper> with TickerProvid
                           padding: const EdgeInsets.fromLTRB(16, 56, 16, 0),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
-                            children: List.generate(9, (index) {
-                              int pageIndex = index + 2; // Name=2, Lang=3, ..., KnowledgeGraph=10
+                            children: kProgressPages.map((pageIndex) {
                               return Container(
                                 margin: const EdgeInsets.symmetric(horizontal: 4.0),
                                 width: pageIndex == _controller!.index ? 12.0 : 8.0,
@@ -449,7 +451,7 @@ class _OnboardingWrapperState extends State<OnboardingWrapper> with TickerProvid
                                   shape: BoxShape.circle,
                                 ),
                               );
-                            }),
+                            }).toList(),
                           ),
                         ),
                       // Back button (hidden on complete page)
@@ -469,6 +471,8 @@ class _OnboardingWrapperState extends State<OnboardingWrapper> with TickerProvid
                                   if (_controller!.index == kSpeechProfilePage) {
                                     _speechProfileProvider?.close();
                                     _controller!.animateTo(kUserReviewPage);
+                                  } else if (_controller!.index == kFoundOmiPage) {
+                                    _controller!.animateTo(kNamePage);
                                   } else if (_controller!.index > kNamePage) {
                                     _controller!.animateTo(_controller!.index - 1);
                                   }
@@ -548,6 +552,8 @@ class _OnboardingWrapperState extends State<OnboardingWrapper> with TickerProvid
                                     if (_controller!.index == kSpeechProfilePage) {
                                       _speechProfileProvider?.close();
                                       _controller!.animateTo(kUserReviewPage);
+                                    } else if (_controller!.index == kFoundOmiPage) {
+                                      _controller!.animateTo(kNamePage);
                                     } else if (_controller!.index > kNamePage) {
                                       _controller!.animateTo(_controller!.index - 1);
                                     }
@@ -562,8 +568,7 @@ class _OnboardingWrapperState extends State<OnboardingWrapper> with TickerProvid
                             padding: const EdgeInsets.fromLTRB(16, 56, 16, 0),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
-                              children: List.generate(7, (index) {
-                                int pageIndex = index + 2; // Name=2, Lang=3, ..., Speech=8
+                              children: kProgressPages.map((pageIndex) {
                                 return Container(
                                   margin: const EdgeInsets.symmetric(horizontal: 4.0),
                                   width: pageIndex == _controller!.index ? 12.0 : 8.0,
@@ -575,7 +580,7 @@ class _OnboardingWrapperState extends State<OnboardingWrapper> with TickerProvid
                                     shape: BoxShape.circle,
                                   ),
                                 );
-                              }),
+                              }).toList(),
                             ),
                           ),
                       ],

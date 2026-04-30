@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:omi/backend/http/api/speech_profile.dart';
 import 'package:omi/backend/http/api/users.dart';
 import 'package:omi/backend/preferences.dart';
-import 'package:omi/app_globals.dart';
 import 'package:omi/pages/settings/language_selection_dialog.dart';
 import 'package:omi/providers/user_provider.dart';
 import 'package:omi/utils/analytics/analytics_manager.dart';
@@ -126,6 +125,7 @@ class HomeProvider extends ChangeNotifier {
   };
 
   HomeProvider() {
+    useDefaultPrimaryLanguage();
     chatFieldFocusNode.addListener(_onFocusChange);
     appsSearchFieldFocusNode.addListener(_onFocusChange);
     convoSearchFieldFocusNode.addListener(_onConvoSearchFocusChange);
@@ -197,39 +197,11 @@ class HomeProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> setupUserPrimaryLanguage() async {
-    if (SharedPreferencesUtil().hasSetPrimaryLanguage && SharedPreferencesUtil().userPrimaryLanguage.isNotEmpty) {
-      return;
-    }
-
-    try {
-      final language = await getUserPrimaryLanguage();
-      if (language == null) {
-        // User hasn't set a primary language yet
-        userPrimaryLanguage = '';
-        hasSetPrimaryLanguage = false;
-
-        // Show language dialog after a short delay to ensure UI is ready
-        Future.delayed(const Duration(milliseconds: 500), () {
-          if (globalNavigatorKey.currentContext != null) {
-            showLanguageDialogIfNeeded(globalNavigatorKey.currentContext!);
-          }
-        });
-      } else {
-        userPrimaryLanguage = language;
-        hasSetPrimaryLanguage = true;
-        SharedPreferencesUtil().userPrimaryLanguage = language;
-        SharedPreferencesUtil().hasSetPrimaryLanguage = true;
-        AnalyticsManager().setUserAttribute('Primary Language', language);
-      }
-      Logger.debug('setupUserPrimaryLanguage: $language, hasSet: $hasSetPrimaryLanguage');
-    } catch (e) {
-      Logger.debug('Error setting up user primary language: $e');
-      userPrimaryLanguage = '';
-      hasSetPrimaryLanguage = false;
-    }
+  Future<void> setupUserPrimaryLanguage() {
+    useDefaultPrimaryLanguage();
+    Logger.debug('setupUserPrimaryLanguage: $userPrimaryLanguage, hasSet: $hasSetPrimaryLanguage');
     notifyListeners();
-    return;
+    return Future.value();
   }
 
   void showLanguageDialogIfNeeded(BuildContext context) {
@@ -240,15 +212,7 @@ class HomeProvider extends ChangeNotifier {
 
   Future<bool> updateUserPrimaryLanguage(String languageCode, {UserProvider? userProvider}) {
     try {
-      userPrimaryLanguage = languageCode;
-      hasSetPrimaryLanguage = true;
-      SharedPreferencesUtil().userPrimaryLanguage = languageCode;
-      SharedPreferencesUtil().hasSetPrimaryLanguage = true;
-      AnalyticsManager().setUserAttribute('Primary Language', languageCode);
-
-      final singleLanguageMode = !multiLanguageSupported.contains(languageCode);
-      userProvider?.updateSingleLanguageModeLocally(singleLanguageMode);
-
+      _saveUserPrimaryLanguageLocally(languageCode, userProvider: userProvider);
       _syncUserPrimaryLanguage(languageCode);
 
       notifyListeners();
@@ -257,6 +221,30 @@ class HomeProvider extends ChangeNotifier {
       Logger.debug('Error saving user primary language locally: $e');
       return Future.value(false);
     }
+  }
+
+  void useDefaultPrimaryLanguage({UserProvider? userProvider}) {
+    final savedLanguage = SharedPreferencesUtil().getString('userPrimaryLanguage');
+    final hasSavedLanguage = SharedPreferencesUtil().getBool('hasSetPrimaryLanguage') && savedLanguage.isNotEmpty;
+    if (hasSavedLanguage) {
+      userPrimaryLanguage = savedLanguage;
+      hasSetPrimaryLanguage = true;
+      return;
+    }
+
+    _saveUserPrimaryLanguageLocally(defaultUserPrimaryLanguage, userProvider: userProvider);
+  }
+
+  void _saveUserPrimaryLanguageLocally(String languageCode, {UserProvider? userProvider}) {
+    userPrimaryLanguage = languageCode;
+    hasSetPrimaryLanguage = true;
+    SharedPreferencesUtil().userPrimaryLanguage = languageCode;
+    SharedPreferencesUtil().hasSetPrimaryLanguage = true;
+    AnalyticsManager().setUserAttribute('Primary Language', languageCode);
+
+    final singleLanguageMode = !multiLanguageSupported.contains(languageCode);
+    SharedPreferencesUtil().cachedSingleLanguageMode = singleLanguageMode;
+    userProvider?.updateSingleLanguageModeLocally(singleLanguageMode);
   }
 
   void _syncUserPrimaryLanguage(String languageCode) {
