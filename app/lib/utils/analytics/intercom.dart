@@ -1,110 +1,44 @@
-import 'dart:async';
-
-import 'package:intercom_flutter/intercom_flutter.dart';
-
-import 'package:omi/backend/preferences.dart';
-import 'package:omi/env/env.dart';
-import 'package:omi/utils/platform/platform_service.dart';
-
 class IntercomManager {
   static final IntercomManager _instance = IntercomManager._internal();
   static IntercomManager get instance => _instance;
-  static final SharedPreferencesUtil _preferences = SharedPreferencesUtil();
+
+  final IntercomClient intercom = const IntercomClient();
 
   IntercomManager._internal();
-
-  Intercom get intercom => Intercom.instance;
-  bool get _isIntercomEnabled =>
-      PlatformService.isIntercomSupported && (Env.intercomAppId != null && Env.intercomAppId!.isNotEmpty);
 
   factory IntercomManager() {
     return _instance;
   }
 
-  Future<void> initIntercom() async {
-    if (Env.intercomAppId == null) return;
-    return PlatformService.executeIfSupportedAsync(
-      _isIntercomEnabled,
-      () => intercom.initialize(
-        Env.intercomAppId!,
-        iosApiKey: Env.intercomIOSApiKey,
-        androidApiKey: Env.intercomAndroidApiKey,
-      ),
-    );
-  }
+  Future<void> initIntercom() async {}
 
-  Future displayChargingArticle(String device) async {
-    return PlatformService.executeIfSupportedAsync(_isIntercomEnabled, () async {
-      if (device == 'Omi DevKit 2') {
-        return await intercom.displayArticle('10003257-how-to-charge-devkit2');
-      } else if (device == 'Omi') {
-        return await intercom.displayArticle('12123047-how-to-charge-omi');
-      } else {
-        return await intercom.displayArticle('9907475-how-to-charge-the-device');
-      }
-    });
-  }
+  Future<void> displayMessenger() => intercom.displayMessenger();
 
-  Future loginIdentifiedUser(String uid) async {
-    return PlatformService.executeIfSupportedAsync(_isIntercomEnabled, () => intercom.loginIdentifiedUser(userId: uid));
-  }
+  Future<void> displayChargingArticle(String device) async {}
 
-  Future loginUnidentifiedUser() async {
-    return PlatformService.executeIfSupportedAsync(_isIntercomEnabled, () => intercom.loginUnidentifiedUser());
-  }
+  Future<void> loginIdentifiedUser(String uid) async {}
 
-  Future displayEarnMoneyArticle() async {
-    return PlatformService.executeIfSupportedAsync(
-      _isIntercomEnabled,
-      () => intercom.displayArticle('10401566-build-publish-and-earn-with-omi-apps'),
-    );
-  }
+  Future<void> loginUnidentifiedUser() async {}
 
-  Future displayFirmwareUpdateArticle() async {
-    return PlatformService.executeIfSupportedAsync(
-      _isIntercomEnabled,
-      () => intercom.displayArticle('9995941-updating-your-devkit2-firmware'),
-    );
-  }
+  Future<void> displayEarnMoneyArticle() async {}
 
-  Future logEvent(String eventName, {Map<String, dynamic>? metaData}) async {
-    return PlatformService.executeIfSupportedAsync(_isIntercomEnabled, () => intercom.logEvent(eventName, metaData));
-  }
+  Future<void> displayFirmwareUpdateArticle() async {}
 
-  Future updateCustomAttributes(Map<String, dynamic> attributes) async {
-    return PlatformService.executeIfSupportedAsync(
-      _isIntercomEnabled,
-      () => intercom.updateUser(customAttributes: attributes),
-    );
-  }
+  Future<void> logEvent(String eventName, {Map<String, dynamic>? metaData}) async {}
 
-  Future updateUser(String? email, String? name, String? uid) async {
-    return PlatformService.executeIfSupportedAsync(
-      _isIntercomEnabled,
-      () => intercom.updateUser(email: email, name: name, userId: uid),
-    );
-  }
+  Future<void> updateCustomAttributes(Map<String, dynamic> attributes) async {}
 
-  Future<void> setUserAttributes() async {
-    return PlatformService.executeIfSupportedAsync(
-      _isIntercomEnabled,
-      () => updateCustomAttributes({
-        'Notifications Enabled': _preferences.notificationsEnabled,
-        'Location Enabled': _preferences.locationEnabled,
-        'Apps Enabled Count': _preferences.enabledAppsCount,
-        'Apps Integrations Enabled Count': _preferences.enabledAppsIntegrationsCount,
-        'Speaker Profile': _preferences.hasSpeakerProfile,
-        'Calendar Enabled': _preferences.calendarEnabled,
-        'Primary Language': _preferences.userPrimaryLanguage,
-        'Authorized Storing Recordings': _preferences.permissionStoreRecordingsEnabled,
-      }),
-    );
-  }
+  Future<void> updateUser(String? email, String? name, String? uid) async {}
 
-  Future<void> sendTokenToIntercom(String token) async {
-    return PlatformService.executeIfSupportedAsync(
-      _isIntercomEnabled,
-      () => Intercom.instance.sendTokenToIntercom(token),
-    );
-  }
+  Future<void> setUserAttributes() async {}
+
+  Future<void> sendTokenToIntercom(String token) async {}
+}
+
+class IntercomClient {
+  const IntercomClient();
+
+  Future<void> displayMessenger() async {}
+
+  Future<void> displayArticle(String articleId) async {}
 }
