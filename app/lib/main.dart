@@ -8,13 +8,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:marionette_flutter/marionette_flutter.dart';
 
-import 'package:flutter_blue_plus/flutter_blue_plus.dart' as ble;
 import 'package:omi/gen/pigeon_communicator.g.dart';
 import 'package:omi/services/bridges/ble_bridge.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:opus_dart/opus_dart.dart';
-import 'package:opus_flutter/opus_flutter.dart' as opus_flutter;
 import 'package:provider/provider.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 
@@ -62,6 +60,7 @@ import 'package:omi/utils/analytics/growthbook.dart';
 import 'package:omi/utils/debug_log_manager.dart';
 import 'package:omi/utils/debugging/crashlytics_manager.dart';
 import 'package:omi/utils/l10n_extensions.dart';
+import 'package:omi/utils/audio/opus_loader.dart';
 import 'package:omi/utils/environment_detector.dart';
 import 'package:omi/pages/settings/developer.dart';
 import 'package:omi/utils/logger.dart';
@@ -128,7 +127,7 @@ Future _init() async {
       print('DEBUG main: After restore - onboardingCompleted=${SharedPreferencesUtil().onboardingCompleted}');
     }
   }
-  initOpus(await opus_flutter.load());
+  initOpus(await loadOpusLibrary());
 
   await GrowthbookUtil.init();
   // Register native BLE bridge
