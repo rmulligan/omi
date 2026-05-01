@@ -1,5 +1,5 @@
-// Platform-aware notification service with FCM implementation
-// FCM Implementation: Full Firebase Cloud Messaging support (iOS, Android)
+// Platform-aware notification service.
+// The Lilly fork disables in-app/mobile notifications.
 
 import 'package:omi/services/notifications/notification_interface.dart';
 import 'package:omi/services/notifications/notification_service_fcm.dart' as fcm;

@@ -35,7 +35,7 @@ class BottomNavBar extends StatelessWidget {
                 _buildTab(context, home, 0, FontAwesomeIcons.house, 'Home'),
                 _buildTab(context, home, 1, FontAwesomeIcons.comments, 'Conversations'),
                 _buildTab(context, home, 2, FontAwesomeIcons.listCheck, 'Tasks'),
-                _buildTab(context, home, 3, FontAwesomeIcons.puzzlePiece, 'Apps'),
+                
               ],
             ),
           ),

@@ -310,7 +310,7 @@ class _SettingsDrawerState extends State<SettingsDrawer> {
     const memIcon = FaIcon(FontAwesomeIcons.brain, color: Color(0xFF8E8E93), size: 20);
     const devIcon = FaIcon(FontAwesomeIcons.code, color: Color(0xFF8E8E93), size: 20);
     const intIcon = FaIcon(FontAwesomeIcons.networkWired, color: Color(0xFF8E8E93), size: 20);
-    const syncIcon = FaIcon(FontAwesomeIcons.solidCloud, color: Color(0xFF8E8E93), size: 20);
+    const syncIcon = FaIcon(FontAwesomeIcons.cloud, color: Color(0xFF8E8E93), size: 20);
 
     final items = <_SearchableItem>[
       // --- Profile ---
@@ -332,7 +332,7 @@ class _SettingsDrawerState extends State<SettingsDrawer> {
       _SearchableItem(title: context.l10n.dailySummary, icon: notifIcon, onTap: goToNotifications),
       _SearchableItem(title: context.l10n.deliveryTime, icon: notifIcon, onTap: goToNotifications),
       // --- Plan & Usage ---
-      _SearchableItem(title: context.l10n.planAndUsage, icon: usageIcon, onTap: goToUsage),
+      
       // --- Offline Sync ---
       _SearchableItem(title: context.l10n.offlineSync, icon: syncIcon, onTap: goToSync),
       // --- Device Settings (only when connected) ---
@@ -347,7 +347,7 @@ class _SettingsDrawerState extends State<SettingsDrawer> {
         _SearchableItem(title: context.l10n.micGain, icon: deviceIcon, onTap: goToDevice),
       ],
       // --- Integrations ---
-      _SearchableItem(title: context.l10n.integrations, icon: intIcon, onTap: goToIntegrations),
+      
       // --- Permissions ---
       _SearchableItem(title: context.l10n.permissions, icon: permIcon, onTap: goToPermissions),
       _SearchableItem(title: context.l10n.microphone, icon: permIcon, onTap: goToPermissions),
@@ -382,16 +382,16 @@ class _SettingsDrawerState extends State<SettingsDrawer> {
         ),
       ],
       // --- Developer ---
-      _SearchableItem(title: context.l10n.developerSettings, icon: devIcon, onTap: goToDeveloper),
-      _SearchableItem(title: context.l10n.apiKeys, icon: devIcon, onTap: goToDeveloper),
-      _SearchableItem(title: context.l10n.debugAndDiagnostics, icon: devIcon, onTap: goToDeveloper),
-      _SearchableItem(title: context.l10n.conversationEvents, icon: devIcon, onTap: goToDeveloper),
-      _SearchableItem(title: context.l10n.realTimeTranscript, icon: devIcon, onTap: goToDeveloper),
-      _SearchableItem(title: context.l10n.audioBytes, icon: devIcon, onTap: goToDeveloper),
-      _SearchableItem(title: context.l10n.daySummary, icon: devIcon, onTap: goToDeveloper),
-      _SearchableItem(title: context.l10n.autoCreateSpeakers, icon: devIcon, onTap: goToDeveloper),
-      _SearchableItem(title: context.l10n.goalTracker, icon: devIcon, onTap: goToDeveloper),
-      _SearchableItem(title: context.l10n.apiEnvironment, icon: devIcon, onTap: goToDeveloper),
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
       // --- What's New ---
       _SearchableItem(
         title: context.l10n.whatsNew,
@@ -477,85 +477,10 @@ class _SettingsDrawerState extends State<SettingsDrawer> {
   }
 
   Widget _buildOmiModeContent(BuildContext context) {
-    return Consumer<UsageProvider>(
-      builder: (context, usageProvider, child) {
-        return Column(
-          children: [
-            // Profile & Notifications Section
-            _buildSectionContainer(
-              children: [
-                // Wrapped 2025 - temporarily disabled
-                // _buildSettingsItem(
-                //   title: context.l10n.wrapped2025,
-                //   icon: const FaIcon(FontAwesomeIcons.gift, color: Color(0xFF8E8E93), size: 20),
-                //   showNewTag: true,
-                //   onTap: () {
-                //     Navigator.of(context).push(
-                //       MaterialPageRoute(
-                //         builder: (context) => const Wrapped2025Page(),
-                //       ),
-                //     );
-                //   },
-                // ),
-                // const Divider(height: 1, color: Color(0xFF3C3C43)),
-                _buildSettingsItem(
-                  title: context.l10n.profile,
-                  icon: const FaIcon(FontAwesomeIcons.solidUser, color: Color(0xFF8E8E93), size: 20),
-                  onTap: () {
-                    routeToPage(context, const ProfilePage());
-                  },
-                ),
-                const Divider(height: 1, color: Color(0xFF3C3C43)),
-                _buildSettingsItem(
-                  title: context.l10n.notifications,
-                  icon: const FaIcon(FontAwesomeIcons.solidBell, color: Color(0xFF8E8E93), size: 20),
-                  onTap: () {
-                    routeToPage(context, const NotificationsSettingsPage());
-                  },
-                ),
-                const Divider(height: 1, color: Color(0xFF3C3C43)),
-                Consumer<UsageProvider>(
-                  builder: (context, usageProvider, child) {
-                    final sp = usageProvider.subscription?.subscription.plan;
-                    final isUnlimited = sp == PlanType.unlimited || sp == PlanType.operator || sp == PlanType.architect;
-                    return _buildSettingsItem(
-                      title: context.l10n.planAndUsage,
-                      icon: const FaIcon(FontAwesomeIcons.chartLine, color: Color(0xFF8E8E93), size: 20),
-                      trailingChip: isUnlimited
-                          ? Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: Colors.amber.withOpacity(0.2),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const FaIcon(FontAwesomeIcons.crown, color: Colors.amber, size: 10),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    context.l10n.pro.toUpperCase(),
-                                    style: const TextStyle(
-                                      color: Colors.amber,
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w600,
-                                      letterSpacing: 0.5,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            )
-                          : null,
-                      onTap: () {
-                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => const UsagePage()));
-                      },
-                    );
-                  },
-                ),
-                const Divider(height: 1, color: Color(0xFF3C3C43)),
+    return 
                 _buildSettingsItem(
                   title: context.l10n.offlineSync,
-                  icon: const FaIcon(FontAwesomeIcons.solidCloud, color: Color(0xFF8E8E93), size: 20),
+                  icon: const FaIcon(FontAwesomeIcons.cloud, color: Color(0xFF8E8E93), size: 20),
                   onTap: () {
                     final page =
                         SharedPreferencesUtil().deviceSupportsMultiFileSync ? const AutoSyncPage() : const SyncPage();
@@ -581,15 +506,7 @@ class _SettingsDrawerState extends State<SettingsDrawer> {
                     );
                   },
                 ),
-                const Divider(height: 1, color: Color(0xFF3C3C43)),
-                _buildSettingsItem(
-                  title: context.l10n.integrations,
-                  icon: const FaIcon(FontAwesomeIcons.networkWired, color: Color(0xFF8E8E93), size: 20),
-                  showBetaTag: true,
-                  onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => const IntegrationsPage()));
-                  },
-                ),
+                
                 const Divider(height: 1, color: Color(0xFF3C3C43)),
                 _buildSettingsItem(
                   title: context.l10n.permissions,
@@ -615,49 +532,12 @@ class _SettingsDrawerState extends State<SettingsDrawer> {
             _buildSectionContainer(
               children: [
                 if (PlatformService.isIntercomSupported) ...[
-                  _buildSettingsItem(
-                    title: context.l10n.feedbackBug,
-                    icon: const FaIcon(FontAwesomeIcons.solidEnvelope, color: Color(0xFF8E8E93), size: 20),
-                    onTap: () async {
-                      final Uri url = Uri.parse('https://feedback.omi.me/');
-                      if (await canLaunchUrl(url)) {
-                        await launchUrl(url, mode: LaunchMode.inAppBrowserView);
-                      }
-                    },
-                  ),
-                  const Divider(height: 1, color: Color(0xFF3C3C43)),
-                  _buildSettingsItem(
-                    title: context.l10n.helpCenter,
-                    icon: const FaIcon(FontAwesomeIcons.book, color: Color(0xFF8E8E93), size: 20),
-                    onTap: () async {
-                      final Uri url = Uri.parse('https://help.omi.me/en/');
-                      if (await canLaunchUrl(url)) {
-                        try {
-                          await launchUrl(url, mode: LaunchMode.inAppBrowserView);
-                        } catch (e) {
-                          await launchUrl(url, mode: LaunchMode.externalApplication);
-                        }
-                      }
-                    },
-                  ),
+                  
+                  
                   const Divider(height: 1, color: Color(0xFF3C3C43)),
                 ],
-                _buildSettingsItem(
-                  title: context.l10n.developerSettings,
-                  icon: const FaIcon(FontAwesomeIcons.code, color: Color(0xFF8E8E93), size: 20),
-                  onTap: () async {
-                    await routeToPage(context, const DeveloperSettingsPage());
-                  },
-                ),
-                const Divider(height: 1, color: Color(0xFF3C3C43)),
-                _buildSettingsItem(
-                  title: context.l10n.whatsNew,
-                  icon: const FaIcon(FontAwesomeIcons.solidStar, color: Color(0xFF8E8E93), size: 20),
-                  onTap: () {
-                    MixpanelManager().whatsNewOpened();
-                    ChangelogSheet.showWithLoading(context, () => getAppChangelogs(limit: 5));
-                  },
-                ),
+                
+                
               ],
             ),
             const SizedBox(height: 32),
@@ -665,23 +545,8 @@ class _SettingsDrawerState extends State<SettingsDrawer> {
             // Share & Get Section
             _buildSectionContainer(
               children: [
-                _buildSettingsItem(
-                  title: context.l10n.getOmiForMac,
-                  icon: const FaIcon(FontAwesomeIcons.desktop, color: Color(0xFF8E8E93), size: 20),
-                  onTap: () async {
-                    final Uri url = Uri.parse('https://apps.apple.com/us/app/omi-ai-scale-yourself/id6502156163');
-                    await launchUrl(url, mode: LaunchMode.externalApplication);
-                  },
-                ),
-                const Divider(height: 1, color: Color(0xFF3C3C43)),
-                _buildSettingsItem(
-                  title: context.l10n.referralProgram,
-                  icon: const FaIcon(FontAwesomeIcons.gift, color: Color(0xFF8E8E93), size: 20),
-                  showNewTag: true,
-                  onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => const ReferralPage()));
-                  },
-                ),
+                
+                
               ],
             ),
             const SizedBox(height: 32),

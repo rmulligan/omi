@@ -24,7 +24,13 @@ _usage_callback = get_usage_callback()
 # ---------------------------------------------------------------------------
 _LLM_BASE_URL = os.environ.get('LLM_BASE_URL')
 _LLM_API_KEY = os.environ.get('LLM_API_KEY', '')
+_LOCAL_LLM_MODEL = os.environ.get('LLM_MODEL', 'magnum-opus:35b').strip() or 'magnum-opus:35b'
 # MARKER 384075
+
+
+def _openai_compatible_base_url(base_url: str) -> str:
+    base = base_url.rstrip('/')
+    return base if base.endswith('/v1') else f'{base}/v1'
 
 
 
@@ -199,13 +205,13 @@ def _byok_openai(model: str, **ctor_kwargs) -> _OpenAIChatProxy:
     When LLM_BASE_URL is set, uses the local llama-swap instance instead.
     """
     if _LLM_BASE_URL:
-        kwargs: Dict[str, Any] = {
-            'model': 'magnum-opus:35b',
-            'api_key': _LLM_API_KEY or 'local',
-            'base_url': _LLM_BASE_URL.rstrip('/') + ('' if _LLM_BASE_URL.rstrip('/').endswith('/v1') else '/v1'),
-        }
-        kwargs.update(ctor_kwargs)
-        return _OpenAIChatProxy(model=model, default=ChatOpenAI(**kwargs), ctor_kwargs=kwargs)
+        default = ChatOpenAI(
+            model=_LOCAL_LLM_MODEL,
+            api_key=_LLM_API_KEY or 'local',
+            base_url=_openai_compatible_base_url(_LLM_BASE_URL),
+            **ctor_kwargs,
+        )
+        return _OpenAIChatProxy(model=model, default=default, ctor_kwargs=ctor_kwargs)
     try:
         default = ChatOpenAI(model=model, **ctor_kwargs)
     except Exception:
@@ -488,16 +494,15 @@ def get_llm(feature: str, streaming: bool = False, cache_key: Optional[str] = No
     if feature in _ANTHROPIC_ONLY_FEATURES:
         if _LLM_BASE_URL:
             # Route through local LLM (llama-swap / Hermes)
-            model = get_model(feature)
             kwargs: Dict[str, Any] = {
                 'api_key': _LLM_API_KEY or 'local',
-                'base_url': _LLM_BASE_URL.rstrip('/') + ('' if _LLM_BASE_URL.rstrip('/').endswith('/v1') else '/v1'),
+                'base_url': _openai_compatible_base_url(_LLM_BASE_URL),
                 'callbacks': [_usage_callback],
             }
             if streaming:
                 kwargs['streaming'] = True
                 kwargs['stream_options'] = {"include_usage": True}
-            return ChatOpenAI(model=model, **kwargs)
+            return ChatOpenAI(model=_LOCAL_LLM_MODEL, **kwargs)
         raise ValueError(
             f"Feature '{feature}' is Anthropic — use get_model('{feature}') with anthropic_client instead of get_llm()"
         )
@@ -513,13 +518,13 @@ def get_llm(feature: str, streaming: bool = False, cache_key: Optional[str] = No
     if _LLM_BASE_URL:
         kwargs: Dict[str, Any] = {
             'api_key': _LLM_API_KEY or 'local',
-            'base_url': _LLM_BASE_URL.rstrip('/') + ('' if _LLM_BASE_URL.rstrip('/').endswith('/v1') else '/v1'),
+            'base_url': _openai_compatible_base_url(_LLM_BASE_URL),
             'callbacks': [_usage_callback],
         }
         if streaming:
             kwargs['streaming'] = True
             kwargs['stream_options'] = {"include_usage": True}
-        return ChatOpenAI(model=model, **kwargs)
+        return ChatOpenAI(model=_LOCAL_LLM_MODEL, **kwargs)
 
     # Reject models that can't be served via ChatOpenAI (Anthropic direct, Perplexity)
     if provider == 'anthropic':
@@ -548,7 +553,7 @@ def get_qos_info() -> Dict[str, Dict[str, str]]:
     for feature in sorted(all_features):
         model = get_model(feature)
         info[feature] = {
-            'model': 'magnum-opus:35b',
+            'model': model,
             'profile': _active_profile_name,
             'provider': _classify_provider(model),
         }

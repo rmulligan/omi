@@ -2,6 +2,7 @@ import UIKit
 import Flutter
 import UserNotifications
 import app_links
+import flutter_foreground_task
 import WatchConnectivity
 import AVFoundation
 import Speech

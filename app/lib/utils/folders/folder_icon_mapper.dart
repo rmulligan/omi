@@ -12,7 +12,7 @@ IconData folderIconToFa(String? iconString) {
 const Map<String, IconData> _emojiToFaMap = {
   '📁': FontAwesomeIcons.solidFolder,
   '💼': FontAwesomeIcons.briefcase,
-  '🏠': FontAwesomeIcons.solidHouse,
+  '🏠': FontAwesomeIcons.house,
   '📚': FontAwesomeIcons.book,
   '👨‍👩‍👧‍👦': FontAwesomeIcons.users,
   '👤': FontAwesomeIcons.solidHeart,

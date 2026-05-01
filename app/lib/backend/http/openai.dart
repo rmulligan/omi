@@ -69,7 +69,7 @@ Future<dynamic> gptApiCall({
   double temperature = 0.3,
   int? maxTokens,
 }) async {
-  final url = 'https://api.openai.com/v1/$urlSuffix';
+  final url = '${Env.apiBaseUrl}v1/$urlSuffix';
   final headers = {'Content-Type': 'application/json; charset=utf-8', 'Authorization': 'Bearer ${Env.openAIAPIKey}'};
   final String body;
   if (urlSuffix == 'embeddings') {

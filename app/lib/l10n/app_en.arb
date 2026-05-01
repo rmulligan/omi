@@ -1,7 +1,7 @@
 {
   "@@locale": "en",
   "@@last_modified": "2024-12-26",
-  "appTitle": "Omi",
+  "appTitle": "Lilly",
   "@appTitle": {
     "description": "The app title displayed in various places"
   },
@@ -155,7 +155,7 @@
   "@editPerson": {
     "description": "Title for edit person dialog"
   },
-  "createPersonHint": "Create a new person and train Omi to recognize their speech too!",
+  "createPersonHint": "Create a new person and train Lilly to recognize their speech too!",
   "@createPersonHint": {
     "description": "Hint text for creating a person"
   },
@@ -209,9 +209,9 @@
   "@couldNotAccessFile": {
     "description": "Error when file access fails"
   },
-  "askOmi": "Ask Omi",
-  "@askOmi": {
-    "description": "Shortcut to ask Omi a question"
+  "askLilly": "Ask Lilly",
+  "@askLilly": {
+    "description": "Shortcut to ask Lilly a question"
   },
   "done": "Done",
   "@done": {
@@ -347,7 +347,7 @@
   "@noMessagesYet": {
     "description": "Empty chat state message"
   },
-  "deletingMessages": "Deleting your messages from Omi's memory...",
+  "deletingMessages": "Deleting your messages from Lilly's memory...",
   "@deletingMessages": {
     "description": "Loading text when clearing chat"
   },
@@ -387,8 +387,8 @@
   "@maxFilesLimit": {
     "description": "Max files upload warning"
   },
-  "chatWithOmi": "Chat with Omi",
-  "@chatWithOmi": {
+  "chatWithLilly": "Chat with Lilly",
+  "@chatWithLilly": {
     "description": "Chat share subject"
   },
   "apps": "Apps",
@@ -427,8 +427,8 @@
   "@unableToFetchApps": {
     "description": "Error when apps fail to load"
   },
-  "aboutOmi": "About Omi",
-  "@aboutOmi": {
+  "aboutLilly": "About Lilly",
+  "@aboutLilly": {
     "description": "About page title"
   },
   "privacyPolicy": "Privacy Policy",
@@ -575,8 +575,8 @@
   "@developerSettings": {
     "description": "Title for developer settings page"
   },
-  "getOmiForMac": "Get Omi for Mac",
-  "@getOmiForMac": {
+  "getLillyForMac": "Get Lilly for Mac",
+  "@getLillyForMac": {
     "description": "Mac app download link"
   },
   "referralProgram": "Referral Program",
@@ -599,7 +599,7 @@
   "@yourPrivacyYourControl": {
     "description": "Data privacy page heading"
   },
-  "privacyIntro": "At Omi, we are committed to protecting your privacy. This page allows you to control how your data is stored and used.",
+  "privacyIntro": "At Lilly, we are committed to protecting your privacy. This page allows you to control how your data is stored and used.",
   "@privacyIntro": {
     "description": "Data privacy page introduction"
   },
@@ -691,7 +691,7 @@
   "@unpairAndForget": {
     "description": "Unpair and forget device button"
   },
-  "deviceDisconnectedMessage": "Your Omi has been disconnected 😔",
+  "deviceDisconnectedMessage": "Your Lilly has been disconnected 😔",
   "@deviceDisconnectedMessage": {
     "description": "Message shown when device is disconnected"
   },
@@ -711,7 +711,7 @@
   "@deviceNotConnected": {
     "description": "Device not connected header"
   },
-  "connectDeviceMessage": "Connect your Omi device to access\ndevice settings and customization",
+  "connectDeviceMessage": "Connect your Lilly device to access\ndevice settings and customization",
   "@connectDeviceMessage": {
     "description": "Message encouraging user to connect device"
   },
@@ -883,8 +883,8 @@
   "@docs": {
     "description": "Documentation button text"
   },
-  "yourOmiInsights": "Your Omi Insights",
-  "@yourOmiInsights": {
+  "yourLillyInsights": "Your Lilly Insights",
+  "@yourLillyInsights": {
     "description": "Usage page title"
   },
   "today": "Today",
@@ -907,7 +907,7 @@
   "@noActivityYet": {
     "description": "Empty state title"
   },
-  "startConversationToSeeInsights": "Start a conversation with Omi\nto see your usage insights here.",
+  "startConversationToSeeInsights": "Start a conversation with Lilly\nto see your usage insights here.",
   "@startConversationToSeeInsights": {
     "description": "Empty state description"
   },
@@ -915,7 +915,7 @@
   "@listening": {
     "description": "Listening stat title"
   },
-  "listeningSubtitle": "Total time Omi has actively listened.",
+  "listeningSubtitle": "Total time Lilly has actively listened.",
   "@listeningSubtitle": {
     "description": "Listening stat subtitle"
   },
@@ -1007,23 +1007,23 @@
       }
     }
   },
-  "shareStatsMessage": "Sharing my Omi stats! (omi.me - your always-on AI assistant)",
+  "shareStatsMessage": "Sharing my Lilly stats! (lilly.me - your always-on AI assistant)",
   "@shareStatsMessage": {
     "description": "Share stats base message"
   },
-  "sharePeriodToday": "Today, omi has:",
+  "sharePeriodToday": "Today, lilly has:",
   "@sharePeriodToday": {
     "description": "Share stats period: Today"
   },
-  "sharePeriodMonth": "This month, omi has:",
+  "sharePeriodMonth": "This month, lilly has:",
   "@sharePeriodMonth": {
     "description": "Share stats period: Month"
   },
-  "sharePeriodYear": "This year, omi has:",
+  "sharePeriodYear": "This year, lilly has:",
   "@sharePeriodYear": {
     "description": "Share stats period: Year"
   },
-  "sharePeriodAllTime": "So far, omi has:",
+  "sharePeriodAllTime": "So far, lilly has:",
   "@sharePeriodAllTime": {
     "description": "Share stats period: All Time"
   },
@@ -1071,7 +1071,7 @@
   "debugLogsAutoDelete": "Auto-deletes after 3 days.",
   "debugLogsDesc": "Helps diagnose issues",
   "noLogFilesFound": "No log files found.",
-  "omiDebugLog": "Omi debug log",
+  "lillyDebugLog": "Lilly debug log",
   "logShared": "Log shared",
   "selectLogFile": "Select Log File",
   "shareLogs": "Share Logs",
@@ -1079,7 +1079,7 @@
   "exportStarted": "Export started. This may take a few seconds...",
   "exportAllData": "Export All Data",
   "exportDataDesc": "Export conversations to a JSON file",
-  "exportedConversations": "Exported Conversations from Omi",
+  "exportedConversations": "Exported Conversations from Lilly",
   "exportShared": "Export shared",
   "deleteKnowledgeGraphTitle": "Delete Knowledge Graph?",
   "deleteKnowledgeGraphMessage": "This will delete all derived knowledge graph data (nodes and connections). Your original memories will remain safe. The graph will be rebuilt over time or upon next request.",
@@ -1190,7 +1190,7 @@
   "customVocabularyTitle": "Custom Vocabulary",
   "addWords": "Add Words",
   "addWordsDesc": "Names, terms, or uncommon words",
-  "vocabularyHint": "Omi, Callie, OpenAI",
+  "vocabularyHint": "Lilly, Callie, OpenAI",
   "connect": "Connect",
   "comingSoon": "Coming Soon",
   "integrationsFooter": "Connect your apps to view data and metrics in chat.",
@@ -1236,7 +1236,7 @@
       }
     }
   },
-  "authAccessMessage": "You'll need to authorize Omi to access your {appName} data. This will open your browser for authentication.",
+  "authAccessMessage": "You'll need to authorize Lilly to access your {appName} data. This will open your browser for authentication.",
   "@authAccessMessage": {
     "placeholders": {
       "appName": {
@@ -1273,7 +1273,7 @@
   "permissionRevokedMessage": "Do you want us to remove all your existing recordings too?",
   "yes": "Yes",
   "editName": "Edit Name",
-  "howShouldOmiCallYou": "How should Omi call you?",
+  "howShouldLillyCallYou": "How should Lilly call you?",
   "enterYourName": "Enter your name",
   "nameCannotBeEmpty": "Name cannot be empty",
   "nameUpdatedSuccessfully": "Name updated successfully!",
@@ -1457,8 +1457,8 @@
       }
     }
   },
-  "authorizeOmiForTasks": "You'll need to authorize Omi to create tasks in your {appName} account. This will open your browser for authentication.",
-  "@authorizeOmiForTasks": {
+  "authorizeLillyForTasks": "You'll need to authorize Lilly to create tasks in your {appName} account. This will open your browser for authentication.",
+  "@authorizeLillyForTasks": {
     "placeholders": {
       "appName": {
         "type": "String"
@@ -1488,9 +1488,9 @@
   "importConfiguration": "Import Configuration",
   "exportConfiguration": "Export configuration",
   "bringYourOwn": "Bring your own",
-  "payYourSttProvider": "Freely use omi. You only pay your STT provider directly.",
+  "payYourSttProvider": "Freely use lilly. You only pay your STT provider directly.",
   "freeMinutesMonth": "1,200 free minutes/month included. Unlimited with ",
-  "omiUnlimited": "Omi Unlimited",
+  "lillyUnlimited": "Lilly Unlimited",
   "hostRequired": "Host is required",
   "validPortRequired": "Valid port is required",
   "validWebsocketUrlRequired": "Valid WebSocket URL is required (wss://)",
@@ -1548,7 +1548,7 @@
   "logs": "Logs",
   "logsCopied": "Logs copied",
   "noLogsYet": "No logs yet. Start recording to see custom STT activity.",
-  "deviceUsesCodec": "{device} uses {reason}. Omi will be used.",
+  "deviceUsesCodec": "{device} uses {reason}. Lilly will be used.",
   "@deviceUsesCodec": {
     "description": "Warning about device codec compatibility",
     "placeholders": {
@@ -1560,7 +1560,7 @@
       }
     }
   },
-  "omiTranscription": "Omi Transcription",
+  "lillyTranscription": "Lilly Transcription",
   "bestInClassTranscription": "Best in class transcription with zero setup",
   "instantSpeakerLabels": "Instant speaker labels",
   "languageTranslation": "100+ language translation",
@@ -1642,7 +1642,7 @@
   "@enableBluetooth": {
     "description": "Title for dialog prompting user to enable Bluetooth"
   },
-  "bluetoothNeeded": "Omi needs Bluetooth to connect to your wearable. Please enable Bluetooth and try again.",
+  "bluetoothNeeded": "Lilly needs Bluetooth to connect to your wearable. Please enable Bluetooth and try again.",
   "@bluetoothNeeded": {
     "description": "Explanation text for why Bluetooth is required"
   },
@@ -1662,7 +1662,7 @@
   "@backgroundActivity": {
     "description": "Title for background activity permission"
   },
-  "backgroundActivityDesc": "Let Omi run in the background for better stability",
+  "backgroundActivityDesc": "Let Lilly run in the background for better stability",
   "@backgroundActivityDesc": {
     "description": "Description for background activity permission"
   },
@@ -1701,8 +1701,8 @@
   "@backgroundLocationDeniedDesc": {
     "description": "Instructions to grant background location permission"
   },
-  "lovingOmi": "Loving Omi?",
-  "@lovingOmi": {
+  "lovingLilly": "Loving Lilly?",
+  "@lovingLilly": {
     "description": "Title for the app review prompt"
   },
   "leaveReviewIos": "Help us reach more people by leaving a review in the App Store. Your feedback means the world to us!",
@@ -1725,7 +1725,7 @@
   "@maybeLater": {
     "description": "Button text to defer action"
   },
-  "speechProfileIntro": "Omi needs to learn your goals and your voice. You'll be able to modify it later.",
+  "speechProfileIntro": "Lilly needs to learn your goals and your voice. You'll be able to modify it later.",
   "@speechProfileIntro": {
     "description": "Introduction text for speech profile setup"
   },
@@ -1793,8 +1793,8 @@
   "@tryAgain": {
     "description": "Button text to retry an action"
   },
-  "connectOmiOmiGlass": "Connect Omi / OmiGlass",
-  "@connectOmiOmiGlass": {
+  "connectLillyLillyGlass": "Connect Lilly / LillyGlass",
+  "@connectLillyLillyGlass": {
     "description": "Button text to connect specific device models"
   },
   "continueWithoutDevice": "Continue Without Device",
@@ -1844,8 +1844,8 @@
   "@termsOfUse": {
     "description": "Link text for Terms of Use"
   },
-  "omiYourAiCompanion": "Omi – Your AI Companion",
-  "@omiYourAiCompanion": {
+  "lillyYourAiCompanion": "Lilly – Your AI Companion",
+  "@lillyYourAiCompanion": {
     "description": "App title or branding on onboarding screen"
   },
   "captureEveryMoment": "Capture every moment. Get AI-powered\nsummaries. Never take notes again.",
@@ -1864,7 +1864,7 @@
   "@microphonePermission": {
     "description": "Title for microphone permission section"
   },
-  "permissionGrantedNow": "Permission granted! Now:\n\nOpen the Omi app on your watch and tap \"Continue\" below",
+  "permissionGrantedNow": "Permission granted! Now:\n\nOpen the Lilly app on your watch and tap \"Continue\" below",
   "@permissionGrantedNow": {
     "description": "Instructions after permission is granted"
   },
@@ -1880,7 +1880,7 @@
   "@needHelp": {
     "description": "Link to help dialog"
   },
-  "troubleshootingSteps": "Troubleshooting:\n\n1. Ensure Omi is installed on your watch\n2. Open the Omi app on your watch\n3. Look for the permission popup\n4. Tap \"Allow\" when prompted\n5. App on your watch will close - reopen it\n6. Come back and tap \"Continue\" on your iPhone",
+  "troubleshootingSteps": "Troubleshooting:\n\n1. Ensure Lilly is installed on your watch\n2. Open the Lilly app on your watch\n3. Look for the permission popup\n4. Tap \"Allow\" when prompted\n5. App on your watch will close - reopen it\n6. Come back and tap \"Continue\" on your iPhone",
   "@troubleshootingSteps": {
     "description": "Troubleshooting instructions for watch setup"
   },
@@ -1937,7 +1937,7 @@
   },
   "personalGrowthJourney": "Your personal growth journey with AI that listens to your every word.",
   "@personalGrowthJourney": {
-    "description": "Subtitle describing Omi on auth screen"
+    "description": "Subtitle describing Lilly on auth screen"
   },
   "actionItemsTitle": "To-Do's",
   "@actionItemsTitle": {
@@ -2110,11 +2110,11 @@
   "@addFirstMemory": {
     "description": "Button to add first memory"
   },
-  "clearMemoryTitle": "Clear Omi's Memory",
+  "clearMemoryTitle": "Clear Lilly's Memory",
   "@clearMemoryTitle": {
     "description": "Dialog title for clearing memory"
   },
-  "clearMemoryMessage": "Are you sure you want to clear Omi's memory? This action cannot be undone.",
+  "clearMemoryMessage": "Are you sure you want to clear Lilly's memory? This action cannot be undone.",
   "@clearMemoryMessage": {
     "description": "Dialog content for clearing memory"
   },
@@ -2122,7 +2122,7 @@
   "@clearMemoryButton": {
     "description": "Button text to confirm clearing all memories"
   },
-  "memoryClearedSuccess": "Omi's memory about you has been cleared",
+  "memoryClearedSuccess": "Lilly's memory about you has been cleared",
   "@memoryClearedSuccess": {
     "description": "Snackbar success message"
   },
@@ -2319,7 +2319,7 @@
   "@translationNotice": {
     "description": "Title for dialog explaining that conversations are translated"
   },
-  "translationNoticeMessage": "Omi translates conversations into your primary language. Update it anytime in Settings → Profiles.",
+  "translationNoticeMessage": "Lilly translates conversations into your primary language. Update it anytime in Settings → Profiles.",
   "@translationNoticeMessage": {
     "description": "Message explaining how translation works and where to change language settings"
   },
@@ -2568,9 +2568,9 @@
   "@privacyPolicyTitle": {
     "description": "Title for privacy policy page"
   },
-  "omiSttProvider": "Omi",
-  "@omiSttProvider": {
-    "description": "Label for default Omi STT provider"
+  "lillySttProvider": "Lilly",
+  "@lillySttProvider": {
+    "description": "Label for default Lilly STT provider"
   },
   "labelCopied": "{label} copied",
   "@labelCopied": {
@@ -2862,8 +2862,8 @@
   "@checksForAudioFiles": {
     "description": "Step 1: Checking for audio files"
   },
-  "omiSyncsAudioFiles": "Omi then syncs the audio files with the server",
-  "@omiSyncsAudioFiles": {
+  "lillySyncsAudioFiles": "Lilly then syncs the audio files with the server",
+  "@lillySyncsAudioFiles": {
     "description": "Step 2: Syncing audio files"
   },
   "serverProcessesAudio": "The server processes the audio files and creates memories",
@@ -2874,12 +2874,12 @@
   "@youreAllSet": {
     "description": "Completion message when onboarding is finished"
   },
-  "welcomeToOmiDescription": "Welcome to Omi! Your AI companion is ready to assist you with conversations, tasks, and more.",
-  "@welcomeToOmiDescription": {
+  "welcomeToLillyDescription": "Welcome to Lilly! Your AI companion is ready to assist you with conversations, tasks, and more.",
+  "@welcomeToLillyDescription": {
     "description": "Welcome message on completion screen"
   },
-  "startUsingOmi": "Start Using Omi",
-  "@startUsingOmi": {
+  "startUsingLilly": "Start Using Lilly",
+  "@startUsingLilly": {
     "description": "Button to complete onboarding and start using the app"
   },
   "back": "Back",
@@ -2987,7 +2987,7 @@
   "@reviewAndManageConversations": {
     "description": "Subtitle explaining what users can do on conversations page"
   },
-  "startCapturingConversations": "Start capturing conversations with your Omi device to see them here.",
+  "startCapturingConversations": "Start capturing conversations with your Lilly device to see them here.",
   "@startCapturingConversations": {
     "description": "Message explaining how to get started with conversations"
   },
@@ -3007,7 +3007,7 @@
   "@showAll": {
     "description": "Button text to show all items"
   },
-  "noTasksForToday": "No tasks for today.\nAsk Omi for more tasks or create manually.",
+  "noTasksForToday": "No tasks for today.\nAsk Lilly for more tasks or create manually.",
   "@noTasksForToday": {
     "description": "Message shown when there are no tasks due today"
   },
@@ -3206,8 +3206,8 @@
   "@createNewApp": {
     "description": "Title for the create new app page"
   },
-  "buildSubmitCustomOmiApp": "Build and submit your custom Omi app",
-  "@buildSubmitCustomOmiApp": {
+  "buildSubmitCustomLillyApp": "Build and submit your custom Lilly app",
+  "@buildSubmitCustomLillyApp": {
     "description": "Subtitle describing the purpose of the create app page"
   },
   "submittingYourApp": "Submitting your app...",
@@ -3266,7 +3266,7 @@
   "@makeMyAppPublic": {
     "description": "Checkbox label for making app publicly available"
   },
-  "submitAppTermsAgreement": "By submitting this app, I agree to the Omi AI Terms of Service and Privacy Policy",
+  "submitAppTermsAgreement": "By submitting this app, I agree to the Lilly AI Terms of Service and Privacy Policy",
   "@submitAppTermsAgreement": {
     "description": "Terms and conditions agreement checkbox text"
   },
@@ -3322,7 +3322,7 @@
   "@dataAccessNotice": {
     "description": "Dialog title warning about app data access"
   },
-  "dataAccessWarning": "This app will access your data. Omi AI is not responsible for how your data is used, modified, or deleted by this app",
+  "dataAccessWarning": "This app will access your data. Lilly AI is not responsible for how your data is used, modified, or deleted by this app",
   "@dataAccessWarning": {
     "description": "Warning message about app data access in confirmation dialog"
   },
@@ -3794,8 +3794,8 @@
   "@upgradeToPro": {
     "description": "Subscription banner button text"
   },
-  "getOmiDevice": "Get Omi Device",
-  "@getOmiDevice": {
+  "getLillyDevice": "Get Lilly Device",
+  "@getLillyDevice": {
     "description": "Widget title for device promotion"
   },
   "wearableAiCompanion": "Wearable AI companion",
@@ -3897,7 +3897,7 @@
   "@setAllMemoriesToPublic": {
     "description": "Description for making all memories public"
   },
-  "permanentlyRemoveAllMemories": "Permanently remove all memories from Omi",
+  "permanentlyRemoveAllMemories": "Permanently remove all memories from Lilly",
   "@permanentlyRemoveAllMemories": {
     "description": "Description for deleting all memories"
   },
@@ -3909,11 +3909,11 @@
   "@allMemoriesAreNowPublic": {
     "description": "Success message after making all memories public"
   },
-  "clearOmisMemory": "Clear Omi's Memory",
-  "@clearOmisMemory": {
+  "clearLillysMemory": "Clear Lilly's Memory",
+  "@clearLillysMemory": {
     "description": "Confirmation dialog title for clearing all memories"
   },
-  "clearMemoryConfirmation": "Are you sure you want to clear Omi's memory? This action cannot be undone and will permanently delete all {count} memories.",
+  "clearMemoryConfirmation": "Are you sure you want to clear Lilly's memory? This action cannot be undone and will permanently delete all {count} memories.",
   "@clearMemoryConfirmation": {
     "description": "Confirmation message for clearing all memories",
     "placeholders": {
@@ -3922,12 +3922,12 @@
       }
     }
   },
-  "omisMemoryCleared": "Omi's memory about you has been cleared",
-  "@omisMemoryCleared": {
+  "lillysMemoryCleared": "Lilly's memory about you has been cleared",
+  "@lillysMemoryCleared": {
     "description": "Success message after clearing all memories"
   },
-  "welcomeToOmi": "Welcome to Omi",
-  "@welcomeToOmi": {
+  "welcomeToLilly": "Welcome to Lilly",
+  "@welcomeToLilly": {
     "description": "Welcome message on auth screen"
   },
   "continueWithApple": "Continue with Apple",
@@ -3980,13 +3980,13 @@
   },
   "pleaseSelectYourPrimaryLanguage": "Please select your primary language",
   "chooseYourLanguage": "Choose your language",
-  "selectPreferredLanguageForBestExperience": "Select your preferred language for the best Omi experience",
+  "selectPreferredLanguageForBestExperience": "Select your preferred language for the best Lilly experience",
   "searchLanguages": "Search languages...",
   "selectALanguage": "Select a language",
   "tryDifferentSearchTerm": "Try a different search term",
   "pleaseEnterYourName": "Please enter your name",
   "nameMustBeAtLeast2Characters": "Name must be at least 2 characters",
-  "tellUsHowYouWouldLikeToBeAddressed": "Tell us how you'd like to be addressed. This helps personalize your Omi experience.",
+  "tellUsHowYouWouldLikeToBeAddressed": "Tell us how you'd like to be addressed. This helps personalize your Lilly experience.",
   "charactersCount": "{count} characters",
   "@charactersCount": {
     "placeholders": {
@@ -3995,16 +3995,16 @@
       }
     }
   },
-  "enableFeaturesForBestExperience": "Enable features for the best Omi experience on your device.",
+  "enableFeaturesForBestExperience": "Enable features for the best Lilly experience on your device.",
   "microphoneAccess": "Microphone Access",
   "recordAudioConversations": "Record audio conversations",
-  "microphoneAccessDescription": "Omi needs microphone access to record your conversations and provide transcriptions.",
+  "microphoneAccessDescription": "Lilly needs microphone access to record your conversations and provide transcriptions.",
   "screenRecording": "Screen Recording",
   "captureSystemAudioFromMeetings": "Capture system audio from meetings",
-  "screenRecordingDescription": "Omi needs screen recording permission to capture system audio from your browser-based meetings.",
+  "screenRecordingDescription": "Lilly needs screen recording permission to capture system audio from your browser-based meetings.",
   "accessibility": "Accessibility",
   "detectBrowserBasedMeetings": "Detect browser-based meetings",
-  "accessibilityDescription": "Omi needs accessibility permission to detect when you join Zoom, Meet, or Teams meetings in your browser.",
+  "accessibilityDescription": "Lilly needs accessibility permission to detect when you join Zoom, Meet, or Teams meetings in your browser.",
   "pleaseWait": "Please wait...",
   "joinTheCommunity": "Join the community!",
   "loadingProfile": "Loading profile...",
@@ -4015,12 +4015,12 @@
   "setYourName": "Set Your Name",
   "changeYourName": "Change Your Name",
   "voiceAndPeople": "Voice & People",
-  "teachOmiYourVoice": "Teach Omi your voice",
-  "tellOmiWhoSaidIt": "Tell Omi who said it 🗣️",
+  "teachLillyYourVoice": "Teach Lilly your voice",
+  "tellLillyWhoSaidIt": "Tell Lilly who said it 🗣️",
   "payment": "Payment",
   "addOrChangeYourPaymentMethod": "Add or change your payment method",
   "preferences": "Preferences",
-  "helpImproveOmiBySharing": "Help improve Omi by sharing anonymized analytics data",
+  "helpImproveLillyBySharing": "Help improve Lilly by sharing anonymized analytics data",
   "deleteAccount": "Delete Account",
   "deleteYourAccountAndAllData": "Delete your account and all data",
   "clearLogs": "Clear logs",
@@ -4028,7 +4028,7 @@
   "exportConversations": "Export Conversations",
   "exportAllConversationsToJson": "Export all your conversations to a JSON file.",
   "conversationsExportStarted": "Conversations Export Started. This may take a few seconds, please wait.",
-  "mcpDescription": "To connect Omi with other applications to read, search, and manage your memories and conversations. Create a key to get started.",
+  "mcpDescription": "To connect Lilly with other applications to read, search, and manage your memories and conversations. Create a key to get started.",
   "apiKeys": "API Keys",
   "errorLabel": "Error: {error}",
   "@errorLabel": {
@@ -4046,7 +4046,7 @@
   "triggersWhenAudioBytesReceived": "Triggers when audio bytes are received.",
   "everyXSeconds": "Every x seconds",
   "triggersWhenDaySummaryGenerated": "Triggers when day summary is generated.",
-  "tryLatestExperimentalFeatures": "Try the latest experimental features from Omi Team.",
+  "tryLatestExperimentalFeatures": "Try the latest experimental features from Lilly Team.",
   "transcriptionServiceDiagnosticStatus": "Transcription service diagnostic status",
   "enableDetailedDiagnosticMessages": "Enable detailed diagnostic messages from the transcription service",
   "autoCreateAndTagNewSpeakers": "Auto-create and tag new speakers",
@@ -4082,7 +4082,7 @@
       }
     }
   },
-  "letOmiChooseAutomatically": "Let Omi choose the best app automatically",
+  "letLillyChooseAutomatically": "Let Lilly choose the best app automatically",
   "deleteConversationConfirmation": "Are you sure you want to delete this conversation? This action cannot be undone.",
   "conversationDeleted": "Conversation deleted",
   "generatingLink": "Generating link...",
@@ -4233,8 +4233,8 @@
       }
     }
   },
-  "translatedByOmi": "translated by omi",
-  "@translatedByOmi": {
+  "translatedByLilly": "translated by lilly",
+  "@translatedByLilly": {
     "description": "Credit line for translations"
   },
   "backToConversations": "Back to Conversations",
@@ -4349,7 +4349,7 @@
   "@customVocabularyHeader": {
     "description": "Custom vocabulary section header"
   },
-  "addWordsDescription": "Add words that Omi should recognize during transcription.",
+  "addWordsDescription": "Add words that Lilly should recognize during transcription.",
   "@addWordsDescription": {
     "description": "Custom vocabulary description"
   },
@@ -4410,7 +4410,7 @@
   "clearNodesDescription": "Clear all nodes and connections",
   "deleteKnowledgeGraphQuestion": "Delete Knowledge Graph?",
   "deleteKnowledgeGraphWarning": "This will delete all derived knowledge graph data. Your original memories remain safe.",
-  "connectOmiWithAI": "Connect Omi with AI assistants",
+  "connectLillyWithAI": "Connect Lilly with AI assistants",
   "noAPIKeys": "No API keys. Create one to get started.",
   "autoCreateWhenDetected": "Auto-create when name detected",
   "trackPersonalGoals": "Track personal goals on homepage",
@@ -4430,8 +4430,8 @@
   "@holdOnPreparingForm": {
     "description": "Loading message while preparing form"
   },
-  "bySubmittingYouAgreeToOmi": "By submitting, you agree to Omi ",
-  "@bySubmittingYouAgreeToOmi": {
+  "bySubmittingYouAgreeToLilly": "By submitting, you agree to Lilly ",
+  "@bySubmittingYouAgreeToLilly": {
     "description": "Text before Terms & Privacy Policy link"
   },
   "termsAndPrivacyPolicy": "Terms & Privacy Policy",
@@ -4642,7 +4642,7 @@
   "@issueActivatingApp": {
     "description": "Dialog description for activation error"
   },
-  "dataAccessNoticeDescription": "This app will access your data. Omi AI is not responsible for how your data is used, modified, or deleted by this app",
+  "dataAccessNoticeDescription": "This app will access your data. Lilly AI is not responsible for how your data is used, modified, or deleted by this app",
   "@dataAccessNoticeDescription": {
     "description": "Description for data access notice dialog"
   },
@@ -4774,16 +4774,16 @@
       }
     }
   },
-  "omiApiKeys": "Omi API Keys",
-  "@omiApiKeys": {
+  "lillyApiKeys": "Lilly API Keys",
+  "@lillyApiKeys": {
     "description": "Dialog title for API keys info"
   },
-  "apiKeysDescription": "API Keys are used for authentication when your app communicates with the OMI server. They allow your application to create memories and access other OMI services securely.",
+  "apiKeysDescription": "API Keys are used for authentication when your app communicates with the LILLY server. They allow your application to create memories and access other LILLY services securely.",
   "@apiKeysDescription": {
     "description": "Description of what API keys are used for"
   },
-  "aboutOmiApiKeys": "About Omi API Keys",
-  "@aboutOmiApiKeys": {
+  "aboutLillyApiKeys": "About Lilly API Keys",
+  "@aboutLillyApiKeys": {
     "description": "Tooltip for API keys info button"
   },
   "yourNewKey": "Your new key:",
@@ -4976,7 +4976,7 @@
   "@maximumSecurityE2ee": {
     "description": "Title for End-to-End Encryption dialog"
   },
-  "e2eeDescription": "End-to-end encryption is the gold standard for privacy. When enabled, your data is encrypted on your device before it's sent to our servers. This means no one, not even Omi, can access your content.",
+  "e2eeDescription": "End-to-end encryption is the gold standard for privacy. When enabled, your data is encrypted on your device before it's sent to our servers. This means no one, not even Lilly, can access your content.",
   "@e2eeDescription": {
     "description": "Description of E2EE encryption explaining its benefits"
   },
@@ -5032,7 +5032,7 @@
   "@secureEncryption": {
     "description": "Title for secure encryption card"
   },
-  "secureEncryptionDescription": "Your data is encrypted with a key unique to you on our servers, hosted on Google Cloud. This means your raw content is inaccessible to anyone, including Omi staff or Google, directly from the database.",
+  "secureEncryptionDescription": "Your data is encrypted with a key unique to you on our servers, hosted on Google Cloud. This means your raw content is inaccessible to anyone, including Lilly staff or Google, directly from the database.",
   "@secureEncryptionDescription": {
     "description": "Description of secure encryption explaining how data is protected"
   },
@@ -5129,24 +5129,24 @@
       }
     }
   },
-  "omiTraining": "Omi Training",
-  "@omiTraining": {
-    "description": "Title for the Omi Training page/section"
+  "lillyTraining": "Lilly Training",
+  "@lillyTraining": {
+    "description": "Title for the Lilly Training page/section"
   },
   "trainingDataProgram": "Training Data Program",
   "@trainingDataProgram": {
     "description": "Label for training data program"
   },
-  "getOmiUnlimitedFree": "Get Omi Unlimited for free by contributing your data to train AI models.",
-  "@getOmiUnlimitedFree": {
-    "description": "Description for getting Omi Unlimited free by contributing data"
+  "getLillyUnlimitedFree": "Get Lilly Unlimited for free by contributing your data to train AI models.",
+  "@getLillyUnlimitedFree": {
+    "description": "Description for getting Lilly Unlimited free by contributing data"
   },
   "trainingDataBullets": "• Your data helps improve AI models\n• Only non-sensitive data is shared\n• Fully transparent process",
   "@trainingDataBullets": {
     "description": "Bullet points explaining training data program benefits"
   },
-  "learnMoreAtOmiTraining": "Learn more at omi.me/training",
-  "@learnMoreAtOmiTraining": {
+  "learnMoreAtLillyTraining": "Learn more at lilly.me/training",
+  "@learnMoreAtLillyTraining": {
     "description": "Link text to learn more about training"
   },
   "agreeToContributeData": "I understand and agree to contribute my data for AI training",
@@ -5251,8 +5251,8 @@
   "@youAreOnUnlimitedPlan": {
     "description": "Message showing user is on unlimited plan"
   },
-  "yourOmiUnleashed": "Your Omi, unleashed. Go unlimited for endless possibilities.",
-  "@yourOmiUnleashed": {
+  "yourLillyUnleashed": "Your Lilly, unleashed. Go unlimited for endless possibilities.",
+  "@yourLillyUnleashed": {
     "description": "Marketing text for unlimited plan"
   },
   "planEndedOn": "Your plan ended on {date}.\\nResubscribe now - you'll be charged immediately for a new billing period.",
@@ -5293,12 +5293,12 @@
   "@unlimitedConversations": {
     "description": "Feature: unlimited conversations"
   },
-  "askOmiAnything": "Ask Omi anything about your life",
-  "@askOmiAnything": {
-    "description": "Feature: ask Omi anything"
+  "askLillyAnything": "Ask Lilly anything about your life",
+  "@askLillyAnything": {
+    "description": "Feature: ask Lilly anything"
   },
-  "unlockOmiInfiniteMemory": "Unlock Omi's infinite memory",
-  "@unlockOmiInfiniteMemory": {
+  "unlockLillyInfiniteMemory": "Unlock Lilly's infinite memory",
+  "@unlockLillyInfiniteMemory": {
     "description": "Feature: unlock infinite memory"
   },
   "youreOnAnnualPlan": "You're on the Annual Plan",
@@ -5369,7 +5369,7 @@
   "@yourPrivacyMattersToUs": {
     "description": "Privacy page - yourPrivacyMattersToUs"
   },
-  "privacyIntroText": "At Omi, we take your privacy very seriously. We want to be transparent about the data we collect and how we use it to improve our product for you. Here's what you need to know:",
+  "privacyIntroText": "At Lilly, we take your privacy very seriously. We want to be transparent about the data we collect and how we use it to improve our product for you. Here's what you need to know:",
   "@privacyIntroText": {
     "description": "Privacy page - privacyIntroText"
   },
@@ -5389,11 +5389,11 @@
   "@ourCommitment": {
     "description": "Privacy page - ourCommitment"
   },
-  "commitmentText": "We are committed to using the data we collect only to make Omi a better product for you. Your privacy and trust are paramount to us.",
+  "commitmentText": "We are committed to using the data we collect only to make Lilly a better product for you. Your privacy and trust are paramount to us.",
   "@commitmentText": {
     "description": "Privacy page - commitmentText"
   },
-  "thankYouText": "Thank you for being a valued user of Omi. If you have any questions or concerns, feel free to reach out to us to team@basedhardware.com.",
+  "thankYouText": "Thank you for being a valued user of Lilly. If you have any questions or concerns, feel free to reach out to us to team@basedhardware.com.",
   "@thankYouText": {
     "description": "Privacy page - thankYouText"
   },
@@ -5554,8 +5554,8 @@
   "@minutes": {
     "description": "Unit label for minutes"
   },
-  "omiHas": "Omi has:",
-  "@omiHas": {
+  "lillyHas": "Lilly has:",
+  "@lillyHas": {
     "description": "Fallback text for share stats when period is unknown"
   },
   "premiumMinutesUsed": "Premium minutes used.",
@@ -5687,7 +5687,7 @@
   "@howItWorksTitle": {
     "description": "Help dialog title"
   },
-  "howPeopleWorks": "Once a person is created, you can go to a conversation transcript, and assign them their corresponding segments, that way Omi will be able to recognize their speech too!",
+  "howPeopleWorks": "Once a person is created, you can go to a conversation transcript, and assign them their corresponding segments, that way Lilly will be able to recognize their speech too!",
   "@howPeopleWorks": {
     "description": "Explanation of how people/speech recognition works"
   },
@@ -6048,9 +6048,9 @@
   "@enableApps": {
     "description": "Menu item text to navigate to apps page and enable more chat apps"
   },
-  "omiAppName": "Omi",
-  "@omiAppName": {
-    "description": "The Omi app/assistant name shown in chat app selection"
+  "lillyAppName": "Lilly",
+  "@lillyAppName": {
+    "description": "The Lilly app/assistant name shown in chat app selection"
   },
   "showMore": "show more ↓",
   "@showMore": {
@@ -6080,21 +6080,21 @@
   "@checkingAppleWatch": {
     "description": "Loading text while checking Apple Watch status"
   },
-  "installOmiOnAppleWatch": "Install Omi on your\nApple Watch",
-  "@installOmiOnAppleWatch": {
-    "description": "Title prompting user to install Omi on Apple Watch"
+  "installLillyOnAppleWatch": "Install Lilly on your\nApple Watch",
+  "@installLillyOnAppleWatch": {
+    "description": "Title prompting user to install Lilly on Apple Watch"
   },
-  "installOmiOnAppleWatchDescription": "To use your Apple Watch with Omi, you need to install the Omi app on your watch first.",
-  "@installOmiOnAppleWatchDescription": {
-    "description": "Description explaining need to install Omi app on watch"
+  "installLillyOnAppleWatchDescription": "To use your Apple Watch with Lilly, you need to install the Lilly app on your watch first.",
+  "@installLillyOnAppleWatchDescription": {
+    "description": "Description explaining need to install Lilly app on watch"
   },
-  "openOmiOnAppleWatch": "Open Omi on your\nApple Watch",
-  "@openOmiOnAppleWatch": {
-    "description": "Title prompting user to open Omi on Apple Watch"
+  "openLillyOnAppleWatch": "Open Lilly on your\nApple Watch",
+  "@openLillyOnAppleWatch": {
+    "description": "Title prompting user to open Lilly on Apple Watch"
   },
-  "openOmiOnAppleWatchDescription": "The Omi app is installed on your Apple Watch. Open it and tap Start to begin.",
-  "@openOmiOnAppleWatchDescription": {
-    "description": "Description explaining Omi is installed and user should open it"
+  "openLillyOnAppleWatchDescription": "The Lilly app is installed on your Apple Watch. Open it and tap Start to begin.",
+  "@openLillyOnAppleWatchDescription": {
+    "description": "Description explaining Lilly is installed and user should open it"
   },
   "openWatchApp": "Open Watch App",
   "@openWatchApp": {
@@ -6104,7 +6104,7 @@
   "@iveInstalledAndOpenedTheApp": {
     "description": "Button text confirming user has installed and opened the app"
   },
-  "unableToOpenWatchApp": "Unable to open Apple Watch app. Please manually open the Watch app on your Apple Watch and install Omi from the \"Available Apps\" section.",
+  "unableToOpenWatchApp": "Unable to open Apple Watch app. Please manually open the Watch app on your Apple Watch and install Lilly from the \"Available Apps\" section.",
   "@unableToOpenWatchApp": {
     "description": "Error message when Watch app cannot be opened automatically"
   },
@@ -6112,7 +6112,7 @@
   "@appleWatchConnectedSuccessfully": {
     "description": "Success message when Apple Watch connects"
   },
-  "appleWatchNotReachable": "Apple Watch still not reachable. Please make sure the Omi app is open on your watch.",
+  "appleWatchNotReachable": "Apple Watch still not reachable. Please make sure the Lilly app is open on your watch.",
   "@appleWatchNotReachable": {
     "description": "Error message when Apple Watch is not reachable"
   },
@@ -6230,9 +6230,9 @@
   "@noSummary": {
     "description": "Message when no summary is available"
   },
-  "updateOmiFirmware": "Update omi firmware",
-  "@updateOmiFirmware": {
-    "description": "Button text to update Omi device firmware"
+  "updateLillyFirmware": "Update lilly firmware",
+  "@updateLillyFirmware": {
+    "description": "Button text to update Lilly device firmware"
   },
   "anErrorOccurredTryAgain": "An error occurred. Please try again.",
   "@anErrorOccurredTryAgain": {
@@ -6242,7 +6242,7 @@
   "@welcomeBackSimple": {
     "description": "Simple welcome message without user name"
   },
-  "addVocabularyDescription": "Add words that Omi should recognize during transcription.",
+  "addVocabularyDescription": "Add words that Lilly should recognize during transcription.",
   "@addVocabularyDescription": {
     "description": "Description for custom vocabulary section"
   },
@@ -6475,15 +6475,15 @@
   "@wrappedNoDataAvailable": {
     "description": "Shown when wrapped result is null"
   },
-  "wrappedOmiLifeRecap": "Omi Life Recap",
-  "@wrappedOmiLifeRecap": {
+  "wrappedLillyLifeRecap": "Lilly Life Recap",
+  "@wrappedLillyLifeRecap": {
     "description": "Subtitle on the intro card"
   },
   "wrappedSwipeUpToBegin": "Swipe up to begin",
   "@wrappedSwipeUpToBegin": {
     "description": "Instruction text on intro card"
   },
-  "wrappedShareText": "My 2025, remembered by Omi ✨ omi.me/wrapped",
+  "wrappedShareText": "My 2025, remembered by Lilly ✨ lilly.me/wrapped",
   "@wrappedShareText": {
     "description": "Text shared when sharing wrapped images"
   },
@@ -6511,8 +6511,8 @@
   "@wrappedMy2025": {
     "description": "Title text for shareable image"
   },
-  "wrappedRememberedByOmi": "remembered by Omi",
-  "@wrappedRememberedByOmi": {
+  "wrappedRememberedByLilly": "remembered by Lilly",
+  "@wrappedRememberedByLilly": {
     "description": "Subtitle text for shareable image"
   },
   "wrappedMostFunDay": "Most Fun",
@@ -6795,7 +6795,7 @@
   "@notificationFrequency": {
     "description": "Section header for notification frequency settings"
   },
-  "controlNotificationFrequency": "Control how often Omi sends you proactive notifications.",
+  "controlNotificationFrequency": "Control how often Lilly sends you proactive notifications.",
   "@controlNotificationFrequency": {
     "description": "Description for notification frequency control"
   },
@@ -6827,7 +6827,7 @@
   "@dailyScoreExplanation": {
     "description": "Explanation of how daily score is calculated"
   },
-  "notificationFrequencyDescription": "Control how often Omi sends you proactive notifications and reminders.",
+  "notificationFrequencyDescription": "Control how often Lilly sends you proactive notifications and reminders.",
   "@notificationFrequencyDescription": {
     "description": "Description text for notification frequency section"
   },
@@ -7157,8 +7157,8 @@
   "@noRecordings": {
     "description": "Empty state title when there are no recordings"
   },
-  "audioFromOmiWillAppearHere": "Audio from your Omi device will appear here",
-  "@audioFromOmiWillAppearHere": {
+  "audioFromLillyWillAppearHere": "Audio from your Lilly device will appear here",
+  "@audioFromLillyWillAppearHere": {
     "description": "Empty state description for recordings"
   },
   "deleteProcessed": "Delete Processed",
@@ -7337,8 +7337,8 @@
   "@batteryUsageHigher": {
     "description": "Warning about battery usage"
   },
-  "considerOmiCloud": "Consider using Omi Cloud for better performance.",
-  "@considerOmiCloud": {
+  "considerLillyCloud": "Consider using Lilly Cloud for better performance.",
+  "@considerLillyCloud": {
     "description": "Suggestion to use cloud transcription"
   },
   "highResourceUsage": "High Resource Usage",
@@ -7564,9 +7564,9 @@
       }
     }
   },
-  "omiTranscriptionOptimized": "Omis built-in live transcription is optimized for real-time conversations with automatic speaker detection and diarization.",
-  "@omiTranscriptionOptimized": {
-    "description": "Description of Omi transcription features"
+  "lillyTranscriptionOptimized": "Lillys built-in live transcription is optimized for real-time conversations with automatic speaker detection and diarization.",
+  "@lillyTranscriptionOptimized": {
+    "description": "Description of Lilly transcription features"
   },
   "reset": "Reset",
   "@reset": {
@@ -7686,7 +7686,7 @@
   "@writeReviewOptional": {
     "description": "Hint text for review input field"
   },
-  "setupQuestionsIntro": "Help us improve Omi by answering a few questions.  🫶 💜",
+  "setupQuestionsIntro": "Help us improve Lilly by answering a few questions.  🫶 💜",
   "@setupQuestionsIntro": {
     "description": "Intro text for setup questions page"
   },
@@ -7694,9 +7694,9 @@
   "@setupQuestionProfession": {
     "description": "Question about profession"
   },
-  "setupQuestionUsage": "2. Where do you plan to use your Omi?",
+  "setupQuestionUsage": "2. Where do you plan to use your Lilly?",
   "@setupQuestionUsage": {
-    "description": "Question about Omi usage location"
+    "description": "Question about Lilly usage location"
   },
   "setupQuestionAge": "3. What's your age range?",
   "@setupQuestionAge": {
@@ -8171,7 +8171,7 @@
     "placeholders": {
       "deviceName": {
         "type": "String",
-        "example": "Omi"
+        "example": "Lilly"
       }
     }
   },
@@ -8181,7 +8181,7 @@
     "placeholders": {
       "deviceName": {
         "type": "String",
-        "example": "Omi"
+        "example": "Lilly"
       }
     }
   },
@@ -8191,7 +8191,7 @@
     "placeholders": {
       "deviceName": {
         "type": "String",
-        "example": "Omi"
+        "example": "Lilly"
       }
     }
   },
@@ -8345,7 +8345,7 @@
   "@enableFastTransfer": {
     "description": "Dialog title for enabling fast transfer"
   },
-  "fastTransferDescription": "Fast Transfer uses WiFi for ~5x faster speeds. Your phone will temporarily connect to your Omi device's WiFi network during transfer.",
+  "fastTransferDescription": "Fast Transfer uses WiFi for ~5x faster speeds. Your phone will temporarily connect to your Lilly device's WiFi network during transfer.",
   "@fastTransferDescription": {
     "description": "Description of fast transfer feature in dialog"
   },
@@ -8353,7 +8353,7 @@
   "@internetAccessPausedDuringTransfer": {
     "description": "Warning that internet is paused during transfer"
   },
-  "chooseTransferMethodDescription": "Choose how recordings are transferred from your Omi device to your phone.",
+  "chooseTransferMethodDescription": "Choose how recordings are transferred from your Lilly device to your phone.",
   "@chooseTransferMethodDescription": {
     "description": "Description text on transfer method page"
   },
@@ -8365,7 +8365,7 @@
   "@fiveTimesFaster": {
     "description": "Badge label for faster transfer method"
   },
-  "fastTransferMethodDescription": "Creates a direct WiFi connection to your Omi device. Your phone temporarily disconnects from your regular WiFi during transfer.",
+  "fastTransferMethodDescription": "Creates a direct WiFi connection to your Lilly device. Your phone temporarily disconnects from your regular WiFi during transfer.",
   "@fastTransferMethodDescription": {
     "description": "Description of fast transfer method card"
   },
@@ -8397,11 +8397,11 @@
   "@lowBatteryAlertBody": {
     "description": "Body text for low battery notification"
   },
-  "deviceDisconnectedNotificationTitle": "Your Omi Device Disconnected",
+  "deviceDisconnectedNotificationTitle": "Your Lilly Device Disconnected",
   "@deviceDisconnectedNotificationTitle": {
     "description": "Title for device disconnected notification"
   },
-  "deviceDisconnectedNotificationBody": "Please reconnect to continue using your Omi.",
+  "deviceDisconnectedNotificationBody": "Please reconnect to continue using your Lilly.",
   "@deviceDisconnectedNotificationBody": {
     "description": "Body text for device disconnected notification"
   },
@@ -8409,7 +8409,7 @@
   "@firmwareUpdateAvailable": {
     "description": "Title for firmware update available dialog"
   },
-  "firmwareUpdateAvailableDescription": "A new firmware update ({version}) is available for your Omi device. Would you like to update now?",
+  "firmwareUpdateAvailableDescription": "A new firmware update ({version}) is available for your Lilly device. Would you like to update now?",
   "@firmwareUpdateAvailableDescription": {
     "description": "Description for firmware update dialog with version parameter",
     "placeholders": {
@@ -8464,9 +8464,9 @@
   "@almostDone": {
     "description": "Migration is almost complete"
   },
-  "omiSays": "omi says",
-  "@omiSays": {
-    "description": "Notification title for omi app messages"
+  "lillySays": "lilly says",
+  "@lillySays": {
+    "description": "Notification title for lilly app messages"
   },
   "analyzingYourData": "Analyzing your data...",
   "@analyzingYourData": {
@@ -8803,9 +8803,9 @@
   "@nextButton": {
     "description": "Button text to proceed to next step"
   },
-  "connectOmiDevice": "Connect Omi Device",
-  "@connectOmiDevice": {
-    "description": "Button text to connect Omi device"
+  "connectLillyDevice": "Connect Lilly Device",
+  "@connectLillyDevice": {
+    "description": "Button text to connect Lilly device"
   },
   "planSwitchingDescriptionWithTitle": "You're switching your Unlimited Plan to the {title}. Are you sure you want to proceed?",
   "@planSwitchingDescriptionWithTitle": {
@@ -8844,9 +8844,9 @@
   "@transcriptionJsonPlaceholder": {
     "description": "JSON configuration placeholder hint text in transcription settings"
   },
-  "transcriptionSourceOmi": "Omi",
-  "@transcriptionSourceOmi": {
-    "description": "Tab title for Omi transcription source option"
+  "transcriptionSourceLilly": "Lilly",
+  "@transcriptionSourceLilly": {
+    "description": "Tab title for Lilly transcription source option"
   },
   "pricePlaceholder": "0.00",
   "@pricePlaceholder": {
@@ -8886,7 +8886,7 @@
       }
     }
   },
-  "actionItemReminderTitle": "Omi Reminder",
+  "actionItemReminderTitle": "Lilly Reminder",
   "@actionItemReminderTitle": {
     "description": "Title for action item reminder notifications"
   },
@@ -8896,7 +8896,7 @@
     "placeholders": {
       "deviceName": {
         "type": "String",
-        "example": "Omi"
+        "example": "Lilly"
       }
     }
   },
@@ -8906,7 +8906,7 @@
     "placeholders": {
       "deviceName": {
         "type": "String",
-        "example": "Omi"
+        "example": "Lilly"
       }
     }
   },
@@ -8930,8 +8930,8 @@
   "@onboardingComplete": {
     "description": "Onboarding step title for completion"
   },
-  "onboardingWelcomeToOmi": "Welcome to Omi",
-  "@onboardingWelcomeToOmi": {
+  "onboardingWelcomeToLilly": "Welcome to Lilly",
+  "@onboardingWelcomeToLilly": {
     "description": "Onboarding step description for sign in"
   },
   "onboardingTellUsAboutYourself": "Tell us about yourself",
@@ -9709,7 +9709,7 @@
   },
   "mcpConnectionFailed": "Failed to connect to MCP server",
   "authorizingMcpServer": "Authorizing...",
-  "whereDidYouHearAboutOmi": "How did you find us?",
+  "whereDidYouHearAboutLilly": "How did you find us?",
   "tiktok": "TikTok",
   "youtube": "YouTube",
   "instagram": "Instagram",
@@ -9730,29 +9730,29 @@
   "pairNewDevice": "Pair new device",
   "dontSeeYourDevice": "Don't see your device?",
   "reportAnIssue": "Report an issue",
-  "pairingTitleOmi": "Turn On Omi",
-  "@pairingTitleOmi": {
-    "description": "Pairing title for Omi device"
+  "pairingTitleLilly": "Turn On Lilly",
+  "@pairingTitleLilly": {
+    "description": "Pairing title for Lilly device"
   },
-  "pairingDescOmi": "Press and hold the device until it vibrates to turn it on.",
-  "@pairingDescOmi": {
-    "description": "Pairing description for Omi device"
+  "pairingDescLilly": "Press and hold the device until it vibrates to turn it on.",
+  "@pairingDescLilly": {
+    "description": "Pairing description for Lilly device"
   },
-  "pairingTitleOmiDevkit": "Put Omi DevKit in Pairing Mode",
-  "@pairingTitleOmiDevkit": {
-    "description": "Pairing title for Omi DevKit"
+  "pairingTitleLillyDevkit": "Put Lilly DevKit in Pairing Mode",
+  "@pairingTitleLillyDevkit": {
+    "description": "Pairing title for Lilly DevKit"
   },
-  "pairingDescOmiDevkit": "Press the button once to turn on. The LED will blink purple when in pairing mode.",
-  "@pairingDescOmiDevkit": {
-    "description": "Pairing description for Omi DevKit"
+  "pairingDescLillyDevkit": "Press the button once to turn on. The LED will blink purple when in pairing mode.",
+  "@pairingDescLillyDevkit": {
+    "description": "Pairing description for Lilly DevKit"
   },
-  "pairingTitleOmiGlass": "Turn On Omi Glass",
-  "@pairingTitleOmiGlass": {
-    "description": "Pairing title for Omi Glass"
+  "pairingTitleLillyGlass": "Turn On Lilly Glass",
+  "@pairingTitleLillyGlass": {
+    "description": "Pairing title for Lilly Glass"
   },
-  "pairingDescOmiGlass": "Power on by pressing the side button for 3 seconds.",
-  "@pairingDescOmiGlass": {
-    "description": "Pairing description for Omi Glass"
+  "pairingDescLillyGlass": "Power on by pressing the side button for 3 seconds.",
+  "@pairingDescLillyGlass": {
+    "description": "Pairing description for Lilly Glass"
   },
   "pairingTitlePlaudNote": "Put Plaud Note in Pairing Mode",
   "@pairingTitlePlaudNote": {
@@ -9798,7 +9798,7 @@
   "@pairingTitleAppleWatch": {
     "description": "Pairing title for Apple Watch"
   },
-  "pairingDescAppleWatch": "Install and open the Omi app on your Apple Watch, then tap Connect in the app.",
+  "pairingDescAppleWatch": "Install and open the Lilly app on your Apple Watch, then tap Connect in the app.",
   "@pairingDescAppleWatch": {
     "description": "Pairing description for Apple Watch"
   },
@@ -9892,7 +9892,7 @@
   "@onboardingWhatIKnowAboutYouTitle": {
     "description": "Title for onboarding step that previews the memory graph"
   },
-  "onboardingWhatIKnowAboutYouDescription": "This map updates as Omi learns from your conversations.",
+  "onboardingWhatIKnowAboutYouDescription": "This map updates as Lilly learns from your conversations.",
   "@onboardingWhatIKnowAboutYouDescription": {
     "description": "Description for onboarding memory graph preview step"
   },
@@ -9950,7 +9950,7 @@
     "description": "Confirmation dialog message for cleaning today task deadlines"
   },
   "tasksOverdue": "Overdue",
-  "phoneCallsWithOmi": "Phone Calls with Omi",
+  "phoneCallsWithLilly": "Phone Calls with Lilly",
   "phoneCallsSubtitle": "Make calls with real-time transcription",
   "phoneSetupStep1Title": "Verify your phone number",
   "phoneSetupStep1Subtitle": "We'll call you to confirm it's yours",
@@ -10055,11 +10055,11 @@
   "@showTasksOnHomepage": {
     "description": "Description for show tasks toggle in developer settings"
   },
-  "phoneCallsUnlimitedOnly": "Phone Calls via Omi",
+  "phoneCallsUnlimitedOnly": "Phone Calls via Lilly",
   "@phoneCallsUnlimitedOnly": {
     "description": "Title for the phone calls upsell sheet shown to non-unlimited users"
   },
-  "phoneCallsUpsellSubtitle": "Make calls through Omi and get real-time transcription, automatic summaries, and more. Available exclusively for Unlimited plan subscribers.",
+  "phoneCallsUpsellSubtitle": "Make calls through Lilly and get real-time transcription, automatic summaries, and more. Available exclusively for Unlimited plan subscribers.",
   "@phoneCallsUpsellSubtitle": {
     "description": "Subtitle explaining phone calls feature on upsell sheet"
   },
@@ -10180,7 +10180,7 @@
   "fairUse3Day": "3-Day Rolling",
   "fairUseWeekly": "Weekly Rolling",
   "fairUseAboutTitle": "About Fair Use",
-  "fairUseAboutBody": "Omi is designed for personal conversations, meetings, and live interactions. Usage is measured by real speech time detected, not connection time. If usage significantly exceeds normal patterns for non-personal content, adjustments may apply.",
+  "fairUseAboutBody": "Lilly is designed for personal conversations, meetings, and live interactions. Usage is measured by real speech time detected, not connection time. If usage significantly exceeds normal patterns for non-personal content, adjustments may apply.",
   "fairUseCaseRefCopied": "{caseRef} copied",
   "@fairUseCaseRefCopied": {
     "description": "Snackbar message when case reference is copied to clipboard",
@@ -10222,7 +10222,7 @@
     }
   },
   "improveConnectionTitle": "Improve Connection",
-  "improveConnectionContent": "We've improved how Omi stays connected to your device. To activate this, please go to the Device Info page, tap \"Disconnect Device\", and then pair your device again.",
+  "improveConnectionContent": "We've improved how Lilly stays connected to your device. To activate this, please go to the Device Info page, tap \"Disconnect Device\", and then pair your device again.",
   "improveConnectionAction": "Got it",
   "clockSkewWarning": "Your device clock is off by ~{minutes} min. Check your date & time settings.",
   "@clockSkewWarning": {
@@ -10232,8 +10232,8 @@
       }
     }
   },
-  "omisStorage": "Omi's Storage",
-  "@omisStorage": {
+  "lillysStorage": "Lilly's Storage",
+  "@lillysStorage": {
     "description": "Label for device storage tier in sync pipeline"
   },
   "phoneStorage": "Phone Storage",
@@ -10285,11 +10285,11 @@
   "@cancelSyncQuestion": {
     "description": "Title for cancel sync confirmation dialog"
   },
-  "omisStorageDesc": "When your Omi is not connected to your phone, it stores audio locally on its built-in memory. You never lose a recording.",
-  "@omisStorageDesc": {
+  "lillysStorageDesc": "When your Lilly is not connected to your phone, it stores audio locally on its built-in memory. You never lose a recording.",
+  "@lillysStorageDesc": {
     "description": "Description of device storage in sync info sheet"
   },
-  "phoneStorageDesc": "When Omi reconnects, recordings are automatically transferred to your phone as a temporary holding area before uploading.",
+  "phoneStorageDesc": "When Lilly reconnects, recordings are automatically transferred to your phone as a temporary holding area before uploading.",
   "@phoneStorageDesc": {
     "description": "Description of phone storage in sync info sheet"
   },
@@ -10325,11 +10325,11 @@
   "@permissionEnable": {
     "description": "Action text to enable a permission"
   },
-  "permissionsPageDescription": "These permissions are core to how Omi works. They enable key features like notifications, location-based experiences, and audio capture.",
+  "permissionsPageDescription": "These permissions are core to how Lilly works. They enable key features like notifications, location-based experiences, and audio capture.",
   "@permissionsPageDescription": {
     "description": "Description text shown at the bottom of the permissions page"
   },
-  "permissionsRequiredDescription": "Omi needs a few permissions to work properly. Please grant them to continue.",
+  "permissionsRequiredDescription": "Lilly needs a few permissions to work properly. Please grant them to continue.",
   "@permissionsRequiredDescription": {
     "description": "Description for the permissions interstitial screen"
   },
@@ -10337,7 +10337,7 @@
   "@permissionsSetupTitle": {
     "description": "Title for the permissions interstitial screen"
   },
-  "permissionsSetupDescription": "Enable a few permissions so Omi can work its magic.",
+  "permissionsSetupDescription": "Enable a few permissions so Lilly can work its magic.",
   "@permissionsSetupDescription": {
     "description": "Subtitle for the permissions interstitial screen"
   },
@@ -10466,7 +10466,7 @@
   "@feedbackTitleFoundAlternative": {
     "description": "Feedback title when cancel reason is found alternative"
   },
-  "feedbackTitleNotUsing": "What would make you use Omi more?",
+  "feedbackTitleNotUsing": "What would make you use Lilly more?",
   "@feedbackTitleNotUsing": {
     "description": "Feedback title when cancel reason is not using enough"
   },
@@ -10490,7 +10490,7 @@
   "@feedbackSubtitleFoundAlternative": {
     "description": "Feedback subtitle for found alternative"
   },
-  "feedbackSubtitleNotUsing": "We want to make Omi more useful for you.",
+  "feedbackSubtitleNotUsing": "We want to make Lilly more useful for you.",
   "@feedbackSubtitleNotUsing": {
     "description": "Feedback subtitle for not using enough"
   },
@@ -10618,23 +10618,23 @@
     }
   },
   "tasksMarkComplete": "Marked as complete",
-  "appleHealthManageNote": "Omi accesses Apple Health through Apple's HealthKit framework. You can revoke access anytime in iOS Settings.",
+  "appleHealthManageNote": "Lilly accesses Apple Health through Apple's HealthKit framework. You can revoke access anytime in iOS Settings.",
   "appleHealthConnectCta": "Connect to Apple Health",
   "appleHealthDisconnectCta": "Disconnect Apple Health",
   "appleHealthConnectedBadge": "Connected",
   "appleHealthFeatureChatTitle": "Chat about your health",
-  "appleHealthFeatureChatDesc": "Ask Omi about your steps, sleep, heart rate, and workouts.",
+  "appleHealthFeatureChatDesc": "Ask Lilly about your steps, sleep, heart rate, and workouts.",
   "appleHealthFeatureReadOnlyTitle": "Read-only access",
-  "appleHealthFeatureReadOnlyDesc": "Omi never writes to Apple Health or modifies your data.",
+  "appleHealthFeatureReadOnlyDesc": "Lilly never writes to Apple Health or modifies your data.",
   "appleHealthFeatureSecureTitle": "Secure sync",
-  "appleHealthFeatureSecureDesc": "Your Apple Health data syncs privately to your Omi account.",
+  "appleHealthFeatureSecureDesc": "Your Apple Health data syncs privately to your Lilly account.",
   "appleHealthDeniedTitle": "Apple Health access denied",
-  "appleHealthDeniedBody": "Omi doesn't have permission to read your Apple Health data. Enable it in iOS Settings → Privacy & Security → Health → Omi.",
+  "appleHealthDeniedBody": "Lilly doesn't have permission to read your Apple Health data. Enable it in iOS Settings → Privacy & Security → Health → Lilly.",
   "deleteFlowReasonTitle": "Why are you leaving?",
   "@deleteFlowReasonTitle": {
     "description": "Title on delete-account flow reason step"
   },
-  "deleteFlowReasonSubtitle": "Your feedback helps us improve Omi for everyone.",
+  "deleteFlowReasonSubtitle": "Your feedback helps us improve Lilly for everyone.",
   "@deleteFlowReasonSubtitle": {
     "description": "Subtitle on delete-account flow reason step"
   },
@@ -10670,7 +10670,7 @@
   "@deleteFlowFeedbackTitle": {
     "description": "Title on delete-account flow feedback step"
   },
-  "deleteFlowFeedbackSubtitle": "What would have made Omi work for you?",
+  "deleteFlowFeedbackSubtitle": "What would have made Lilly work for you?",
   "@deleteFlowFeedbackSubtitle": {
     "description": "Subtitle on delete-account flow feedback step"
   },
@@ -10860,12 +10860,12 @@
       }
     }
   },
-  "chatQuotaSubtitle": "AI chat messages used with Omi this month.",
-  "chatQuotaExceededReply": "You've hit your monthly limit. Upgrade to keep chatting with Omi without restrictions.",
+  "chatQuotaSubtitle": "AI chat messages used with Lilly this month.",
+  "chatQuotaExceededReply": "You've hit your monthly limit. Upgrade to keep chatting with Lilly without restrictions.",
   "@chatQuotaExceededReply": {
     "description": "AI reply message shown when user exceeds chat quota"
   },
-  "voiceResponseAudio": "Speak Omi responses aloud",
+  "voiceResponseAudio": "Speak Lilly responses aloud",
   "@voiceResponseAudio": {
     "description": "Voice response audio feature title"
   },

@@ -1,7 +1,16 @@
 import 'env.dart';
 
+const _localLillyApiBaseUrl = String.fromEnvironment(
+  'API_BASE_URL',
+  defaultValue: 'http://100.83.194.65:8010/',
+);
+
+const _localLillyStagingApiUrl = String.fromEnvironment(
+  'STAGING_API_URL',
+  defaultValue: _localLillyApiBaseUrl,
+);
+
 // Stubbed envied — Firebase and envied codegen were stripped from this fork.
-// All values are null so the app compiles without the generated .g.dart file.
 final class DevEnv implements EnvFields {
   DevEnv();
 
@@ -10,7 +19,7 @@ final class DevEnv implements EnvFields {
   @override
   String? get mixpanelProjectToken => null;
   @override
-  String? get apiBaseUrl => null;
+  String? get apiBaseUrl => _localLillyApiBaseUrl;
   @override
   String? get growthbookApiKey => null;
   @override
@@ -30,5 +39,5 @@ final class DevEnv implements EnvFields {
   @override
   bool? get useAuthCustomToken => false;
   @override
-  String? get stagingApiUrl => null;
+  String? get stagingApiUrl => _localLillyStagingApiUrl;
 }

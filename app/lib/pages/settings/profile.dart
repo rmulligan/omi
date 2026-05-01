@@ -333,14 +333,7 @@ class _ProfilePageState extends State<ProfilePage> {
             // PAYMENT & PRIVACY SECTION
             _buildSectionContainer(
               children: [
-                _buildProfileItem(
-                  title: context.l10n.paymentMethods,
-                  icon: const FaIcon(FontAwesomeIcons.solidCreditCard, color: Color(0xFF8E8E93), size: 20),
-                  onTap: () {
-                    routeToPage(context, const PaymentsPage());
-                  },
-                ),
-                const Divider(height: 1, color: Color(0xFF3C3C43)),
+                
                 _buildProfileItem(
                   title: context.l10n.conversationDisplay,
                   icon: const FaIcon(FontAwesomeIcons.list, color: Color(0xFF8E8E93), size: 20),

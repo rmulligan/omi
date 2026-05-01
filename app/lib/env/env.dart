@@ -21,11 +21,11 @@ abstract class Env {
   static String? get mixpanelProjectToken => _instance.mixpanelProjectToken;
 
   // static String? get apiBaseUrl => 'https://omi-backend.ngrok.app/';
-  static String? get apiBaseUrl => _apiBaseUrlOverride ?? _instance.apiBaseUrl;
+  static String? get apiBaseUrl => _withTrailingSlash(_apiBaseUrlOverride ?? _instance.apiBaseUrl);
 
   /// Staging API URL from STAGING_API_URL env var. Null when not configured.
   static String? get stagingApiUrl {
-    final url = _instance.stagingApiUrl;
+    final url = _withTrailingSlash(_instance.stagingApiUrl);
     if (url == null || url.isEmpty) return null;
     return url;
   }
@@ -48,14 +48,22 @@ abstract class Env {
     return s;
   }
 
+  static String? _withTrailingSlash(String? url) {
+    final trimmed = url?.trim();
+    if (trimmed == null || trimmed.isEmpty) return null;
+    return trimmed.endsWith('/') ? trimmed : '$trimmed/';
+  }
+
   /// WebSocket URL for the agent proxy service.
   /// Derives from apiBaseUrl: api.omi.me → agent.omi.me, api.omiapi.com → agent.omiapi.com.
   /// Can be overridden via Env.overrideAgentProxyWsUrl() for local testing.
   static String get agentProxyWsUrl {
     if (_agentProxyWsUrlOverride != null) return _agentProxyWsUrlOverride!;
     final base = apiBaseUrl ?? 'https://api.omi.me';
-    final host = Uri.parse(base).host.replaceFirst('api.', 'agent.');
-    return 'wss://$host/v1/agent/ws';
+    final uri = Uri.parse(base);
+    final host = uri.host.replaceFirst('api.', 'agent.');
+    final authority = uri.hasPort ? '$host:${uri.port}' : host;
+    return 'wss://$authority/v1/agent/ws';
   }
 
   static String? get growthbookApiKey => _instance.growthbookApiKey;

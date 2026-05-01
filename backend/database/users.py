@@ -145,8 +145,23 @@ def get_user_profile(uid: str) -> dict:
     user_ref = db.collection('users').document(uid)
     user_doc = user_ref.get()
     if user_doc.exists:
-        return user_doc.to_dict()
-    return {}
+        profile = user_doc.to_dict() or {}
+    else:
+        profile = {}
+    if not profile:
+        profile = {
+            'uid': uid,
+            'name': f'User {uid}',
+            'language': 'en',
+            'data_protection_level': 'standard',
+            'created_at': datetime.now(timezone.utc),
+        }
+        user_ref.set(profile, merge=True)
+    else:
+        profile.setdefault('uid', uid)
+        profile.setdefault('language', 'en')
+        profile.setdefault('data_protection_level', 'standard')
+    return profile
 
 
 def get_user_store_recording_permission(uid: str):

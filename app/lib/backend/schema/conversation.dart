@@ -1,3 +1,4 @@
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'dart:convert';
 import 'dart:math';
 
@@ -43,6 +44,17 @@ enum ConversationSource {
   phone,
   desktop,
   limitless,
+  matrix,
+  email,
+  photo_share,
+  watchdog_error,
+  lilly_activity,
+  sent_message,
+  linkedin,
+  zotero,
+  research,
+  skill_event,
+  google_drive,
 }
 
 class ConversationExternalData {
@@ -523,5 +535,68 @@ class SyncedConversationPointer {
       key: key ?? this.key,
       conversation: conversation ?? this.conversation,
     );
+  }
+}
+
+extension ConversationSourceExtension on ConversationSource {
+  IconData getIcon() {
+    switch (this) {
+      case ConversationSource.matrix:
+        return FontAwesomeIcons.matrixOrg;
+      case ConversationSource.email:
+        return FontAwesomeIcons.solidEnvelope;
+      case ConversationSource.photo_share:
+        return FontAwesomeIcons.image;
+      case ConversationSource.watchdog_error:
+        return FontAwesomeIcons.triangleExclamation;
+      case ConversationSource.lilly_activity:
+        return FontAwesomeIcons.robot;
+      case ConversationSource.sent_message:
+        return FontAwesomeIcons.paperPlane;
+      case ConversationSource.linkedin:
+        return FontAwesomeIcons.linkedin;
+      case ConversationSource.zotero:
+        return FontAwesomeIcons.bookOpen;
+      case ConversationSource.research:
+        return FontAwesomeIcons.microscope;
+      case ConversationSource.skill_event:
+        return FontAwesomeIcons.bolt;
+      case ConversationSource.google_drive:
+        return FontAwesomeIcons.noteSticky;
+      case ConversationSource.screenpipe:
+        return FontAwesomeIcons.desktop;
+      case ConversationSource.phone:
+      case ConversationSource.phone_call:
+        return FontAwesomeIcons.phone;
+      default:
+        return FontAwesomeIcons.microphone;
+    }
+  }
+
+  Color getColor() {
+    switch (this) {
+      case ConversationSource.matrix:
+        return const Color(0xFF00FF00);
+      case ConversationSource.email:
+        return Colors.blue;
+      case ConversationSource.photo_share:
+        return Colors.orange;
+      case ConversationSource.watchdog_error:
+        return Colors.red;
+      case ConversationSource.lilly_activity:
+        return Colors.purple;
+      case ConversationSource.sent_message:
+        return Colors.greenAccent;
+      case ConversationSource.linkedin:
+        return const Color(0xFF0077B5);
+      case ConversationSource.zotero:
+        return const Color(0xFFCC2936);
+      case ConversationSource.research:
+        return Colors.teal;
+      case ConversationSource.skill_event:
+        return Colors.amber;
+      default:
+        return Colors.deepPurple;
+    }
   }
 }

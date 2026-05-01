@@ -293,7 +293,13 @@ Future<bool> getHasConversationSummaryRating(String conversationId) async {
 
 // User language preference API calls
 Future<String?> getUserPrimaryLanguage() async {
-  var response = await makeApiCall(url: '${Env.apiBaseUrl}v1/users/language', headers: {}, method: 'GET', body: '');
+  var response = await makeApiCall(
+    url: '${Env.apiBaseUrl}v1/users/language',
+    headers: {},
+    method: 'GET',
+    body: '',
+    signOutOn401: false,
+  );
   if (response == null) return null;
   Logger.debug('getUserPrimaryLanguage response: ${response.body}');
 
@@ -316,10 +322,12 @@ Future<bool> setUserPrimaryLanguage(String languageCode) async {
     headers: {},
     method: 'PATCH',
     body: jsonEncode({'language': languageCode}),
+    timeout: const Duration(seconds: 10),
+    signOutOn401: false,
   );
   if (response == null) return false;
-  Logger.debug('setUserPrimaryLanguage response: ${response.body}');
-  return response.statusCode == 200;
+  Logger.debug('setUserPrimaryLanguage response (${response.statusCode}): ${response.body}');
+  return response.statusCode >= 200 && response.statusCode < 300;
 }
 
 Future<bool> setPreferredSummarizationAppServer(String appId) async {

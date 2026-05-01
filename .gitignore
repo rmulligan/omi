@@ -105,6 +105,7 @@ web/app/public/firebase-messaging-sw.js
 !mcp/uv.lock
 *.lock
 *.log
+backend/local_omi.db*
 *.swo
 *.swp
 *.tmp
