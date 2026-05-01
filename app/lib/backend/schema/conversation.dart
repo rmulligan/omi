@@ -54,6 +54,7 @@ enum ConversationSource {
   zotero,
   research,
   skill_event,
+  google_drive,
 }
 
 class ConversationExternalData {
@@ -560,6 +561,8 @@ extension ConversationSourceExtension on ConversationSource {
         return FontAwesomeIcons.microscope;
       case ConversationSource.skill_event:
         return FontAwesomeIcons.bolt;
+      case ConversationSource.google_drive:
+        return FontAwesomeIcons.noteSticky;
       case ConversationSource.screenpipe:
         return FontAwesomeIcons.desktop;
       case ConversationSource.phone:

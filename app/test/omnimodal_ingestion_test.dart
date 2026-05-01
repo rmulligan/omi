@@ -90,5 +90,26 @@ void main() {
       );
       expect(response.statusCode, 200);
     });
+
+    test('7. Ingest Google Drive Handwritten Note', () async {
+      final response = await http.post(
+        Uri.parse('$baseUrl/lilly/ingest'),
+        headers: authHeaders,
+        body: jsonEncode({
+          'source': 'google_drive',
+          'category': 'other',
+          'text': 'Handwritten note captured from Google Drive. Content: "Buy more sensors for the lab, check voltage on battery array B, and call Sarah about the silicon shipment."',
+          'title': 'Google Drive: Handwritten Note',
+          'metadata': {
+            'file_id': 'drive_file_123',
+            'mime_type': 'image/jpeg',
+          }
+        }),
+      );
+
+      expect(response.statusCode, 200);
+      final data = jsonDecode(response.body);
+      expect(data['conversation']['source'], 'google_drive');
+    });
   });
 }

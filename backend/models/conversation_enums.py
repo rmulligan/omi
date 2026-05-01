@@ -72,6 +72,7 @@ class ConversationSource(str, Enum):
     zotero = 'zotero'
     research = 'research'
     skill_event = 'skill_event'
+    google_drive = 'google_drive'
     unknown = 'unknown'
 
     @classmethod
