@@ -711,7 +711,7 @@
   "@deviceNotConnected": {
     "description": "Device not connected header"
   },
-  "connectDeviceMessage": "Connect your Lilly device to access\ndevice settings and custlillyzation",
+  "connectDeviceMessage": "Connect your Lilly device to access\ndevice settings and customization",
   "@connectDeviceMessage": {
     "description": "Message encouraging user to connect device"
   },
@@ -719,9 +719,9 @@
   "@deviceInfoSection": {
     "description": "Device information section header"
   },
-  "custlillyzationSection": "Custlillyzation",
-  "@custlillyzationSection": {
-    "description": "Custlillyzation section header"
+  "customizationSection": "Customization",
+  "@customizationSection": {
+    "description": "Customization section header"
   },
   "hardwareSection": "Hardware",
   "@hardwareSection": {
@@ -1192,7 +1192,7 @@
   "addWordsDesc": "Names, terms, or uncommon words",
   "vocabularyHint": "Lilly, Callie, OpenAI",
   "connect": "Connect",
-  "clillyngSoon": "Clillyng Soon",
+  "comingSoon": "Coming Soon",
   "integrationsFooter": "Connect your apps to view data and metrics in chat.",
   "completeAuthInBrowser": "Please complete authentication in your browser. Once done, return to the app.",
   "failedToStartAuth": "Failed to start {appName} authentication",
@@ -1283,16 +1283,16 @@
   "connectMacOsCalendar": "Connect your local macOS calendar",
   "googleCalendar": "Google Calendar",
   "syncGoogleAccount": "Sync with your Google account",
-  "showMeetingsMenuBar": "Show upclillyng meetings in menu bar",
+  "showMeetingsMenuBar": "Show upcoming meetings in menu bar",
   "showMeetingsMenuBarDesc": "Display your next meeting and time until it starts in the macOS menu bar",
   "showEventsNoParticipants": "Show events with no participants",
-  "showEventsNoParticipantsDesc": "When enabled, Clillyng Up shows events without participants or a video link.",
+  "showEventsNoParticipantsDesc": "When enabled, Coming Up shows events without participants or a video link.",
   "yourMeetings": "Your Meetings",
   "refresh": "Refresh",
-  "noUpclillyngMeetings": "No upclillyng meetings",
+  "noUpcomingMeetings": "No upcoming meetings",
   "checkingNextDays": "Checking next 30 days",
   "tomorrow": "Tomorrow",
-  "googleCalendarClillyngSoon": "Google Calendar integration clillyng soon!",
+  "googleCalendarComingSoon": "Google Calendar integration coming soon!",
   "connectedAsUser": "Connected as user: {userId}",
   "@connectedAsUser": {
     "placeholders": {
@@ -1474,8 +1474,8 @@
       }
     }
   },
-  "integrationClillyngSoon": "Integration with {appName} is clillyng soon! We're working hard to bring you more task management options.",
-  "@integrationClillyngSoon": {
+  "integrationComingSoon": "Integration with {appName} is coming soon! We're working hard to bring you more task management options.",
+  "@integrationComingSoon": {
     "placeholders": {
       "appName": {
         "type": "String"
@@ -4395,10 +4395,10 @@
   },
   "displayOptions": "Display Options",
   "showMeetingsInMenuBar": "Show Meetings in Menu Bar",
-  "displayUpclillyngMeetingsDescription": "Display upclillyng meetings in the menu bar",
+  "displayUpcomingMeetingsDescription": "Display upcoming meetings in the menu bar",
   "showEventsWithoutParticipants": "Show Events Without Participants",
   "includePersonalEventsDescription": "Include personal events with no attendees",
-  "upclillyngMeetings": "Upclillyng Meetings",
+  "upcomingMeetings": "Upcoming Meetings",
   "checkingNext7Days": "Checking the next 7 days",
   "shortcuts": "Shortcuts",
   "shortcutChangeInstruction": "Click on a shortcut to change it. Press Escape to cancel.",
@@ -4686,8 +4686,8 @@
   "@weekdaySun": {
     "description": "Abbreviated Sunday"
   },
-  "serviceIntegrationClillyngSoon": "{serviceName} integration clillyng soon",
-  "@serviceIntegrationClillyngSoon": {
+  "serviceIntegrationComingSoon": "{serviceName} integration coming soon",
+  "@serviceIntegrationComingSoon": {
     "description": "Message shown when task integration is not yet available",
     "placeholders": {
       "serviceName": {
@@ -4992,9 +4992,9 @@
   "@e2eeTradeoff2": {
     "description": "Second trade-off bullet point for E2EE"
   },
-  "featureClillyngSoon": "This feature is clillyng soon!",
-  "@featureClillyngSoon": {
-    "description": "Message indicating a feature is clillyng soon"
+  "featureComingSoon": "This feature is coming soon!",
+  "@featureComingSoon": {
+    "description": "Message indicating a feature is coming soon"
   },
   "migrationInProgressMessage": "Migration in progress. You cannot change the protection level until it is complete.",
   "@migrationInProgressMessage": {
@@ -5595,8 +5595,8 @@
   "@selectZipFileToImport": {
     "description": "Description for Limitless import option"
   },
-  "otherDevicesClillyngSoon": "Other devices clillyng soon",
-  "@otherDevicesClillyngSoon": {
+  "otherDevicesComingSoon": "Other devices coming soon",
+  "@otherDevicesComingSoon": {
     "description": "Text for other devices placeholder"
   },
   "deleteAllLimitlessConversations": "Delete All Limitless Conversations?",
@@ -6254,15 +6254,15 @@
   "@whenToReceiveDailySummary": {
     "description": "Description for delivery time setting"
   },
-  "@upclillyngMeetings": {
-    "description": "Section header for upclillyng meetings in calendar"
+  "@upcomingMeetings": {
+    "description": "Section header for upcoming meetings in calendar"
   },
-  "@noUpclillyngMeetings": {
+  "@noUpcomingMeetings": {
     "description": "Empty state when no meetings scheduled"
   },
   "checkingNextSevenDays": "Checking the next 7 days",
   "@checkingNextSevenDays": {
-    "description": "Subtitle for no upclillyng meetings state"
+    "description": "Subtitle for no upcoming meetings state"
   },
   "@exportingConversations": {
     "description": "Snackbar message when exporting conversations"
