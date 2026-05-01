@@ -39,6 +39,7 @@ class CategoryEnum(str, Enum):
     system = 'system'
     media = 'media'
     internal = 'internal'
+    research = 'research'
     other = 'other'
 
 
@@ -66,6 +67,11 @@ class ConversationSource(str, Enum):
     photo_share = 'photo_share'
     watchdog_error = 'watchdog_error'
     lilly_activity = 'lilly_activity'
+    sent_message = 'sent_message'
+    linkedin = 'linkedin'
+    zotero = 'zotero'
+    research = 'research'
+    skill_event = 'skill_event'
     unknown = 'unknown'
 
     @classmethod

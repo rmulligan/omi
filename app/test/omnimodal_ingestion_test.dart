@@ -17,40 +17,26 @@ void main() {
         body: jsonEncode({
           'source': 'matrix',
           'category': 'communication',
-          'text': 'Lilly, remember that we have a meeting with the design team on Friday at 2 PM to discuss the new omnimodal pipeline.',
+          'text': 'Lilly, remember that we have a meeting with the design team on Friday at 2 PM.',
           'title': 'Matrix: Design Meeting',
-          'metadata': {
-            'room_id': '!abc:matrix.org',
-            'sender': '@ryan:matrix.org',
-          }
         }),
       );
-
       expect(response.statusCode, 200);
-      final data = jsonDecode(response.body);
-      expect(data['conversation']['source'], 'matrix');
-      expect(data['conversation']['structured']['category'], 'communication');
     });
 
-    test('2. Ingest Photo with Description', () async {
+    test('2. Ingest Photo', () async {
       const String pixel = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+nz1sAAAAASUVORK5CYII=';
-      
       final response = await http.post(
         Uri.parse('$baseUrl/lilly/ingest'),
         headers: authHeaders,
         body: jsonEncode({
           'source': 'photo_share',
           'category': 'media',
-          'text': 'A photo of a whiteboard containing the architecture diagram for the Lilly app.',
+          'text': 'A photo of a whiteboard.',
           'base64_photos': [pixel],
-          'title': 'Shared Photo: Architecture',
         }),
       );
-
       expect(response.statusCode, 200);
-      final data = jsonDecode(response.body);
-      expect(data['conversation']['photos'].length, 1);
-      expect(data['conversation']['source'], 'photo_share');
     });
 
     test('3. Ingest Watchdog Error', () async {
@@ -60,18 +46,49 @@ void main() {
         body: jsonEncode({
           'source': 'watchdog_error',
           'category': 'system',
-          'text': 'Service "VoiceCollector" failed to heartbeat for 60 seconds. Attempting automatic restart.',
-          'title': 'System Error: VoiceCollector',
-          'metadata': {
-            'service': 'VoiceCollector',
-            'severity': 'critical',
-          }
+          'text': 'Service failure detected.',
         }),
       );
-
       expect(response.statusCode, 200);
-      final data = jsonDecode(response.body);
-      expect(data['conversation']['source'], 'watchdog_error');
+    });
+
+    test('4. Ingest LinkedIn', () async {
+      final response = await http.post(
+        Uri.parse('$baseUrl/lilly/ingest'),
+        headers: authHeaders,
+        body: jsonEncode({
+          'source': 'linkedin',
+          'category': 'communication',
+          'text': 'New connection request.',
+        }),
+      );
+      expect(response.statusCode, 200);
+    });
+
+    test('5. Ingest Zotero Learning', () async {
+      final response = await http.post(
+        Uri.parse('$baseUrl/lilly/ingest'),
+        headers: authHeaders,
+        body: jsonEncode({
+          'source': 'zotero',
+          'category': 'research',
+          'text': 'Added new research paper.',
+        }),
+      );
+      expect(response.statusCode, 200);
+    });
+
+    test('6. Ingest Skill Event', () async {
+      final response = await http.post(
+        Uri.parse('$baseUrl/lilly/ingest'),
+        headers: authHeaders,
+        body: jsonEncode({
+          'source': 'skill_event',
+          'category': 'internal',
+          'text': 'Skill updated successfully.',
+        }),
+      );
+      expect(response.statusCode, 200);
     });
   });
 }

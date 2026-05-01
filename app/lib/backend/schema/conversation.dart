@@ -49,6 +49,11 @@ enum ConversationSource {
   photo_share,
   watchdog_error,
   lilly_activity,
+  sent_message,
+  linkedin,
+  zotero,
+  research,
+  skill_event,
 }
 
 class ConversationExternalData {
@@ -545,6 +550,16 @@ extension ConversationSourceExtension on ConversationSource {
         return FontAwesomeIcons.triangleExclamation;
       case ConversationSource.lilly_activity:
         return FontAwesomeIcons.robot;
+      case ConversationSource.sent_message:
+        return FontAwesomeIcons.paperPlane;
+      case ConversationSource.linkedin:
+        return FontAwesomeIcons.linkedin;
+      case ConversationSource.zotero:
+        return FontAwesomeIcons.bookOpen;
+      case ConversationSource.research:
+        return FontAwesomeIcons.microscope;
+      case ConversationSource.skill_event:
+        return FontAwesomeIcons.bolt;
       case ConversationSource.screenpipe:
         return FontAwesomeIcons.desktop;
       case ConversationSource.phone:
@@ -567,6 +582,16 @@ extension ConversationSourceExtension on ConversationSource {
         return Colors.red;
       case ConversationSource.lilly_activity:
         return Colors.purple;
+      case ConversationSource.sent_message:
+        return Colors.greenAccent;
+      case ConversationSource.linkedin:
+        return const Color(0xFF0077B5);
+      case ConversationSource.zotero:
+        return const Color(0xFFCC2936);
+      case ConversationSource.research:
+        return Colors.teal;
+      case ConversationSource.skill_event:
+        return Colors.amber;
       default:
         return Colors.deepPurple;
     }
