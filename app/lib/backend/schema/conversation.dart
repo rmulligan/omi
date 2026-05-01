@@ -55,6 +55,7 @@ enum ConversationSource {
   research,
   skill_event,
   google_drive,
+  phone_call,
 }
 
 class ConversationExternalData {
@@ -99,11 +100,9 @@ class ConversationPostProcessing {
 
   factory ConversationPostProcessing.fromJson(Map<String, dynamic> json) {
     return ConversationPostProcessing(
-      status:
-          ConversationPostProcessingStatus.values.asNameMap()[json['status']] ??
+      status: ConversationPostProcessingStatus.values.asNameMap()[json['status']] ??
           ConversationPostProcessingStatus.in_progress,
-      model:
-          ConversationPostProcessingModel.values.asNameMap()[json['model']] ??
+      model: ConversationPostProcessingModel.values.asNameMap()[json['model']] ??
           ConversationPostProcessingModel.fal_whisperx,
       failReason: json['fail_reason'],
     );
@@ -154,12 +153,12 @@ class ConversationPhoto {
   }
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'base64': base64,
-    'description': description,
-    'created_at': createdAt.toUtc().toIso8601String(),
-    'discarded': discarded,
-  };
+        'id': id,
+        'base64': base64,
+        'description': description,
+        'created_at': createdAt.toUtc().toIso8601String(),
+        'discarded': discarded,
+      };
 }
 
 class AudioFile {
@@ -194,14 +193,14 @@ class AudioFile {
   }
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'uid': uid,
-    'conversation_id': conversationId,
-    'chunk_timestamps': chunkTimestamps,
-    'provider': provider,
-    'started_at': startedAt?.toUtc().toIso8601String(),
-    'duration': duration,
-  };
+        'id': id,
+        'uid': uid,
+        'conversation_id': conversationId,
+        'chunk_timestamps': chunkTimestamps,
+        'provider': provider,
+        'started_at': startedAt?.toUtc().toIso8601String(),
+        'duration': duration,
+      };
 }
 
 class ServerConversation {
@@ -268,12 +267,10 @@ class ServerConversation {
       transcriptSegments: ((json['transcript_segments'] ?? []) as List<dynamic>)
           .map((segment) => TranscriptSegment.fromJson(segment))
           .toList(),
-      appResults: ((json['apps_results'] ?? []) as List<dynamic>)
-          .map((result) => AppResponse.fromJson(result))
-          .toList(),
-      suggestedSummarizationApps: ((json['suggested_summarization_apps'] ?? []) as List<dynamic>)
-          .map((appId) => appId.toString())
-          .toList(),
+      appResults:
+          ((json['apps_results'] ?? []) as List<dynamic>).map((result) => AppResponse.fromJson(result)).toList(),
+      suggestedSummarizationApps:
+          ((json['suggested_summarization_apps'] ?? []) as List<dynamic>).map((appId) => appId.toString()).toList(),
       geolocation: json['geolocation'] != null ? Geolocation.fromJson(json['geolocation']) : null,
       photos: json['photos'] != null
           ? ((json['photos'] ?? []) as List<dynamic>).map((photo) => ConversationPhoto.fromJson(photo)).toList()
@@ -283,9 +280,8 @@ class ServerConversation {
       source: json['source'] != null ? ConversationSource.values.asNameMap()[json['source']] : ConversationSource.omi,
       language: json['language'],
       deleted: json['deleted'] ?? false,
-      externalIntegration: json['external_data'] != null
-          ? ConversationExternalData.fromJson(json['external_data'])
-          : null,
+      externalIntegration:
+          json['external_data'] != null ? ConversationExternalData.fromJson(json['external_data']) : null,
       status: json['status'] != null
           ? ConversationStatus.values.asNameMap()[json['status']] ?? ConversationStatus.completed
           : ConversationStatus.completed,
@@ -542,7 +538,7 @@ extension ConversationSourceExtension on ConversationSource {
   IconData getIcon() {
     switch (this) {
       case ConversationSource.matrix:
-        return FontAwesomeIcons.matrixOrg;
+        return Icons.chat_bubble_outline;
       case ConversationSource.email:
         return FontAwesomeIcons.solidEnvelope;
       case ConversationSource.photo_share:

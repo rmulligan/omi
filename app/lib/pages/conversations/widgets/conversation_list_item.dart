@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
@@ -351,7 +352,8 @@ class _ConversationListItemState extends State<ConversationListItem> {
                       Container(
                         width: 40,
                         height: 40,
-                        decoration: BoxDecoration(color: const Color(0xFF35343B), borderRadius: BorderRadius.circular(12)),
+                        decoration:
+                            BoxDecoration(color: const Color(0xFF35343B), borderRadius: BorderRadius.circular(12)),
                         alignment: Alignment.center,
                         child: Text(
                           widget.conversation.structured.getEmoji(),
@@ -465,10 +467,12 @@ class _ConversationListItemState extends State<ConversationListItem> {
             style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.grey.shade300, height: 1.3),
           )
         else ...[
-          Text(widget.conversation.structured.overview.decodeString,
-              style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.grey.shade300, height: 1.3),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis),
+          Text(
+            widget.conversation.structured.overview.decodeString,
+            style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.grey.shade300, height: 1.3),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
           if (widget.conversation.photos.isNotEmpty) ...[
             const SizedBox(height: 12),
             SizedBox(
@@ -496,7 +500,126 @@ class _ConversationListItemState extends State<ConversationListItem> {
         ],
       ],
     );
-  });
+  }
+
+  Widget _buildLockedOverlay() {
+    return Positioned.fill(
+      child: ClipRRect(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 2.0, sigmaY: 2.0),
+          child: Container(
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: Colors.black.withValues(alpha: 0.01),
+              borderRadius: const BorderRadius.all(Radius.circular(8)),
+            ),
+            child: Text(
+              context.l10n.upgradeToUnlimited,
+              style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _getConversationHeader() {
+    return Padding(
+      padding: const EdgeInsets.only(left: 4.0, right: 12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Flexible(
+            fit: FlexFit.tight,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (!widget.conversation.discarded)
+                  Text(
+                    widget.conversation.structured.getEmoji(),
+                    style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w500),
+                  ),
+                if (widget.conversation.structured.category.isNotEmpty && !widget.conversation.discarded)
+                  const SizedBox(width: 8),
+                if (widget.conversation.structured.category.isNotEmpty)
+                  Flexible(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: widget.conversation.getTagColor(),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      child: Text(
+                        widget.conversation.getTag(),
+                        style: Theme.of(
+                          context,
+                        ).textTheme.bodyMedium!.copyWith(color: widget.conversation.getTagTextColor()),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 12),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: isNew
+                ? ConversationNewStatusIndicator(text: context.l10n.conversationNewIndicator)
+                : Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        dateTimeFormat(
+                          'h:mm a',
+                          widget.conversation.startedAt ?? widget.conversation.createdAt,
+                          locale: Localizations.localeOf(context).languageCode,
+                        ),
+                        style: const TextStyle(color: Color(0xFF6A6B71), fontSize: 14),
+                        maxLines: 1,
+                      ),
+                      if (_getConversationDuration(context).isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF35343B),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              _getConversationDuration(context),
+                              style: const TextStyle(color: Colors.white, fontSize: 11),
+                              maxLines: 1,
+                            ),
+                          ),
+                        ),
+                      if (widget.conversation.starred)
+                        const Padding(
+                          padding: EdgeInsets.only(left: 8.0),
+                          child: FaIcon(FontAwesomeIcons.solidStar, size: 12, color: Colors.amber),
+                        ),
+                    ],
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _getConversationDuration(BuildContext context) {
+    int durationSeconds = widget.conversation.getDurationInSeconds();
+    if (durationSeconds <= 0) return '';
+
+    return secondsToCompactDuration(durationSeconds, context);
+  }
+}
+
+class ConversationNewStatusIndicator extends StatefulWidget {
+  final String text;
+
+  const ConversationNewStatusIndicator({super.key, required this.text});
 
   @override
   State<ConversationNewStatusIndicator> createState() => _ConversationNewStatusIndicatorState();

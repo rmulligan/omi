@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:omi/gen/assets.gen.dart';
 import 'package:omi/widgets/shimmer_with_timeout.dart';
 import 'package:omi/providers/task_integration_provider.dart';
 import 'package:omi/services/apple_reminders_service.dart';
@@ -9,13 +10,25 @@ import 'package:omi/utils/l10n_extensions.dart';
 import 'package:omi/utils/logger.dart';
 import 'package:omi/utils/platform/platform_service.dart';
 
-enum TaskIntegrationApp { appleReminders }
+enum TaskIntegrationApp { appleReminders, todoist, clickup, asana, googleTasks, trello, monday }
 
 extension TaskIntegrationAppExtension on TaskIntegrationApp {
   String get displayName {
     switch (this) {
       case TaskIntegrationApp.appleReminders:
         return 'Apple Reminders';
+      case TaskIntegrationApp.googleTasks:
+        return 'Google Tasks';
+      case TaskIntegrationApp.clickup:
+        return 'ClickUp';
+      case TaskIntegrationApp.asana:
+        return 'Asana';
+      case TaskIntegrationApp.trello:
+        return 'Trello';
+      case TaskIntegrationApp.todoist:
+        return 'Todoist';
+      case TaskIntegrationApp.monday:
+        return 'Monday';
     }
   }
 
@@ -23,21 +36,84 @@ extension TaskIntegrationAppExtension on TaskIntegrationApp {
     switch (this) {
       case TaskIntegrationApp.appleReminders:
         return 'apple_reminders';
+      case TaskIntegrationApp.googleTasks:
+        return 'google_tasks';
+      case TaskIntegrationApp.clickup:
+        return 'clickup';
+      case TaskIntegrationApp.asana:
+        return 'asana';
+      case TaskIntegrationApp.trello:
+        return 'trello';
+      case TaskIntegrationApp.todoist:
+        return 'todoist';
+      case TaskIntegrationApp.monday:
+        return 'monday';
+    }
+  }
+
+  String? get logoPath {
+    switch (this) {
+      case TaskIntegrationApp.appleReminders:
+        return Assets.images.appleRemindersLogo.path;
+      case TaskIntegrationApp.googleTasks:
+        return Assets.integrationAppLogos.googleTasksLogo.path;
+      case TaskIntegrationApp.clickup:
+        return Assets.integrationAppLogos.clickupLogo.path;
+      case TaskIntegrationApp.asana:
+        return Assets.integrationAppLogos.asanaLogo.path;
+      case TaskIntegrationApp.trello:
+        return Assets.integrationAppLogos.trelloLogo.path;
+      case TaskIntegrationApp.todoist:
+        return Assets.integrationAppLogos.todoistLogo.path;
+      case TaskIntegrationApp.monday:
+        return Assets.integrationAppLogos.mondayLogo.path;
     }
   }
 
   IconData get icon {
     switch (this) {
       case TaskIntegrationApp.appleReminders:
-        return FontAwesomeIcons.apple;
+        return Icons.checklist_rounded;
+      case TaskIntegrationApp.googleTasks:
+        return Icons.task_alt;
+      case TaskIntegrationApp.clickup:
+        return Icons.rocket_launch;
+      case TaskIntegrationApp.asana:
+        return Icons.analytics_outlined;
+      case TaskIntegrationApp.trello:
+        return Icons.dashboard_outlined;
+      case TaskIntegrationApp.todoist:
+        return Icons.check_circle_outline;
+      case TaskIntegrationApp.monday:
+        return Icons.calendar_today;
     }
   }
 
   Color get iconColor {
     switch (this) {
       case TaskIntegrationApp.appleReminders:
-        return const Color(0xFF000000);
+        return const Color(0xFF007AFF);
+      case TaskIntegrationApp.googleTasks:
+        return const Color(0xFF4285F4);
+      case TaskIntegrationApp.clickup:
+        return const Color(0xFF7B68EE);
+      case TaskIntegrationApp.asana:
+        return const Color(0xFFF06A6A);
+      case TaskIntegrationApp.trello:
+        return const Color(0xFF0079BF);
+      case TaskIntegrationApp.todoist:
+        return const Color(0xFFE44332);
+      case TaskIntegrationApp.monday:
+        return const Color(0xFFFF3D57);
     }
+  }
+
+  bool get isAvailable {
+    return this == TaskIntegrationApp.appleReminders ||
+        this == TaskIntegrationApp.todoist ||
+        this == TaskIntegrationApp.asana ||
+        this == TaskIntegrationApp.googleTasks ||
+        this == TaskIntegrationApp.clickup;
   }
 }
 
@@ -55,7 +131,7 @@ class _TaskIntegrationsPageState extends State<TaskIntegrationsPage> with Widget
     WidgetsBinding.instance.addObserver(this);
     Future.microtask(() {
       if (mounted) {
-        context.read<TaskIntegrationProvider>().initialize();
+        context.read<TaskIntegrationProvider>().loadFromBackend();
       }
     });
   }
@@ -69,14 +145,14 @@ class _TaskIntegrationsPageState extends State<TaskIntegrationsPage> with Widget
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      context.read<TaskIntegrationProvider>().initialize();
+      context.read<TaskIntegrationProvider>().loadFromBackend();
     }
   }
 
   Future<void> _selectApp(TaskIntegrationApp app) async {
     if (app == TaskIntegrationApp.appleReminders) {
       final appleRemindersService = AppleRemindersService();
-      if (!appleRemindersService.hasPermission) {
+      if (!await appleRemindersService.hasPermission()) {
         final shouldAuth = await _showAuthDialog(app);
         if (shouldAuth == true) {
           final success = await appleRemindersService.requestPermission();
@@ -99,11 +175,11 @@ class _TaskIntegrationsPageState extends State<TaskIntegrationsPage> with Widget
           backgroundColor: const Color(0xFF1C1C1E),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           title: Text(
-            context.l10n.connectAppAuth(app.displayName),
+            'Connect ${app.displayName}',
             style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
           ),
           content: Text(
-            context.l10n.connectAppAuthDescription(app.displayName),
+            'Authorize ${app.displayName} to export tasks.',
             style: const TextStyle(color: Color(0xFF8E8E93), fontSize: 14, height: 1.4),
           ),
           actions: [
@@ -185,7 +261,7 @@ class _TaskIntegrationsPageState extends State<TaskIntegrationsPage> with Widget
   Widget _buildAppTile(TaskIntegrationApp app, bool isLoading) {
     final isSelected = context.watch<TaskIntegrationProvider>().selectedApp == app;
     final isConnected = context.watch<TaskIntegrationProvider>().isAppConnected(app);
-    final isAvailable = PlatformService.isAppleRemindersSupported;
+    final isAvailable = app == TaskIntegrationApp.appleReminders ? PlatformService.isApple : app.isAvailable;
 
     return Opacity(
       opacity: isAvailable ? 1.0 : 0.5,
@@ -223,7 +299,7 @@ class _TaskIntegrationsPageState extends State<TaskIntegrationsPage> with Widget
                       Padding(
                         padding: const EdgeInsets.only(top: 2),
                         child: Text(
-                          context.l10n.appleRemindersIosOnly,
+                          'Available on Apple platforms only',
                           style: const TextStyle(color: Color(0xFF8E8E93), fontSize: 12),
                         ),
                       ),

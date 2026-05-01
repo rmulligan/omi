@@ -31,7 +31,7 @@ dependencies:
   visibility_detector: ^0.4.0+2
   flutter_rating_bar: ^4.0.1
   dotted_border: ^2.1.0
-  skeletonizer: 2.0.1
+  skeletonizer: 1.4.3
   shimmer: ^3.0.0
   pull_down_button: ^0.10.2
 
@@ -74,7 +74,7 @@ dependencies:
   flutter_blue_plus: 2.1.0
   http: ^1.4.0
   pdf: ^3.11.0
-  intl: 0.20.2
+  intl: 0.19.0
   permission_handler: ^12.0.0+1
   flutter_contacts: ^1.1.9+2
   intl_country_data:
@@ -141,7 +141,7 @@ dependencies:
       ref: 684fb43710dd4de5538ac2da7d0b1fa405363212
   disk_space_2: ^1.0.11
   pasteboard: ^0.4.0
-  vector_math: ^2.2.0
+  vector_math: ^2.1.4
   marionette_flutter: ^0.3.0
 
 dependency_overrides:
