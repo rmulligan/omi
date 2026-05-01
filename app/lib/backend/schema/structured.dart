@@ -16,10 +16,27 @@ class Structured {
   Structured(this.title, this.overview, {this.id = 0, this.emoji = '', this.category = 'other'});
 
   getEmoji() {
-    try {
-      if (emoji.isNotEmpty) return utf8.decode(emoji.toString().codeUnits);
-      return ['🧠', '😎', '🧑‍💻', '🚀'][Random().nextInt(4)];
-    } catch (e) {
+    if (emoji.isNotEmpty) {
+      try {
+        return utf8.decode(emoji.toString().codeUnits);
+      } catch (e) {
+        return emoji;
+      }
+    }
+    
+    switch (category) {
+      case 'communication':
+        return '💬';
+      case 'system':
+        return '⚙️';
+      case 'media':
+        return '🖼️';
+      case 'internal':
+        return '🤖';
+      default:
+        return ['🧠', '😎', '🧑‍💻', '🚀'][Random().nextInt(4)];
+    }
+  } catch (e) {
       // return ['🧠', '😎', '🧑‍💻', '🚀'][Random().nextInt(4)];
       return emoji; // should return random?
     }

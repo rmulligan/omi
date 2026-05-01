@@ -35,6 +35,10 @@ class CategoryEnum(str, Enum):
     family = 'family'
     economics = 'economics'
     environment = 'environment'
+    communication = 'communication'
+    system = 'system'
+    media = 'media'
+    internal = 'internal'
     other = 'other'
 
 
@@ -57,6 +61,11 @@ class ConversationSource(str, Enum):
     external_integration = 'external_integration'
     limitless = 'limitless'
     onboarding = 'onboarding'
+    matrix = 'matrix'
+    email = 'email'
+    photo_share = 'photo_share'
+    watchdog_error = 'watchdog_error'
+    lilly_activity = 'lilly_activity'
     unknown = 'unknown'
 
     @classmethod

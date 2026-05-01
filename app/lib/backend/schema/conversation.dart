@@ -1,3 +1,4 @@
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'dart:convert';
 import 'dart:math';
 
@@ -43,6 +44,11 @@ enum ConversationSource {
   phone,
   desktop,
   limitless,
+  matrix,
+  email,
+  photo_share,
+  watchdog_error,
+  lilly_activity,
 }
 
 class ConversationExternalData {
@@ -523,5 +529,46 @@ class SyncedConversationPointer {
       key: key ?? this.key,
       conversation: conversation ?? this.conversation,
     );
+  }
+}
+
+extension ConversationSourceExtension on ConversationSource {
+  IconData getIcon() {
+    switch (this) {
+      case ConversationSource.matrix:
+        return FontAwesomeIcons.matrixOrg;
+      case ConversationSource.email:
+        return FontAwesomeIcons.solidEnvelope;
+      case ConversationSource.photo_share:
+        return FontAwesomeIcons.image;
+      case ConversationSource.watchdog_error:
+        return FontAwesomeIcons.triangleExclamation;
+      case ConversationSource.lilly_activity:
+        return FontAwesomeIcons.robot;
+      case ConversationSource.screenpipe:
+        return FontAwesomeIcons.desktop;
+      case ConversationSource.phone:
+      case ConversationSource.phone_call:
+        return FontAwesomeIcons.phone;
+      default:
+        return FontAwesomeIcons.microphone;
+    }
+  }
+
+  Color getColor() {
+    switch (this) {
+      case ConversationSource.matrix:
+        return const Color(0xFF00FF00);
+      case ConversationSource.email:
+        return Colors.blue;
+      case ConversationSource.photo_share:
+        return Colors.orange;
+      case ConversationSource.watchdog_error:
+        return Colors.red;
+      case ConversationSource.lilly_activity:
+        return Colors.purple;
+      default:
+        return Colors.deepPurple;
+    }
   }
 }
